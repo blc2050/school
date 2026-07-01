@@ -40,6 +40,10 @@
                     <i class="fa-solid fa-chart-simple"></i>
                     <span>Student Counts</span>
                 </button>
+                <button class="menu-item" id="btn-fees" onclick="switchTab('fees')">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                    <span>Student Fee Due</span>
+                </button>
             </nav>
             
             <div class="sidebar-footer">
@@ -438,6 +442,106 @@
                         <div class="report-signature">
                             <div class="signature-line"></div>
                             <span>Class Teacher Signature</span>
+                        </div>
+                        <div class="report-signature">
+                            <div class="signature-line"></div>
+                            <span>Principal Signature</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab Content 4: Student Fee Due Report (New Tab) -->
+            <section id="tab-fees" class="tab-content">
+                <!-- Search Box for Dues -->
+                <div class="card no-print">
+                    <div class="filter-group">
+                        <label class="filter-label">Search Student Fee Status</label>
+                        <div class="global-search-container" style="max-width: 100%;">
+                            <i class="fa-solid fa-magnifying-glass global-search-icon"></i>
+                            <input type="text" id="fee-student-search" placeholder="Search by SR Number, Name or Father's Name school-wide..." oninput="handleFeeSearch()" onkeydown="handleFeeSearchKey(event)">
+                            <div class="global-search-results" id="fee-search-results" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fee Empty / Instructions Card -->
+                <div class="placeholder-card card" id="fee-placeholder-card">
+                    <div class="placeholder-content">
+                        <i class="fa-solid fa-receipt placeholder-icon" style="color: var(--primary);"></i>
+                        <h3>Student Fee Dues Search</h3>
+                        <p>Search using Scholar No (SR), Student Name, or Father's name to view installment-wise dues and totals.</p>
+                    </div>
+                </div>
+                
+                <!-- Individual Student Fee statement -->
+                <div class="card" id="fee-report-card" style="display: none;">
+                    <!-- Official Header block for printing fee -->
+                    <div class="school-official-header">
+                        <div class="letterhead-brand-row">
+                            <img src="SSVM%20Hindi%20Logo%20500x..jpg" alt="SSVM Logo" class="letterhead-logo-img">
+                            <div class="letterhead-text-block">
+                                <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
+                                <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
+                                <p class="school-contact">Mob : 9413030806, E-mail : ssvmorg@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="header-divider-row">
+                            <span>Session : 2026-27</span>
+                            <span class="report-tag">Student Fee Dues Statement</span>
+                        </div>
+                    </div>
+
+                    <!-- Individual Student Meta Information -->
+                    <div class="fee-student-info-grid">
+                        <div class="fee-info-item">
+                            <span class="fee-info-lbl">Student Name</span>
+                            <span class="fee-info-val" id="fee-stud-name"></span>
+                        </div>
+                        <div class="fee-info-item">
+                            <span class="fee-info-lbl">Scholar No (SR)</span>
+                            <span class="fee-info-val" id="fee-stud-sr"></span>
+                        </div>
+                        <div class="fee-info-item">
+                            <span class="fee-info-lbl">Father Name</span>
+                            <span class="fee-info-val" id="fee-stud-father"></span>
+                        </div>
+                        <div class="fee-info-item">
+                            <span class="fee-info-lbl">Class (Roster)</span>
+                            <span class="fee-info-val" id="fee-stud-class"></span>
+                        </div>
+                    </div>
+
+                    <!-- Installments Statement Table -->
+                    <div class="table-responsive" style="margin-top: 20px;">
+                        <table class="report-table stats-table" style="min-width: 900px; table-layout: auto;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left;">Fee Description</th>
+                                    <th style="text-align: center;">1st Installment</th>
+                                    <th style="text-align: center;">2nd Installment</th>
+                                    <th style="text-align: center;">3rd Installment</th>
+                                    <th style="text-align: center;">Prev. Year Balance</th>
+                                    <th style="text-align: center; font-weight: 700; background-color: var(--slate-100);">Yearly Total Due</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fee-report-tbody">
+                                <!-- Dynamic breakdown rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Fee action row -->
+                    <div class="controls-row no-print" style="margin-top: 24px; justify-content: flex-end;">
+                        <button class="btn btn-primary" onclick="printReport()">
+                            <i class="fa-solid fa-print"></i> Print Due Statement
+                        </button>
+                    </div>
+
+                    <div class="report-footer print-only">
+                        <div class="report-signature">
+                            <div class="signature-line"></div>
+                            <span>Office Clerk Signature</span>
                         </div>
                         <div class="report-signature">
                             <div class="signature-line"></div>

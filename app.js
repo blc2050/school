@@ -7,17 +7,22 @@ let classesMain = [];
 let classesTc = [];
 let mediums = [];
 let classByMedium = {};
+let dueFees = {};
 
 // Application states
-let currentTab = 'directory'; // 'directory', 'tc', or 'counts'
+let currentTab = 'directory'; // 'directory', 'tc', 'counts', or 'fees'
 let currentMediumFilter = 'all';
 let selectedClass = '';
 let currentSearchQuery = '';
 let currentCountsFormat = 'hindi-pri'; // 'hindi-pri', 'hindi-sec', 'english', 'consolidated'
 
-// Global Search State
+// Global Search States
 let searchFocusedIndex = -1;
 let globalSearchResultsList = [];
+
+// Fee Search States
+let feeSearchFocusedIndex = -1;
+let feeSearchResultsList = [];
 
 // Logical sort order for classes
 const CLASS_SORT_ORDER = [
@@ -31,66 +36,53 @@ const CLASS_SORT_ORDER = [
 
 // Mapping class name (from MAIN) to grade name in TC Report
 const CLASS_TO_GRADE_MAP = {
-    // Tenth
     "10TH A EM": "Tenth\u00a0(2026-27)",
     "10TH A": "Tenth\u00a0(2026-27)",
     "10TH B": "Tenth\u00a0(2026-27)",
     "10TH C": "Tenth\u00a0(2026-27)",
     
-    // Eleventh
     "11TH SCI EM": "Eleventh\u00a0(2026-27)",
     "11TH AGR": "Eleventh\u00a0(2026-27)",
     "11TH ARTS": "Eleventh\u00a0(2026-27)",
     "11TH SCI": "Eleventh\u00a0(2026-27)",
     
-    // Twelfth
     "12TH ARTS EM": "Twelth\u00a0(2026-27)",
     "12TH SCI EM": "Twelth\u00a0(2026-27)",
     "12TH AGR": "Twelth\u00a0(2026-27)",
     "12TH ARTS": "Twelth\u00a0(2026-27)",
     "12TH SCI": "Twelth\u00a0(2026-27)",
     
-    // First
     "1ST EM": "First\u00a0(2026-27)",
     "1ST": "First\u00a0(2026-27)",
     
-    // Second
     "2ND EM": "Second\u00a0(2026-27)",
     "2ND": "Second\u00a0(2026-27)",
     
-    // Third
     "3RD EM": "Third\u00a0(2026-27)",
     "3RD": "Third\u00a0(2026-27)",
     
-    // Fourth
     "4TH EM": "Fourth\u00a0(2026-27)",
     "4TH": "Fourth\u00a0(2026-27)",
     
-    // Fifth
     "5TH EM": "Fifth\u00a0(2026-27)",
     "5TH": "Fifth\u00a0(2026-27)",
     
-    // Sixth
     "6TH A EM": "Sixth\u00a0(2026-27)",
     "6TH A": "Sixth\u00a0(2026-27)",
     "6TH B": "Sixth\u00a0(2026-27)",
     
-    // Seventh
     "7TH A EM": "Seventh\u00a0(2026-27)",
     "7TH A": "Seventh\u00a0(2026-27)",
     "7TH B": "Seventh\u00a0(2026-27)",
     
-    // Eighth
     "8TH A EM": "Eight\u00a0(2026-27)",
     "8TH A": "Eight\u00a0(2026-27)",
     "8TH B": "Eight\u00a0(2026-27)",
     
-    // Ninth
     "9TH A EM": "Ninth\u00a0(2026-27)",
     "9TH A": "Ninth\u00a0(2026-27)",
     "9TH B": "Ninth\u00a0(2026-27)",
     
-    // Pre-primary
     "KG EM": "PP.5+\u00a0(2026-27)",
     "UKG EM": "PP.5+\u00a0(2026-27)",
     "LKG EM": "PP.4+\u00a0(2026-27)"
@@ -103,12 +95,18 @@ document.addEventListener("DOMContentLoaded", () => {
     populateClassDropdown();
     updateUIState();
     
-    // Close global search results on clicking outside
+    // Close global and fee search results on clicking outside
     document.addEventListener("click", (e) => {
-        const container = document.querySelector(".global-search-container");
-        const resultsDiv = document.getElementById("global-search-results");
-        if (resultsDiv && container && !container.contains(e.target)) {
-            resultsDiv.style.display = "none";
+        const globalContainer = document.querySelector(".global-search-container");
+        const globalResults = document.getElementById("global-search-results");
+        if (globalResults && globalContainer && !globalContainer.contains(e.target)) {
+            globalResults.style.display = "none";
+        }
+        
+        const feeContainer = document.querySelector("#tab-fees .global-search-container");
+        const feeResults = document.getElementById("fee-search-results");
+        if (feeResults && feeContainer && !feeContainer.contains(e.target)) {
+            feeResults.style.display = "none";
         }
     });
 });
@@ -122,6 +120,7 @@ function loadData() {
         classesTc = window.STUDENTS_DATA.classes_tc || [];
         mediums = window.STUDENTS_DATA.mediums || [];
         classByMedium = window.STUDENTS_DATA.class_by_medium || {};
+        dueFees = window.STUDENTS_DATA.due_fees || {};
     } else {
         console.error("Database variables (data.js) not loaded.");
     }
@@ -134,47 +133,37 @@ function initStats() {
     const englishCount = activeStudents.filter(s => s.medium === 'English').length;
     const hindiCount = activeStudents.filter(s => s.medium === 'Hindi').length;
     
-    // Gender counts for active students overall
     const activeBoys = activeStudents.filter(s => s.gender === 'Male').length;
     const activeGirls = activeStudents.filter(s => s.gender === 'Female').length;
     
-    // Gender counts for English Medium
     const englishBoys = activeStudents.filter(s => s.medium === 'English' && s.gender === 'Male').length;
     const englishGirls = activeStudents.filter(s => s.medium === 'English' && s.gender === 'Female').length;
     
-    // Gender counts for Hindi Medium
     const hindiBoys = activeStudents.filter(s => s.medium === 'Hindi' && s.gender === 'Male').length;
     const hindiGirls = activeStudents.filter(s => s.medium === 'Hindi' && s.gender === 'Female').length;
     
-    // Gender counts for New Admissions (on or after 2026-04-01)
     const newAdmissions = activeStudents.filter(s => s.date_of_admission && s.date_of_admission >= '2026-04-01');
     const newBoys = newAdmissions.filter(s => s.gender === 'Male').length;
     const newGirls = newAdmissions.filter(s => s.gender === 'Female').length;
     
-    // Update active stats
     document.getElementById('stat-active-count').innerText = totalActive.toLocaleString();
     document.getElementById('stat-active-boys').innerText = activeBoys.toLocaleString();
     document.getElementById('stat-active-girls').innerText = activeGirls.toLocaleString();
     
-    // Update english stats
     document.getElementById('stat-english-count').innerText = englishCount.toLocaleString();
     document.getElementById('stat-english-boys').innerText = englishBoys.toLocaleString();
     document.getElementById('stat-english-girls').innerText = englishGirls.toLocaleString();
     
-    // Update hindi stats
     document.getElementById('stat-hindi-count').innerText = hindiCount.toLocaleString();
     document.getElementById('stat-hindi-boys').innerText = hindiBoys.toLocaleString();
     document.getElementById('stat-hindi-girls').innerText = hindiGirls.toLocaleString();
     
-    // Update new admissions stats
     document.getElementById('stat-new-count').innerText = newAdmissions.length.toLocaleString();
     document.getElementById('stat-new-boys').innerText = newBoys.toLocaleString();
     document.getElementById('stat-new-girls').innerText = newGirls.toLocaleString();
     
-    // Update TC stats
     document.getElementById('stat-tc-count').innerText = totalTc.toLocaleString();
     
-    // Highlight count
     const highlightedActive = activeStudents.filter(s => s.is_highlighted).length;
     const highlightedTc = tcStudents.filter(s => s.is_highlighted).length;
     const totalHighlighted = highlightedActive + highlightedTc;
@@ -258,9 +247,21 @@ function switchTab(tabId) {
             pageSubtitle.innerText = 'Student Directory';
         } else if (tabId === 'tc') {
             pageSubtitle.innerText = 'TC Report';
-        } else {
+        } else if (tabId === 'counts') {
             pageSubtitle.innerText = 'Student Counts Summary';
+        } else {
+            pageSubtitle.innerText = 'Student Fee Due Report';
         }
+    }
+    
+    // Reset fee search state only when switching tabs
+    if (tabId === 'fees') {
+        const feeReportCard = document.getElementById('fee-report-card');
+        const feePlaceholder = document.getElementById('fee-placeholder-card');
+        const feeSearchInput = document.getElementById('fee-student-search');
+        if (feeReportCard) feeReportCard.style.display = 'none';
+        if (feePlaceholder) feePlaceholder.style.display = 'block';
+        if (feeSearchInput) feeSearchInput.value = '';
     }
     
     updateUIState();
@@ -306,18 +307,13 @@ function switchCountsFormat(formatId) {
     renderCountsTable();
 }
 
-// Handle Search Query input (redirects to global search logic)
-function handleSearch() {
-    // Legacy search placeholder
-}
-
 // Global Spotlight Search Handler (searches school-wide for both students and classes)
 function handleGlobalSearch() {
     const input = document.getElementById('global-student-search');
     const resultsDiv = document.getElementById('global-search-results');
     if (!input || !resultsDiv) return;
     
-    const query = input.value.toLowerCase().trim();
+    let query = input.value.toLowerCase().trim();
     if (!query) {
         resultsDiv.style.display = 'none';
         resultsDiv.innerHTML = '';
@@ -325,6 +321,9 @@ function handleGlobalSearch() {
         searchFocusedIndex = -1;
         return;
     }
+    
+    // Strip prefixes like "class" or "grade" to make class queries robust (e.g. "Class 10th" -> "10th")
+    query = query.replace(/^class\s+/g, '').replace(/^grade\s+/g, '');
     
     // 1. Search for matching classes (limit to 3 matches)
     const matchedClasses = classesMain.filter(cls => 
@@ -394,7 +393,8 @@ function handleGlobalSearch() {
                     <span class="result-meta">SR: ${itemData.sr_no} | Father: ${itemData.father_name}</span>
                 </div>
                 <div class="result-status">
-                    <span class="result-class-tag">${classLabel} ${mediumLabel}</span>
+                    <!-- Class Tag styled as hyperlink that switches to class list roster when clicked -->
+                    <span class="result-class-tag-link" onclick="event.stopPropagation(); selectClassSearchResult('${classLabel}');">${classLabel} ${mediumLabel}</span>
                     <span class="status-indicator-badge ${badgeClass}">${itemData.type}</span>
                 </div>
             `;
@@ -485,30 +485,298 @@ function updateSearchFocus(items) {
     }
 }
 
-// Update UI State
+// Global Student Fee Search Handler (searches exclusively in dueFees)
+function handleFeeSearch() {
+    const input = document.getElementById('fee-student-search');
+    const resultsDiv = document.getElementById('fee-search-results');
+    if (!input || !resultsDiv) return;
+    
+    const query = input.value.toLowerCase().trim();
+    if (!query) {
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = '';
+        feeSearchResultsList = [];
+        feeSearchFocusedIndex = -1;
+        return;
+    }
+    
+    const feeRecords = Object.values(dueFees);
+    
+    // Filter matching fee records
+    feeSearchResultsList = feeRecords.filter(f => 
+        f.student_name.toLowerCase().includes(query) ||
+        f.father_name.toLowerCase().includes(query) ||
+        f.scholar_no.toLowerCase().includes(query)
+    ).slice(0, 8);
+    
+    feeSearchFocusedIndex = -1;
+    
+    if (feeSearchResultsList.length === 0) {
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = `
+            <div style="padding: 14px; text-align: center; color: var(--slate-700); font-size: 0.85rem;">
+                <i class="fa-regular fa-face-frown" style="font-size: 1.2rem; display: block; margin-bottom: 6px; color: var(--slate-300);"></i>
+                No matching student fee records found.
+            </div>
+        `;
+        return;
+    }
+    
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '';
+    
+    feeSearchResultsList.forEach((feeData, index) => {
+        const item = document.createElement('div');
+        item.classList.add('search-result-item');
+        item.setAttribute('data-index', index);
+        
+        item.innerHTML = `
+            <div class="result-details">
+                <span class="result-name">${feeData.student_name}</span>
+                <span class="result-meta">SR: ${feeData.scholar_no} | Father: ${feeData.father_name}</span>
+            </div>
+            <div class="result-status">
+                <span class="result-class-tag">${feeData.class_name}</span>
+                <span class="status-indicator-badge" style="background-color: var(--primary-light); color: var(--primary-dark);">SELECT</span>
+            </div>
+        `;
+        
+        item.onclick = () => {
+            selectFeeSearchResult(feeData);
+        };
+        
+        resultsDiv.appendChild(item);
+    });
+}
+
+// Select student item from fee search results
+function selectFeeSearchResult(feeData) {
+    const input = document.getElementById('fee-student-search');
+    const resultsDiv = document.getElementById('fee-search-results');
+    if (input) input.value = '';
+    if (resultsDiv) {
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = '';
+    }
+    
+    renderStudentFeeDue(feeData);
+}
+
+// Keyboard navigation in Fee Search Dropdown
+function handleFeeSearchKey(event) {
+    const resultsDiv = document.getElementById('fee-search-results');
+    if (!resultsDiv || resultsDiv.style.display === 'none') return;
+    
+    const items = resultsDiv.getElementsByClassName('search-result-item');
+    if (items.length === 0) return;
+    
+    if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        feeSearchFocusedIndex++;
+        if (feeSearchFocusedIndex >= items.length) feeSearchFocusedIndex = 0;
+        updateFeeSearchFocus(items);
+    } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        feeSearchFocusedIndex--;
+        if (feeSearchFocusedIndex < 0) feeSearchFocusedIndex = items.length - 1;
+        updateFeeSearchFocus(items);
+    } else if (event.key === 'Enter') {
+        event.preventDefault();
+        if (feeSearchFocusedIndex >= 0 && feeSearchFocusedIndex < items.length) {
+            items[feeSearchFocusedIndex].click();
+        }
+    } else if (event.key === 'Escape') {
+        event.preventDefault();
+        const input = document.getElementById('fee-student-search');
+        if (input) input.value = '';
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = '';
+    }
+}
+
+// Apply visual highlight class for focused fee search item
+function updateFeeSearchFocus(items) {
+    for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove('focused');
+    }
+    if (feeSearchFocusedIndex >= 0 && feeSearchFocusedIndex < items.length) {
+        items[feeSearchFocusedIndex].classList.add('focused');
+        items[feeSearchFocusedIndex].scrollIntoView({ block: 'nearest' });
+    }
+}
+
+// Render dynamic student fee dues statement
+function renderStudentFeeDue(feeRecord) {
+    const tbody = document.getElementById('fee-report-tbody');
+    if (!tbody) return;
+    
+    // Bind meta student details
+    document.getElementById('fee-stud-name').innerText = feeRecord.student_name;
+    document.getElementById('fee-stud-sr').innerText = feeRecord.scholar_no;
+    document.getElementById('fee-stud-father').innerText = feeRecord.father_name;
+    document.getElementById('fee-stud-class').innerText = feeRecord.class_name;
+    
+    tbody.innerHTML = '';
+    
+    // Map Excel values into Installment rows
+    const rows = [
+        {
+            label: "School Fee",
+            ins1: feeRecord.school_fee_1,
+            ins2: feeRecord.school_fee_2,
+            ins3: feeRecord.school_fee_3,
+            prev: 0,
+            total: feeRecord.school_fee_1 + feeRecord.school_fee_2 + feeRecord.school_fee_3
+        },
+        {
+            label: "Bus & Transport Fee",
+            ins1: feeRecord.bus_fee_1,
+            ins2: feeRecord.bus_fee_2,
+            ins3: feeRecord.bus_fee_3,
+            prev: 0,
+            total: feeRecord.bus_fee_1 + feeRecord.bus_fee_2 + feeRecord.bus_fee_3
+        },
+        {
+            label: "Admission Fee",
+            ins1: feeRecord.admission_fee_1,
+            ins2: 0,
+            ins3: 0,
+            prev: 0,
+            total: feeRecord.admission_fee_1
+        },
+        {
+            label: "Hostel Fee",
+            ins1: feeRecord.hostel_fee_1,
+            ins2: feeRecord.hostel_fee_2,
+            ins3: 0,
+            prev: 0,
+            total: feeRecord.hostel_fee_1 + feeRecord.hostel_fee_2
+        },
+        {
+            label: "Previous Year Balance",
+            ins1: 0,
+            ins2: 0,
+            ins3: 0,
+            prev: feeRecord.prev_due,
+            total: feeRecord.prev_due
+        },
+        {
+            label: "Late Fee",
+            ins1: 0,
+            ins2: 0,
+            ins3: 0,
+            prev: 0,
+            total: feeRecord.late_fee
+        },
+        {
+            label: "Advance Adjustable (Prepaid)",
+            ins1: 0,
+            ins2: 0,
+            ins3: 0,
+            prev: 0,
+            total: -feeRecord.advance_adjustable // Render as negative balance deduction
+        }
+    ];
+    
+    rows.forEach(r => {
+        // Hide row if all values are zero
+        if (r.total === 0 && r.ins1 === 0 && r.ins2 === 0 && r.ins3 === 0 && r.prev === 0) return;
+        
+        const tr = document.createElement('tr');
+        
+        const val1 = r.ins1 ? `₹${r.ins1.toLocaleString()}` : '-';
+        const val2 = r.ins2 ? `₹${r.ins2.toLocaleString()}` : '-';
+        const val3 = r.ins3 ? `₹${r.ins3.toLocaleString()}` : '-';
+        const valP = r.prev ? `₹${r.prev.toLocaleString()}` : '-';
+        
+        let totalStr = `₹${r.total.toLocaleString()}`;
+        if (r.total < 0) {
+            totalStr = `-₹${Math.abs(r.total).toLocaleString()}`;
+        }
+        
+        tr.innerHTML = `
+            <td style="font-weight: 600; text-align: left;">${r.label}</td>
+            <td style="text-align: center;">${val1}</td>
+            <td style="text-align: center;">${val2}</td>
+            <td style="text-align: center;">${val3}</td>
+            <td style="text-align: center;">${valP}</td>
+            <td style="text-align: center; font-weight: 700; background-color: var(--slate-50);">${totalStr}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+    
+    // Render highlighted Grand Total Row
+    const totalTr = document.createElement('tr');
+    totalTr.style.borderTop = '2px solid var(--slate-900)';
+    totalTr.style.borderBottom = '2px solid var(--slate-900)';
+    totalTr.style.backgroundColor = 'var(--slate-100)';
+    totalTr.style.fontWeight = '800';
+    
+    const tot1 = feeRecord.school_fee_1 + feeRecord.bus_fee_1 + feeRecord.admission_fee_1 + feeRecord.hostel_fee_1;
+    const tot2 = feeRecord.school_fee_2 + feeRecord.bus_fee_2 + feeRecord.hostel_fee_2;
+    const tot3 = feeRecord.school_fee_3 + feeRecord.bus_fee_3;
+    const totP = feeRecord.prev_due;
+    
+    const valTot1 = tot1 ? `₹${tot1.toLocaleString()}` : '-';
+    const valTot2 = tot2 ? `₹${tot2.toLocaleString()}` : '-';
+    const valTot3 = tot3 ? `₹${tot3.toLocaleString()}` : '-';
+    const valTotP = totP ? `₹${totP.toLocaleString()}` : '-';
+    
+    totalTr.innerHTML = `
+        <td style="font-weight: 800; text-align: left;">TOTAL YEARLY DUE</td>
+        <td style="text-align: center;">${valTot1}</td>
+        <td style="text-align: center;">${valTot2}</td>
+        <td style="text-align: center;">${valTot3}</td>
+        <td style="text-align: center;">${valTotP}</td>
+        <td style="text-align: center; font-weight: 900; background-color: var(--slate-200); color: var(--primary-dark); font-size: 0.95rem;">₹${feeRecord.total.toLocaleString()}</td>
+    `;
+    
+    tbody.appendChild(totalTr);
+    
+    // Toggle containers
+    document.getElementById('fee-report-card').style.display = 'block';
+    document.getElementById('fee-placeholder-card').style.display = 'none';
+}
+
+// Update UI State Contexts
 function updateUIState() {
     const placeholder = document.getElementById('no-class-placeholder');
     const tabDir = document.getElementById('tab-directory');
     const tabTc = document.getElementById('tab-tc');
     const tabCounts = document.getElementById('tab-counts');
+    const tabFees = document.getElementById('tab-fees');
+    
     const filterPanel = document.getElementById('filter-panel-section');
     const classFilterRow = document.getElementById('class-filter-row');
     const btnPrintList = document.getElementById('btn-print-list');
     
-    // Search row panel stays visible across all tabs
-    if (filterPanel) filterPanel.style.display = 'block';
-    
+    // Manage tabs visibility
     if (currentTab === 'counts') {
-        if (placeholder) placeholder.style.display = 'none';
+        if (filterPanel) filterPanel.style.display = 'block';
         if (classFilterRow) classFilterRow.style.display = 'none';
         if (btnPrintList) btnPrintList.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'none';
+        
         if (tabDir) tabDir.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
+        if (tabFees) tabFees.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'block';
         switchCountsFormat(currentCountsFormat);
-    } else {
-        if (classFilterRow) classFilterRow.style.display = 'flex';
+    } else if (currentTab === 'fees') {
+        // Fee tab is search-only: hide filters completely, hide other tables
+        if (filterPanel) filterPanel.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'none';
+        
+        if (tabDir) tabDir.style.display = 'none';
+        if (tabTc) tabTc.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'none';
+        if (tabFees) tabFees.style.display = 'block';
+    } else {
+        if (filterPanel) filterPanel.style.display = 'block';
+        if (classFilterRow) classFilterRow.style.display = 'flex';
+        
+        if (tabCounts) tabCounts.style.display = 'none';
+        if (tabFees) tabFees.style.display = 'none';
         
         if (!selectedClass) {
             if (placeholder) placeholder.style.display = 'block';
@@ -584,9 +852,12 @@ function renderDirectoryTable() {
         const admDate = student.date_of_admission || '-';
         const rte = student.rte || 'No';
         
+        // Wrap SR No in a link that triggers viewStudentDetails modal
         tr.innerHTML = `
             <td data-label="S.No"><strong>${sNo}</strong></td>
-            <td data-label="SR No">${student.sr_no}</td>
+            <td data-label="SR No">
+                <a href="#" onclick="viewStudentDetails('${student.sr_no}', true); return false;" class="sr-link">${student.sr_no}</a>
+            </td>
             <td data-label="Student Name">${student.student_name}</td>
             <td data-label="Father Name">${student.father_name}</td>
             <td data-label="Mother Name">${student.mother_name}</td>
@@ -674,9 +945,12 @@ function renderTCTable() {
         const reason = student.exit_type_reason || 'Left School';
         const exitDate = student.exit_date || '-';
         
+        // Wrap SR No in clickable details link
         tr.innerHTML = `
             <td data-label="S.No"><strong>${sNo}</strong></td>
-            <td data-label="SR No">${student.sr_no}</td>
+            <td data-label="SR No">
+                <a href="#" onclick="viewStudentDetails('${student.sr_no}', false); return false;" class="sr-link">${student.sr_no}</a>
+            </td>
             <td data-label="Student NIC ID">${student.student_nic_id || '-'}</td>
             <td data-label="Student Name">${student.student_name}</td>
             <td data-label="Father Name">${student.father_name}</td>
@@ -782,8 +1056,23 @@ function renderCountsTable() {
         const rowStudents = getStudentCountsForClasses(rowSpec.queryClasses);
         const tr = document.createElement('tr');
         
+        // Wrap class name in first column inside a clickable link that opens that class student list directory
+        // For consolidated format, we map to the base grade representation
+        let selectParam = rowSpec.label;
+        if (currentCountsFormat === 'consolidated') {
+            // Map PRE-PRIMARY -> KG EM, 11TH -> 11TH ARTS, 12TH -> 12TH ARTS, otherwise maps directly
+            if (rowSpec.label === 'PRE-PRIMARY') selectParam = 'KG EM';
+            else if (rowSpec.label === '11TH') selectParam = '11TH ARTS';
+            else if (rowSpec.label === '12TH') selectParam = '12TH ARTS';
+        } else if (currentCountsFormat === 'english') {
+            // Map displaying label back to query class
+            selectParam = rowSpec.queryClasses[0];
+        }
+        
         let rowHtml = `
-            <td style="font-weight: 600;">${rowSpec.label}</td>
+            <td style="font-weight: 600;">
+                <a href="#" onclick="selectClassSearchResult('${selectParam}'); return false;" class="class-link">${rowSpec.label}</a>
+            </td>
             <td style="text-align: center;">${rowSpec.medium}</td>
         `;
         
@@ -899,7 +1188,7 @@ function viewStudentDetails(srNo, isActive = true) {
                 </div>
                 <div class="profile-header-meta">
                     <h4>${student.student_name}</h4>
-                    <p>SR No. ${student.sr_no} | Class ${student.class} (${student.medium} Medium)</p>
+                    <p>SR No. ${student.sr_no} | Class <a href="#" onclick="closeModal(); selectClassSearchResult('${student.class}'); return false;" class="class-link">${student.class}</a> (${student.medium} Medium)</p>
                     <span class="status-indicator-badge badge-active" style="margin-top: 4px; display: inline-block;">ACTIVE</span>
                 </div>
             </div>
