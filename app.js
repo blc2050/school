@@ -238,7 +238,7 @@ function handleClassChange() {
     
     selectedClass = classSelect.value;
     
-    const searchInput = document.getElementById('directory-search');
+    const searchInput = document.getElementById('global-student-search');
     if (searchInput) searchInput.value = '';
     currentSearchQuery = '';
     
@@ -306,19 +306,12 @@ function switchCountsFormat(formatId) {
     renderCountsTable();
 }
 
-// Handle Search Query input (class-specific search)
+// Handle Search Query input (redirects to global search logic)
 function handleSearch() {
-    const searchInput = document.getElementById('directory-search');
-    currentSearchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
-    
-    if (currentTab === 'directory') {
-        renderDirectoryTable();
-    } else if (currentTab === 'tc') {
-        renderTCTable();
-    }
+    // Legacy search placeholder
 }
 
-// Global Spotlight Search Handler (searches school-wide)
+// Global Spotlight Search Handler (searches school-wide for both students and classes)
 function handleGlobalSearch() {
     const input = document.getElementById('global-student-search');
     const resultsDiv = document.getElementById('global-search-results');
@@ -333,7 +326,12 @@ function handleGlobalSearch() {
         return;
     }
     
-    // Filter Active Students
+    // 1. Search for matching classes (limit to 3 matches)
+    const matchedClasses = classesMain.filter(cls => 
+        cls.toLowerCase().includes(query)
+    ).map(cls => ({ name: cls, type: 'Class' }));
+    
+    // 2. Filter Active Students
     const matchedActive = activeStudents.filter(s => 
         s.student_name.toLowerCase().includes(query) ||
         s.father_name.toLowerCase().includes(query) ||
@@ -341,7 +339,7 @@ function handleGlobalSearch() {
         (s.student_nic_id && s.student_nic_id.toLowerCase().includes(query))
     ).map(s => ({ ...s, type: 'Active' }));
     
-    // Filter TC Students
+    // 3. Filter TC Students
     const matchedTc = tcStudents.filter(s => 
         s.student_name.toLowerCase().includes(query) ||
         s.father_name.toLowerCase().includes(query) ||
@@ -349,8 +347,8 @@ function handleGlobalSearch() {
         (s.student_nic_id && s.student_nic_id.toLowerCase().includes(query))
     ).map(s => ({ ...s, type: 'TC' }));
     
-    // Combine and slice to top 8 items
-    globalSearchResultsList = [...matchedActive, ...matchedTc].slice(0, 8);
+    // Combine (classes first, then active/tc students) and slice to top 10 items
+    globalSearchResultsList = [...matchedClasses, ...matchedActive, ...matchedTc].slice(0, 10);
     searchFocusedIndex = -1;
     
     if (globalSearchResultsList.length === 0) {
@@ -358,7 +356,7 @@ function handleGlobalSearch() {
         resultsDiv.innerHTML = `
             <div style="padding: 14px; text-align: center; color: var(--slate-700); font-size: 0.85rem;">
                 <i class="fa-regular fa-face-frown" style="font-size: 1.2rem; display: block; margin-bottom: 6px; color: var(--slate-300);"></i>
-                No matching students found.
+                No matching students or classes found.
             </div>
         `;
         return;
@@ -367,35 +365,71 @@ function handleGlobalSearch() {
     resultsDiv.style.display = 'block';
     resultsDiv.innerHTML = '';
     
-    globalSearchResultsList.forEach((student, index) => {
+    globalSearchResultsList.forEach((itemData, index) => {
         const item = document.createElement('div');
         item.classList.add('search-result-item');
         item.setAttribute('data-index', index);
         
-        const badgeClass = student.type === 'Active' ? 'badge-active' : 'badge-tc';
-        const classLabel = student.type === 'Active' ? student.class : student.class || 'N/A';
-        const mediumLabel = student.type === 'Active' ? `(${student.medium} Medium)` : '';
-        
-        item.innerHTML = `
-            <div class="result-details">
-                <span class="result-name">${student.student_name}</span>
-                <span class="result-meta">SR: ${student.sr_no} | Father: ${student.father_name}</span>
-            </div>
-            <div class="result-status">
-                <span class="result-class-tag">${classLabel} ${mediumLabel}</span>
-                <span class="status-indicator-badge ${badgeClass}">${student.type}</span>
-            </div>
-        `;
-        
-        item.onclick = () => {
-            selectSearchResult(student);
-        };
+        if (itemData.type === 'Class') {
+            item.innerHTML = `
+                <div class="result-details">
+                    <span class="result-name"><i class="fa-solid fa-graduation-cap" style="margin-right: 6px; color: var(--primary);"></i>Go to Class: ${itemData.name}</span>
+                    <span class="result-meta">View active student roster for ${itemData.name}</span>
+                </div>
+                <div class="result-status">
+                    <span class="status-indicator-badge" style="background-color: var(--primary-light); color: var(--primary-dark);">OPEN CLASS</span>
+                </div>
+            `;
+            item.onclick = () => {
+                selectClassSearchResult(itemData.name);
+            };
+        } else {
+            const badgeClass = itemData.type === 'Active' ? 'badge-active' : 'badge-tc';
+            const classLabel = itemData.type === 'Active' ? itemData.class : itemData.class || 'N/A';
+            const mediumLabel = itemData.type === 'Active' ? `(${itemData.medium} Medium)` : '';
+            
+            item.innerHTML = `
+                <div class="result-details">
+                    <span class="result-name">${itemData.student_name}</span>
+                    <span class="result-meta">SR: ${itemData.sr_no} | Father: ${itemData.father_name}</span>
+                </div>
+                <div class="result-status">
+                    <span class="result-class-tag">${classLabel} ${mediumLabel}</span>
+                    <span class="status-indicator-badge ${badgeClass}">${itemData.type}</span>
+                </div>
+            `;
+            item.onclick = () => {
+                selectSearchResult(itemData);
+            };
+        }
         
         resultsDiv.appendChild(item);
     });
 }
 
-// Select item from global search list
+// Select class from search results
+function selectClassSearchResult(className) {
+    const input = document.getElementById('global-student-search');
+    const resultsDiv = document.getElementById('global-search-results');
+    if (input) input.value = '';
+    if (resultsDiv) {
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = '';
+    }
+    
+    // Set parameters
+    selectedClass = className;
+    currentTab = 'directory';
+    switchTab('directory');
+    
+    // Set value in dropdown
+    const classSelect = document.getElementById('class-select');
+    if (classSelect) classSelect.value = className;
+    
+    updateUIState();
+}
+
+// Select student item from global search list
 function selectSearchResult(student) {
     const input = document.getElementById('global-student-search');
     const resultsDiv = document.getElementById('global-search-results');
@@ -458,27 +492,32 @@ function updateUIState() {
     const tabTc = document.getElementById('tab-tc');
     const tabCounts = document.getElementById('tab-counts');
     const filterPanel = document.getElementById('filter-panel-section');
-    const searchRow = document.getElementById('search-row');
+    const classFilterRow = document.getElementById('class-filter-row');
+    const btnPrintList = document.getElementById('btn-print-list');
+    
+    // Search row panel stays visible across all tabs
+    if (filterPanel) filterPanel.style.display = 'block';
     
     if (currentTab === 'counts') {
         if (placeholder) placeholder.style.display = 'none';
-        if (filterPanel) filterPanel.style.display = 'none';
+        if (classFilterRow) classFilterRow.style.display = 'none';
+        if (btnPrintList) btnPrintList.style.display = 'none';
         if (tabDir) tabDir.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'block';
         switchCountsFormat(currentCountsFormat);
     } else {
-        if (filterPanel) filterPanel.style.display = 'block';
+        if (classFilterRow) classFilterRow.style.display = 'flex';
         if (tabCounts) tabCounts.style.display = 'none';
         
         if (!selectedClass) {
             if (placeholder) placeholder.style.display = 'block';
             if (tabDir) tabDir.style.display = 'none';
             if (tabTc) tabTc.style.display = 'none';
-            if (searchRow) searchRow.style.display = 'none';
+            if (btnPrintList) btnPrintList.style.display = 'none';
         } else {
             if (placeholder) placeholder.style.display = 'none';
-            if (searchRow) searchRow.style.display = 'flex';
+            if (btnPrintList) btnPrintList.style.display = 'inline-flex';
             
             if (currentTab === 'directory') {
                 if (tabDir) tabDir.style.display = 'block';
@@ -505,15 +544,6 @@ function renderDirectoryTable() {
     if (selectedClassName) selectedClassName.innerText = selectedClass;
     
     let list = activeStudents.filter(s => s.class === selectedClass);
-    
-    if (currentSearchQuery) {
-        list = list.filter(student => {
-            const nameMatch = student.student_name.toLowerCase().includes(currentSearchQuery);
-            const fatherMatch = student.father_name.toLowerCase().includes(currentSearchQuery);
-            const srMatch = student.sr_no.toLowerCase().includes(currentSearchQuery);
-            return nameMatch || fatherMatch || srMatch;
-        });
-    }
     
     showingCount.innerText = list.length;
     tbody.innerHTML = '';
@@ -607,15 +637,6 @@ function renderTCTable() {
         const studentGrade = s.class.replace(/\s+/g, ' ').trim();
         return studentGrade === normalizedTcGrade;
     });
-    
-    if (currentSearchQuery) {
-        list = list.filter(student => {
-            const nameMatch = student.student_name.toLowerCase().includes(currentSearchQuery);
-            const fatherMatch = student.father_name.toLowerCase().includes(currentSearchQuery);
-            const srMatch = student.sr_no.toLowerCase().includes(currentSearchQuery);
-            return nameMatch || fatherMatch || srMatch;
-        });
-    }
     
     tbody.innerHTML = '';
     
@@ -844,7 +865,6 @@ function viewStudentDetails(srNo, isActive = true) {
     let student = null;
     let isStudentActive = isActive;
     
-    // Look up student details dynamically
     if (isStudentActive) {
         student = activeStudents.find(s => s.sr_no === srNo);
         if (!student) {
@@ -880,7 +900,7 @@ function viewStudentDetails(srNo, isActive = true) {
                 <div class="profile-header-meta">
                     <h4>${student.student_name}</h4>
                     <p>SR No. ${student.sr_no} | Class ${student.class} (${student.medium} Medium)</p>
-                    <span class="status-indicator-badge badge-active" style="margin-top: 6px; display: inline-block;">ACTIVE</span>
+                    <span class="status-indicator-badge badge-active" style="margin-top: 4px; display: inline-block;">ACTIVE</span>
                 </div>
             </div>
             <div class="profile-details-grid">
@@ -950,7 +970,7 @@ function viewStudentDetails(srNo, isActive = true) {
                 <div class="profile-header-meta">
                     <h4>${student.student_name}</h4>
                     <p>SR No. ${student.sr_no} | Class ${student.class || 'N/A'}</p>
-                    <span class="status-indicator-badge badge-tc" style="margin-top: 6px; display: inline-block;">TC ISSUED</span>
+                    <span class="status-indicator-badge badge-tc" style="margin-top: 4px; display: inline-block;">TC ISSUED</span>
                 </div>
             </div>
             <div class="profile-details-grid">
