@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shri Saraswati Vidhya Mandir Mandli - Student Portal</title>
+    <!-- Fonts: Outfit (headings) and Inter (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-school"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>SSVM</h1>
+                    <span>Mandli Portal</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <button class="menu-item active" id="btn-directory" onclick="switchTab('directory')">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Student Directory</span>
+                </button>
+                <button class="menu-item" id="btn-tc" onclick="switchTab('tc')">
+                    <i class="fa-solid fa-file-export"></i>
+                    <span>TC Report</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="update-badge">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <div class="badge-title">Database Version</div>
+                        <div class="badge-desc">Updated: 01-07-2026</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Top Header -->
+            <header class="main-header">
+                <div class="header-title-area">
+                    <h2>Shri Saraswati Vidhya Mandir Mandli</h2>
+                    <p id="page-subtitle">Student Directory</p>
+                </div>
+                <div class="header-actions">
+                    <div class="highlight-info animate-pulse" id="highlight-legend" title="Records updated on 30-06-2026 are highlighted in amber">
+                        <span class="highlight-dot"></span>
+                        <span class="highlight-text">Updated 30-06-2026</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Selection and Filter Panel -->
+            <section class="filter-panel card no-print">
+                <div class="controls-row">
+                    <!-- Class Selector (Mandatory) -->
+                    <div class="filter-group flex-item">
+                        <label class="filter-label" for="class-select">Select Class <span class="required-star">*</span></label>
+                        <div class="custom-select-wrapper">
+                            <select id="class-select" onchange="handleClassChange()">
+                                <option value="">-- Select Class --</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Medium Filters (Optional helper to narrow class list) -->
+                    <div class="filter-group flex-item">
+                        <label class="filter-label">Filter Classes By Medium</label>
+                        <div class="segmented-control" id="medium-filters">
+                            <button class="segment-btn active" data-medium="all" onclick="setMediumFilter('all')">All</button>
+                            <button class="segment-btn" data-medium="English" onclick="setMediumFilter('English')">English</button>
+                            <button class="segment-btn" data-medium="Hindi" onclick="setMediumFilter('Hindi')">Hindi</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls-row" id="search-row" style="display: none;">
+                    <!-- Search Input (Only shown once class is selected) -->
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="directory-search" placeholder="Search by Name, Father's Name or SR Number..." oninput="handleSearch()">
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="printReport()">
+                        <i class="fa-solid fa-print"></i> Print List
+                    </button>
+                </div>
+            </section>
+
+            <!-- Placeholder State when no class is selected -->
+            <section class="placeholder-card card" id="no-class-placeholder">
+                <div class="placeholder-content">
+                    <i class="fa-solid fa-arrow-pointer placeholder-icon"></i>
+                    <h3>No Class Selected</h3>
+                    <p>Please select a class from the dropdown above to view the student list and reports.</p>
+                </div>
+            </section>
+
+            <!-- Tab Content 1: Active Student Directory -->
+            <section id="tab-directory" class="tab-content">
+                <div class="directory-container card">
+                    <div class="directory-header">
+                        <div class="results-meta">
+                            Showing <span id="directory-showing-count">0</span> students of Class <span id="selected-class-name"></span>
+                        </div>
+                        <div class="view-options">
+                            <span class="badge badge-amber" id="directory-highlight-count" style="display: none;">0 Updated</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-directory">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">S.No</th>
+                                    <th style="width: 80px;">SR No</th>
+                                    <th>Student Name</th>
+                                    <th>Father Name</th>
+                                    <th>Mother Name</th>
+                                    <th style="width: 90px;">DOB</th>
+                                    <th style="width: 70px;">Gender</th>
+                                    <th style="width: 80px;">Category</th>
+                                    <th style="width: 95px;">Adm. Date</th>
+                                    <th style="width: 60px;">RTE</th>
+                                    <th style="width: 80px;">Roll No</th>
+                                    <th class="no-print" style="width: 50px;">Profile</th>
+                                </tr>
+                            </thead>
+                            <tbody id="directory-tbody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="report-footer print-only">
+                        <div class="report-signature">
+                            <div class="signature-line"></div>
+                            <span>Class Teacher Signature</span>
+                        </div>
+                        <div class="report-signature">
+                            <div class="signature-line"></div>
+                            <span>Principal Signature</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab Content 2: TC Report -->
+            <section id="tab-tc" class="tab-content">
+                <div class="directory-container card">
+                    <div class="directory-header">
+                        <div class="results-meta">
+                            Transfer Certificate (TC) records for Grade: <span id="selected-tc-grade-name"></span>
+                        </div>
+                        <div class="view-options">
+                            <span class="badge badge-amber" id="tc-highlight-count" style="display: none;">0 Updated</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-tc">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">S.No</th>
+                                    <th style="width: 80px;">SR No</th>
+                                    <th style="width: 110px;">Student NIC ID</th>
+                                    <th>Student Name</th>
+                                    <th>Father Name</th>
+                                    <th style="width: 90px;">DOB</th>
+                                    <th style="width: 140px;">Exit Type</th>
+                                    <th>Reason for Exit</th>
+                                    <th style="width: 95px;">Exit Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tc-tbody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="report-footer print-only">
+                        <div class="report-signature">
+                            <div class="signature-line"></div>
+                            <span>Class Teacher Signature</span>
+                        </div>
+                        <div class="report-signature">
+                            <div class="signature-line"></div>
+                            <span>Principal Signature</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Student Detail Modal -->
+    <div class="modal-overlay" id="student-modal" onclick="closeModal()">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Student Profile</h3>
+                <button class="modal-close-btn" onclick="closeModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="student-modal-body">
+                <!-- Populate dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Load scripts -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
