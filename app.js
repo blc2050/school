@@ -552,6 +552,21 @@ function updateSearchFocus(items) {
     }
 }
 
+// Global Student Fee Search Handler (searches exclusively in dueFees)
+function handleFeeSearch() {
+    const input = document.getElementById('fee-student-search');
+    const resultsDiv = document.getElementById('fee-search-results');
+    if (!input || !resultsDiv) return;
+    
+    const query = input.value.toLowerCase().trim();
+    if (!query) {
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = '';
+        feeSearchResultsList = [];
+        feeSearchFocusedIndex = -1;
+        return;
+    }
+    
     const feeRecords = Object.values(dueFees);
     
     // Filter matching fee records (searches Name, Father, SR, and Mobile number)
