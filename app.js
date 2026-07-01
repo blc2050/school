@@ -15,6 +15,10 @@ let selectedClass = '';
 let currentSearchQuery = '';
 let currentCountsFormat = 'hindi-pri'; // 'hindi-pri', 'hindi-sec', 'english', 'consolidated'
 
+// Global Search State
+let searchFocusedIndex = -1;
+let globalSearchResultsList = [];
+
 // Logical sort order for classes
 const CLASS_SORT_ORDER = [
     "LKG EM", "UKG EM", "KG EM",
@@ -98,6 +102,15 @@ document.addEventListener("DOMContentLoaded", () => {
     initStats();
     populateClassDropdown();
     updateUIState();
+    
+    // Close global search results on clicking outside
+    document.addEventListener("click", (e) => {
+        const container = document.querySelector(".global-search-container");
+        const resultsDiv = document.getElementById("global-search-results");
+        if (resultsDiv && container && !container.contains(e.target)) {
+            resultsDiv.style.display = "none";
+        }
+    });
 });
 
 // Load variables from window.STUDENTS_DATA
@@ -121,29 +134,47 @@ function initStats() {
     const englishCount = activeStudents.filter(s => s.medium === 'English').length;
     const hindiCount = activeStudents.filter(s => s.medium === 'Hindi').length;
     
+    // Gender counts for active students overall
     const activeBoys = activeStudents.filter(s => s.gender === 'Male').length;
     const activeGirls = activeStudents.filter(s => s.gender === 'Female').length;
     
+    // Gender counts for English Medium
     const englishBoys = activeStudents.filter(s => s.medium === 'English' && s.gender === 'Male').length;
     const englishGirls = activeStudents.filter(s => s.medium === 'English' && s.gender === 'Female').length;
     
+    // Gender counts for Hindi Medium
     const hindiBoys = activeStudents.filter(s => s.medium === 'Hindi' && s.gender === 'Male').length;
     const hindiGirls = activeStudents.filter(s => s.medium === 'Hindi' && s.gender === 'Female').length;
     
+    // Gender counts for New Admissions (on or after 2026-04-01)
+    const newAdmissions = activeStudents.filter(s => s.date_of_admission && s.date_of_admission >= '2026-04-01');
+    const newBoys = newAdmissions.filter(s => s.gender === 'Male').length;
+    const newGirls = newAdmissions.filter(s => s.gender === 'Female').length;
+    
+    // Update active stats
     document.getElementById('stat-active-count').innerText = totalActive.toLocaleString();
     document.getElementById('stat-active-boys').innerText = activeBoys.toLocaleString();
     document.getElementById('stat-active-girls').innerText = activeGirls.toLocaleString();
     
+    // Update english stats
     document.getElementById('stat-english-count').innerText = englishCount.toLocaleString();
     document.getElementById('stat-english-boys').innerText = englishBoys.toLocaleString();
     document.getElementById('stat-english-girls').innerText = englishGirls.toLocaleString();
     
+    // Update hindi stats
     document.getElementById('stat-hindi-count').innerText = hindiCount.toLocaleString();
     document.getElementById('stat-hindi-boys').innerText = hindiBoys.toLocaleString();
     document.getElementById('stat-hindi-girls').innerText = hindiGirls.toLocaleString();
     
+    // Update new admissions stats
+    document.getElementById('stat-new-count').innerText = newAdmissions.length.toLocaleString();
+    document.getElementById('stat-new-boys').innerText = newBoys.toLocaleString();
+    document.getElementById('stat-new-girls').innerText = newGirls.toLocaleString();
+    
+    // Update TC stats
     document.getElementById('stat-tc-count').innerText = totalTc.toLocaleString();
     
+    // Highlight count
     const highlightedActive = activeStudents.filter(s => s.is_highlighted).length;
     const highlightedTc = tcStudents.filter(s => s.is_highlighted).length;
     const totalHighlighted = highlightedActive + highlightedTc;
@@ -253,7 +284,6 @@ function switchCountsFormat(formatId) {
     const activeBtn = document.getElementById(btnMap[formatId]);
     if (activeBtn) activeBtn.classList.add('active');
     
-    // Update format title text on header
     const formatTitle = document.getElementById('counts-format-title');
     const metaTitle = document.getElementById('counts-results-meta');
     
@@ -276,7 +306,7 @@ function switchCountsFormat(formatId) {
     renderCountsTable();
 }
 
-// Handle Search Query input
+// Handle Search Query input (class-specific search)
 function handleSearch() {
     const searchInput = document.getElementById('directory-search');
     currentSearchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -285,6 +315,139 @@ function handleSearch() {
         renderDirectoryTable();
     } else if (currentTab === 'tc') {
         renderTCTable();
+    }
+}
+
+// Global Spotlight Search Handler (searches school-wide)
+function handleGlobalSearch() {
+    const input = document.getElementById('global-student-search');
+    const resultsDiv = document.getElementById('global-search-results');
+    if (!input || !resultsDiv) return;
+    
+    const query = input.value.toLowerCase().trim();
+    if (!query) {
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = '';
+        globalSearchResultsList = [];
+        searchFocusedIndex = -1;
+        return;
+    }
+    
+    // Filter Active Students
+    const matchedActive = activeStudents.filter(s => 
+        s.student_name.toLowerCase().includes(query) ||
+        s.father_name.toLowerCase().includes(query) ||
+        s.sr_no.toLowerCase().includes(query) ||
+        (s.student_nic_id && s.student_nic_id.toLowerCase().includes(query))
+    ).map(s => ({ ...s, type: 'Active' }));
+    
+    // Filter TC Students
+    const matchedTc = tcStudents.filter(s => 
+        s.student_name.toLowerCase().includes(query) ||
+        s.father_name.toLowerCase().includes(query) ||
+        s.sr_no.toLowerCase().includes(query) ||
+        (s.student_nic_id && s.student_nic_id.toLowerCase().includes(query))
+    ).map(s => ({ ...s, type: 'TC' }));
+    
+    // Combine and slice to top 8 items
+    globalSearchResultsList = [...matchedActive, ...matchedTc].slice(0, 8);
+    searchFocusedIndex = -1;
+    
+    if (globalSearchResultsList.length === 0) {
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = `
+            <div style="padding: 14px; text-align: center; color: var(--slate-700); font-size: 0.85rem;">
+                <i class="fa-regular fa-face-frown" style="font-size: 1.2rem; display: block; margin-bottom: 6px; color: var(--slate-300);"></i>
+                No matching students found.
+            </div>
+        `;
+        return;
+    }
+    
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '';
+    
+    globalSearchResultsList.forEach((student, index) => {
+        const item = document.createElement('div');
+        item.classList.add('search-result-item');
+        item.setAttribute('data-index', index);
+        
+        const badgeClass = student.type === 'Active' ? 'badge-active' : 'badge-tc';
+        const classLabel = student.type === 'Active' ? student.class : student.class || 'N/A';
+        const mediumLabel = student.type === 'Active' ? `(${student.medium} Medium)` : '';
+        
+        item.innerHTML = `
+            <div class="result-details">
+                <span class="result-name">${student.student_name}</span>
+                <span class="result-meta">SR: ${student.sr_no} | Father: ${student.father_name}</span>
+            </div>
+            <div class="result-status">
+                <span class="result-class-tag">${classLabel} ${mediumLabel}</span>
+                <span class="status-indicator-badge ${badgeClass}">${student.type}</span>
+            </div>
+        `;
+        
+        item.onclick = () => {
+            selectSearchResult(student);
+        };
+        
+        resultsDiv.appendChild(item);
+    });
+}
+
+// Select item from global search list
+function selectSearchResult(student) {
+    const input = document.getElementById('global-student-search');
+    const resultsDiv = document.getElementById('global-search-results');
+    if (input) input.value = '';
+    if (resultsDiv) {
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = '';
+    }
+    
+    viewStudentDetails(student.sr_no, student.type === 'Active');
+}
+
+// Keyboard navigation in Spotlight Search Dropdown
+function handleGlobalSearchKey(event) {
+    const resultsDiv = document.getElementById('global-search-results');
+    if (!resultsDiv || resultsDiv.style.display === 'none') return;
+    
+    const items = resultsDiv.getElementsByClassName('search-result-item');
+    if (items.length === 0) return;
+    
+    if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        searchFocusedIndex++;
+        if (searchFocusedIndex >= items.length) searchFocusedIndex = 0;
+        updateSearchFocus(items);
+    } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        searchFocusedIndex--;
+        if (searchFocusedIndex < 0) searchFocusedIndex = items.length - 1;
+        updateSearchFocus(items);
+    } else if (event.key === 'Enter') {
+        event.preventDefault();
+        if (searchFocusedIndex >= 0 && searchFocusedIndex < items.length) {
+            items[searchFocusedIndex].click();
+        }
+    } else if (event.key === 'Escape') {
+        event.preventDefault();
+        const input = document.getElementById('global-student-search');
+        if (input) input.value = '';
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = '';
+    }
+}
+
+// Apply visual highlight class for focused search result item
+function updateSearchFocus(items) {
+    for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove('focused');
+    }
+    if (searchFocusedIndex >= 0 && searchFocusedIndex < items.length) {
+        items[searchFocusedIndex].classList.add('focused');
+        items[searchFocusedIndex].scrollIntoView({ block: 'nearest' });
     }
 }
 
@@ -404,7 +567,7 @@ function renderDirectoryTable() {
             <td data-label="RTE">${rte}</td>
             <td data-label="Roll No"><strong>${rollNo}</strong></td>
             <td class="no-print" data-label="Profile">
-                <button class="btn-view" onclick="viewStudentDetails('${student.sr_no}')" title="View Profile">
+                <button class="btn-view" onclick="viewStudentDetails('${student.sr_no}', true)" title="View Profile">
                     <i class="fa-regular fa-id-card"></i>
                 </button>
             </td>
@@ -520,7 +683,6 @@ function renderCountsTable() {
     const categories = ['GENERAL', 'OBC', 'SC', 'ST', 'SBC'];
     let rowSpecifications = [];
     
-    // Define rows based on the active format
     if (currentCountsFormat === 'hindi-pri') {
         rowSpecifications = [
             { label: "1ST", medium: "Hindi", queryClasses: ["1ST"] },
@@ -586,7 +748,6 @@ function renderCountsTable() {
         ];
     }
     
-    // Initialize running sums
     const globalTotals = {
         GENERAL: { boys: 0, girls: 0 },
         OBC: { boys: 0, girls: 0 },
@@ -642,7 +803,6 @@ function renderCountsTable() {
         tbody.appendChild(tr);
     });
     
-    // Bottom TOTAL row
     const totalTr = document.createElement('tr');
     totalTr.style.borderTop = '2px solid var(--slate-900)';
     totalTr.style.borderBottom = '2px solid var(--slate-900)';
@@ -679,83 +839,165 @@ function renderCountsTable() {
     tbody.appendChild(totalTr);
 }
 
-// Open Student Details Profile Modal
-function viewStudentDetails(srNo) {
-    const student = activeStudents.find(s => s.sr_no === srNo);
+// Open Student Details Profile Modal (handles Active & TC students)
+function viewStudentDetails(srNo, isActive = true) {
+    let student = null;
+    let isStudentActive = isActive;
+    
+    // Look up student details dynamically
+    if (isStudentActive) {
+        student = activeStudents.find(s => s.sr_no === srNo);
+        if (!student) {
+            student = tcStudents.find(s => s.sr_no === srNo);
+            if (student) isStudentActive = false;
+        }
+    } else {
+        student = tcStudents.find(s => s.sr_no === srNo);
+        if (!student) {
+            student = activeStudents.find(s => s.sr_no === srNo);
+            if (student) isStudentActive = true;
+        }
+    }
+    
     if (!student) return;
     
     const body = document.getElementById('student-modal-body');
     if (!body) return;
     
-    const rollNo = student.roll_no || 'Not Assigned';
-    const rbseRoll = student.rbse_roll_no || 'Not Assigned';
-    const rte = student.rte || 'No';
-    const category = student.social_category || '-';
-    const religion = student.religion || '-';
-    const admDate = student.date_of_admission || '-';
-    
-    body.innerHTML = `
-        <div class="profile-summary-header">
-            <div class="profile-avatar">
-                <i class="fa-solid fa-user-graduate"></i>
+    if (isStudentActive) {
+        const rollNo = student.roll_no || 'Not Assigned';
+        const rbseRoll = student.rbse_roll_no || 'Not Assigned';
+        const rte = student.rte || 'No';
+        const category = student.social_category || '-';
+        const religion = student.religion || '-';
+        const admDate = student.date_of_admission || '-';
+        
+        body.innerHTML = `
+            <div class="profile-summary-header">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <div class="profile-header-meta">
+                    <h4>${student.student_name}</h4>
+                    <p>SR No. ${student.sr_no} | Class ${student.class} (${student.medium} Medium)</p>
+                    <span class="status-indicator-badge badge-active" style="margin-top: 6px; display: inline-block;">ACTIVE</span>
+                </div>
             </div>
-            <div class="profile-header-meta">
-                <h4>${student.student_name}</h4>
-                <p>SR No. ${student.sr_no} | Class ${student.class} (${student.medium} Medium)</p>
+            <div class="profile-details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Roll Number</span>
+                    <span class="detail-val">${rollNo}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">RBSE Roll Number</span>
+                    <span class="detail-val">${rbseRoll}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Father's Name</span>
+                    <span class="detail-val">${student.father_name}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Mother's Name</span>
+                    <span class="detail-val">${student.mother_name}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Date of Birth</span>
+                    <span class="detail-val">${student.dob}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Gender</span>
+                    <span class="detail-val">${student.gender}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Social Category</span>
+                    <span class="detail-val">${category}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Religion</span>
+                    <span class="detail-val">${religion}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Admission Date</span>
+                    <span class="detail-val">${admDate}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">RTE Category</span>
+                    <span class="detail-val">${rte}</span>
+                </div>
+                <div class="detail-item detail-span-full">
+                    <span class="detail-label">Student ID (NIC)</span>
+                    <span class="detail-val">${student.student_nic_id}</span>
+                </div>
+                ${student.is_highlighted ? `
+                <div class="detail-item detail-span-full" style="background-color: var(--amber-50); border: 1px solid var(--amber-100); border-radius: var(--radius-sm); padding: 8px 12px; margin-top: 8px;">
+                    <span class="detail-label" style="color: #b45309; font-weight: 700;">Update Log</span>
+                    <span class="detail-val" style="color: #92400e; font-size: 0.85rem;"><i class="fa-solid fa-clock-rotate-left"></i> Record was updated in the database on 30-06-2026.</span>
+                </div>` : ''}
             </div>
-        </div>
-        <div class="profile-details-grid">
-            <div class="detail-item">
-                <span class="detail-label">Roll Number</span>
-                <span class="detail-val">${rollNo}</span>
+        `;
+    } else {
+        const exitType = student.exit_type || 'T.C. Issued';
+        const reason = student.exit_type_reason || 'Left School';
+        const exitDate = student.exit_date || '-';
+        const dob = student.dob || '-';
+        const nic = student.student_nic_id || '-';
+        
+        body.innerHTML = `
+            <div class="profile-summary-header" style="border-bottom-color: var(--amber-100);">
+                <div class="profile-avatar" style="background-color: var(--amber-50); color: var(--amber-500);">
+                    <i class="fa-solid fa-user-xmark"></i>
+                </div>
+                <div class="profile-header-meta">
+                    <h4>${student.student_name}</h4>
+                    <p>SR No. ${student.sr_no} | Class ${student.class || 'N/A'}</p>
+                    <span class="status-indicator-badge badge-tc" style="margin-top: 6px; display: inline-block;">TC ISSUED</span>
+                </div>
             </div>
-            <div class="detail-item">
-                <span class="detail-label">RBSE Roll Number</span>
-                <span class="detail-val">${rbseRoll}</span>
+            <div class="profile-details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Father's Name</span>
+                    <span class="detail-val">${student.father_name}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Mother's Name</span>
+                    <span class="detail-val">${student.mother_name || '-'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Date of Birth</span>
+                    <span class="detail-val">${dob}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Gender</span>
+                    <span class="detail-val">${student.gender || '-'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Student ID (NIC)</span>
+                    <span class="detail-val">${nic}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Exit Date</span>
+                    <span class="detail-val" style="color: var(--rose-500); font-weight: 700;">${exitDate}</span>
+                </div>
+                <div class="detail-item detail-span-full" style="background-color: var(--amber-50); border: 1px solid var(--amber-100); border-radius: var(--radius-sm); padding: 12px; margin-top: 8px;">
+                    <div style="display: flex; gap: 10px;">
+                        <i class="fa-solid fa-circle-exclamation" style="color: var(--amber-500); font-size: 1.1rem; margin-top: 2px;"></i>
+                        <div>
+                            <span class="detail-label" style="color: #b45309; font-weight: 700; margin-bottom: 2px;">Exit Details</span>
+                            <span class="detail-val" style="color: #92400e; font-size: 0.88rem; display: block;">
+                                <strong>Type:</strong> ${exitType}<br>
+                                <strong>Reason:</strong> ${reason}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                ${student.is_highlighted ? `
+                <div class="detail-item detail-span-full" style="background-color: var(--amber-50); border: 1px solid var(--amber-100); border-radius: var(--radius-sm); padding: 8px 12px;">
+                    <span class="detail-label" style="color: #b45309; font-weight: 700;">Update Log</span>
+                    <span class="detail-val" style="color: #92400e; font-size: 0.85rem;"><i class="fa-solid fa-clock-rotate-left"></i> Record was updated in the database on 30-06-2026.</span>
+                </div>` : ''}
             </div>
-            <div class="detail-item">
-                <span class="detail-label">Father's Name</span>
-                <span class="detail-val">${student.father_name}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">Mother's Name</span>
-                <span class="detail-val">${student.mother_name}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">Date of Birth</span>
-                <span class="detail-val">${student.dob}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">Gender</span>
-                <span class="detail-val">${student.gender}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">Social Category</span>
-                <span class="detail-val">${category}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">Religion</span>
-                <span class="detail-val">${religion}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">Admission Date</span>
-                <span class="detail-val">${admDate}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">RTE Category</span>
-                <span class="detail-val">${rte}</span>
-            </div>
-            <div class="detail-item detail-span-full">
-                <span class="detail-label">Student ID (NIC)</span>
-                <span class="detail-val">${student.student_nic_id}</span>
-            </div>
-            ${student.is_highlighted ? `
-            <div class="detail-item detail-span-full" style="background-color: var(--amber-50); border: 1px solid var(--amber-100); border-radius: var(--radius-sm); padding: 8px 12px; margin-top: 8px;">
-                <span class="detail-label" style="color: #b45309; font-weight: 700;">Update Log</span>
-                <span class="detail-val" style="color: #92400e; font-size: 0.85rem;"><i class="fa-solid fa-clock-rotate-left"></i> Record was updated in the database on 30-06-2026.</span>
-            </div>` : ''}
-        </div>
-    `;
+        `;
+    }
     
     document.getElementById('student-modal').classList.add('active');
 }

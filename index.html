@@ -18,8 +18,8 @@
         <!-- Sidebar Navigation -->
         <aside class="app-sidebar">
             <div class="sidebar-brand">
-                <div class="brand-icon">
-                    <i class="fa-solid fa-school"></i>
+                <div class="brand-logo-container">
+                    <img src="SSVM Hindi Logo 500x..jpg" alt="SSVM Logo" class="brand-logo-img">
                 </div>
                 <div class="brand-text">
                     <h1>SSVM</h1>
@@ -61,6 +61,14 @@
                     <h2>Shri Saraswati Vidhya Mandir Mandli</h2>
                     <p id="page-subtitle">Student Directory</p>
                 </div>
+                
+                <!-- Global Spotlight Search -->
+                <div class="global-search-container no-print">
+                    <i class="fa-solid fa-magnifying-glass global-search-icon"></i>
+                    <input type="text" id="global-student-search" placeholder="Search student school-wide..." oninput="handleGlobalSearch()" onkeydown="handleGlobalSearchKey(event)">
+                    <div class="global-search-results" id="global-search-results" style="display: none;"></div>
+                </div>
+
                 <div class="header-actions">
                     <div class="highlight-info animate-pulse" id="highlight-legend" title="Records updated on 30-06-2026 are highlighted in amber">
                         <span class="highlight-dot"></span>
@@ -92,7 +100,7 @@
                 </div>
                 
                 <div class="stat-card" id="card-english-medium">
-                    <div class="stat-icon icon-emerald">
+                    <div class="stat-icon icon-purple">
                         <i class="fa-solid fa-language"></i>
                     </div>
                     <div class="stat-info">
@@ -112,7 +120,7 @@
                 </div>
 
                 <div class="stat-card" id="card-hindi-medium">
-                    <div class="stat-icon icon-purple">
+                    <div class="stat-icon icon-blue" style="background-color: var(--primary-light); color: var(--primary);">
                         <i class="fa-solid fa-book-open-reader"></i>
                     </div>
                     <div class="stat-info">
@@ -126,6 +134,27 @@
                             <div class="sub-stat">
                                 <span class="sub-label">Girls</span>
                                 <span class="sub-val" id="stat-hindi-girls">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Admissions Block (01 April 2026 or later) -->
+                <div class="stat-card" id="card-new-admissions">
+                    <div class="stat-icon icon-emerald">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">New Admissions (2026-27)</span>
+                        <h3 class="stat-value" id="stat-new-count">0</h3>
+                        <div class="stat-sub-grid">
+                            <div class="sub-stat">
+                                <span class="sub-label">Boys</span>
+                                <span class="sub-val" id="stat-new-boys">0</span>
+                            </div>
+                            <div class="sub-stat">
+                                <span class="sub-label">Girls</span>
+                                <span class="sub-val" id="stat-new-girls">0</span>
                             </div>
                         </div>
                     </div>
@@ -195,11 +224,16 @@
             <!-- Tab Content 1: Active Student Directory -->
             <section id="tab-directory" class="tab-content">
                 <div class="directory-container card">
-                    <!-- Official Header block for printing directory -->
+                    <!-- Official Header block with Logo for printing directory -->
                     <div class="school-official-header print-only">
-                        <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
-                        <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
-                        <p class="school-contact">Mob : 9413030806, E-mail : ssvmorg@gmail.com</p>
+                        <div class="letterhead-brand-row">
+                            <img src="SSVM Hindi Logo 500x..jpg" alt="SSVM Logo" class="letterhead-logo-img">
+                            <div class="letterhead-text-block">
+                                <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
+                                <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
+                                <p class="school-contact">Mob : 9413030806, E-mail : ssvmorg@gmail.com</p>
+                            </div>
+                        </div>
                         <div class="header-divider-row">
                             <span>Session : 2026-27</span>
                             <span class="report-tag">छात्र विवरण पंजी (सक्रिय नामांकित सूची)</span>
@@ -255,11 +289,16 @@
             <!-- Tab Content 2: TC Report -->
             <section id="tab-tc" class="tab-content">
                 <div class="directory-container card">
-                    <!-- Official Header block for printing TC report -->
+                    <!-- Official Header block with Logo for printing TC report -->
                     <div class="school-official-header print-only">
-                        <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
-                        <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
-                        <p class="school-contact">Mob : 9413030806, E-mail : ssvmorg@gmail.com</p>
+                        <div class="letterhead-brand-row">
+                            <img src="SSVM Hindi Logo 500x..jpg" alt="SSVM Logo" class="letterhead-logo-img">
+                            <div class="letterhead-text-block">
+                                <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
+                                <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
+                                <p class="school-contact">Mob : 9413030806, E-mail : ssvmorg@gmail.com</p>
+                            </div>
+                        </div>
                         <div class="header-divider-row">
                             <span>Session : 2026-27</span>
                             <span class="report-tag">स्थानांतरण प्रमाण पत्र (TC) रिपोर्ट</span>
@@ -328,11 +367,16 @@
                 </div>
 
                 <div class="directory-container card">
-                    <!-- Official Header block for counts -->
+                    <!-- Official Header block with Logo for counts -->
                     <div class="school-official-header">
-                        <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
-                        <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
-                        <p class="school-contact">Mob : 9413030806, E-mail : ssvmorg@gmail.com</p>
+                        <div class="letterhead-brand-row">
+                            <img src="SSVM Hindi Logo 500x..jpg" alt="SSVM Logo" class="letterhead-logo-img">
+                            <div class="letterhead-text-block">
+                                <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
+                                <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
+                                <p class="school-contact">Mob : 9413030806, E-mail : ssvmorg@gmail.com</p>
+                            </div>
+                        </div>
                         <div class="header-divider-row">
                             <span>Session : 2026-27</span>
                             <span class="report-tag" id="counts-format-title">नामांकन सूचना वर्गवार</span>

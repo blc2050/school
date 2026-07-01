@@ -16,15 +16,15 @@
     --slate-900: #0f172a;
     
     /* Accents */
-    --emerald-500: #10b981;
     --emerald-50: #ecfdf5;
+    --emerald-500: #10b981;
     
-    --purple-500: #a855f7;
     --purple-50: #faf5ff;
+    --purple-500: #a855f7;
     
-    --amber-500: #f59e0b;
-    --amber-100: #fef3c7;
     --amber-50: #fffbeb;
+    --amber-100: #fef3c7;
+    --amber-500: #f59e0b;
     --amber-glow: rgba(245, 158, 11, 0.15);
     
     --rose-500: #f43f5e;
@@ -93,19 +93,25 @@ body {
     gap: 12px;
     padding-bottom: 24px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    margin-margin-bottom: 24px;
+    margin-bottom: 24px;
 }
 
-.brand-icon {
+.brand-logo-container {
     width: 40px;
     height: 40px;
-    background-color: var(--primary);
+    background-color: white;
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    padding: 2px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+}
+
+.brand-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .brand-text h1 {
@@ -207,17 +213,18 @@ body {
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: var(--radius-lg);
-    padding: 20px 24px;
+    padding: 16px 24px;
     margin-bottom: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: var(--shadow-glass);
+    gap: 20px;
 }
 
 .header-title-area h2 {
     font-family: var(--font-heading);
-    font-size: 1.4rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: var(--slate-900);
 }
@@ -225,42 +232,141 @@ body {
 .header-title-area p {
     font-size: 0.85rem;
     color: var(--slate-700);
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
-.highlight-info {
+/* Global Spotlight Search styling */
+.global-search-container {
+    position: relative;
+    width: 320px;
+    flex-shrink: 0;
+}
+
+.global-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--slate-300);
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+#global-student-search {
+    width: 100%;
+    padding: 10px 14px 10px 38px;
+    border-radius: 30px;
+    border: 1px solid var(--slate-200);
+    background-color: var(--slate-50);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    color: var(--slate-800);
+    transition: var(--transition-fast);
+}
+
+#global-student-search:focus {
+    outline: none;
+    border-color: var(--primary);
+    background-color: white;
+    box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.global-search-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--slate-200);
+    z-index: 1000;
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--slate-100);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover,
+.search-result-item.focused {
+    background-color: var(--slate-50);
+    border-left: 3px solid var(--primary);
+    padding-left: 13px; /* Keep padding aligned with border width */
+}
+
+.result-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.result-name {
+    font-family: var(--font-heading);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--slate-900);
+}
+
+.result-meta {
+    font-size: 0.72rem;
+    color: var(--slate-700);
+}
+
+.result-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.result-class-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--slate-800);
+}
+
+.status-indicator-badge {
+    padding: 2px 6px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge-active {
+    background-color: var(--emerald-50);
+    color: var(--emerald-500);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.badge-tc {
+    background-color: var(--amber-50);
+    color: var(--amber-500);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.header-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background-color: var(--amber-50);
-    border: 1px solid var(--amber-100);
-    border-radius: 30px;
-    padding: 6px 14px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #b45309;
-}
-
-.highlight-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--amber-500);
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(1.1); }
-}
-
-.animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    gap: 12px;
 }
 
 /* Statistics Grid */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     margin-bottom: 24px;
 }
@@ -535,12 +641,35 @@ body {
     display: block;
 }
 
+.letterhead-brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.letterhead-logo-img {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    margin-right: 18px;
+    background-color: white;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--slate-200);
+    padding: 2px;
+}
+
+.letterhead-text-block {
+    text-align: left;
+}
+
 .school-title-hindi {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: 1.45rem;
     font-weight: 800;
     color: var(--slate-900);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     line-height: 1.25;
 }
 
@@ -611,6 +740,7 @@ body {
     max-width: 400px;
     margin: 0 auto;
     display: flex;
+    flex-direction: center;
     flex-direction: column;
     align-items: center;
 }
@@ -688,7 +818,7 @@ body {
     border-collapse: collapse;
     text-align: left;
     font-size: 0.85rem;
-    table-layout: auto; /* Screen-level autofit */
+    table-layout: auto;
 }
 
 .data-table th {
@@ -737,7 +867,7 @@ tr.row-highlighted td:first-child {
 .stats-table {
     min-width: 1200px;
     border-collapse: collapse;
-    table-layout: auto; /* Autofit sizing */
+    table-layout: auto;
 }
 
 .stats-table th {
@@ -963,6 +1093,18 @@ tr.row-highlighted td:first-child {
 }
 
 /* Responsiveness adjustments */
+@media (max-width: 992px) {
+    .main-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .global-search-container {
+        width: 100%;
+    }
+}
+
 @media (max-width: 768px) {
     .app-container {
         flex-direction: column;
@@ -1027,7 +1169,6 @@ tr.row-highlighted td:first-child {
         overflow: visible;
     }
     
-    /* Stats counts and standard tables remain tables with horizontal scroll on mobile */
     .table-responsive:has(.stats-table) {
         border: 1px solid var(--slate-200);
         overflow-x: auto;
@@ -1120,7 +1261,6 @@ tr.row-highlighted td:first-child {
 
 /* PRINT LAYOUT ADJUSTMENTS */
 @media print {
-    /* 1. FORCE LANDSCAPE ORIENTATION */
     @page {
         size: landscape !important;
         margin: 0.8cm !important;
@@ -1160,14 +1300,13 @@ tr.row-highlighted td:first-child {
         overflow: visible !important;
     }
     
-    /* 2. DYNAMIC AUTO-FIT COLUMN WIDTH */
     .data-table, 
     .report-table,
     .stats-table {
         display: table !important;
         width: 100% !important;
         border-collapse: collapse !important;
-        table-layout: auto !important; /* Forces Autofit Sizing */
+        table-layout: auto !important;
         font-size: 0.72rem !important;
     }
     
@@ -1200,19 +1339,17 @@ tr.row-highlighted td:first-child {
         border: 1px solid #000 !important;
         color: black !important;
         padding: 5px 6px !important;
-        text-align: center !important; /* Center-align table cells for neat print */
-        width: auto !important;       /* Overwrite any fixed width, enabling browser autofit */
-        white-space: nowrap !important; /* Keep columns from wrapping values inappropriately */
+        text-align: center !important;
+        width: auto !important;
+        white-space: nowrap !important;
     }
     
-    /* Left align names for standard list readability */
     .data-table td:nth-child(3),
     .data-table td:nth-child(4),
     .data-table td:nth-child(5) {
         text-align: left !important;
     }
     
-    /* Allow student and father name to wrap if they are exceptionally long, preventing overflow */
     .data-table td:nth-child(3),
     .data-table td:nth-child(4) {
         white-space: normal !important;
@@ -1225,7 +1362,6 @@ tr.row-highlighted td:first-child {
         display: none !important;
     }
     
-    /* Print Header layout */
     .print-only {
         display: block !important;
     }
@@ -1234,10 +1370,24 @@ tr.row-highlighted td:first-child {
         border-bottom: 2px solid #000 !important;
         margin-bottom: 15px !important;
         padding-bottom: 8px !important;
+        display: block !important;
+    }
+    
+    .letterhead-brand-row {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .letterhead-logo-img {
+        width: 60px !important;
+        height: 60px !important;
+        margin-right: 12px !important;
+        border: none !important;
     }
     
     .school-title-hindi {
-        font-size: 1.3rem !important;
+        font-size: 1.25rem !important;
         color: black !important;
     }
     
@@ -1259,7 +1409,6 @@ tr.row-highlighted td:first-child {
         padding: 2px 8px !important;
     }
     
-    /* Signatures display */
     .report-footer {
         display: flex !important;
         justify-content: space-between;
