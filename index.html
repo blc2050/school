@@ -224,8 +224,11 @@
         </div>
     </div>
 
-    <!-- Load scripts -->
-    <script src="data.js"></script>
+    <!-- Load scripts dynamically with cache-busting timestamp -->
+    <script>
+        // Force browser to load the newest version of data.js instead of cached memory
+        document.write('<script src="data.js?v=' + Date.now() + '"><\/script>');
+    </script>
     <script src="app.js"></script>
 </body>
 </html>
