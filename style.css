@@ -447,6 +447,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
+    gap: 16px;
 }
 
 .results-meta {
@@ -457,6 +458,13 @@ body {
 
 .results-meta span {
     font-weight: 700;
+    color: var(--slate-900);
+}
+
+.results-meta.text-lg {
+    font-size: 1.05rem;
+    font-family: var(--font-heading);
+    font-weight: 600;
     color: var(--slate-900);
 }
 
@@ -513,6 +521,31 @@ tr.row-highlighted td {
 
 tr.row-highlighted td:first-child {
     border-left: 4px solid var(--amber-500);
+}
+
+/* BGT Count Stats Table Custom Styles */
+.stats-table {
+    min-width: 1200px;
+    border-collapse: collapse;
+}
+
+.stats-table th {
+    text-align: center;
+    border: 1px solid var(--slate-200);
+    padding: 10px;
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.stats-table td {
+    border: 1px solid var(--slate-200);
+    padding: 8px 10px;
+    font-size: 0.82rem;
+}
+
+.stats-table tbody tr:hover {
+    background-color: var(--slate-50);
 }
 
 /* Badges */
@@ -781,6 +814,14 @@ tr.row-highlighted td:first-child {
         overflow: visible;
     }
     
+    /* Stats count table remains a table (does not convert to cards) to keep grid comparison clean.
+       It uses the horizontal scrollbar with 1200px width. */
+    .table-responsive:has(.stats-table) {
+        border: 1px solid var(--slate-200);
+        overflow-x: auto;
+        border-radius: var(--radius-md);
+    }
+    
     .data-table, 
     .data-table thead, 
     .data-table tbody, 
@@ -900,7 +941,6 @@ tr.row-highlighted td:first-child {
         background: transparent !important;
     }
     
-    /* Ensure print layout displays as standard layout on paper (no cards) */
     .table-responsive {
         border: 1px solid #000 !important;
         border-radius: 0 !important;
@@ -949,6 +989,40 @@ tr.row-highlighted td:first-child {
         display: none !important;
     }
     
+    /* Stats table printing */
+    .stats-table {
+        display: table !important;
+        min-width: 100% !important;
+        font-size: 0.68rem !important;
+        border-collapse: collapse !important;
+        width: 100% !important;
+    }
+    
+    .stats-table thead {
+        display: table-header-group !important;
+    }
+    
+    .stats-table thead tr {
+        display: table-row !important;
+    }
+    
+    .stats-table tbody {
+        display: table-row-group !important;
+    }
+    
+    .stats-table tr {
+        display: table-row !important;
+        background: transparent !important;
+    }
+    
+    .stats-table th, 
+    .stats-table td {
+        display: table-cell !important;
+        border: 1px solid #000 !important;
+        color: black !important;
+        padding: 4px 6px !important;
+    }
+    
     tr.row-highlighted {
         background-color: #f1f5f9 !important;
         -webkit-print-color-adjust: exact;
@@ -967,6 +1041,7 @@ tr.row-highlighted td:first-child {
         margin-top: 60px;
         padding: 0 40px;
         width: 100%;
+        page-break-inside: avoid;
     }
     
     .report-signature {

@@ -9,10 +9,20 @@ let mediums = [];
 let classByMedium = {};
 
 // Application states
-let currentTab = 'directory'; // 'directory' or 'tc'
+let currentTab = 'directory'; // 'directory', 'tc', or 'counts'
 let currentMediumFilter = 'all';
 let selectedClass = '';
 let currentSearchQuery = '';
+
+// Logical sort order for classes
+const CLASS_SORT_ORDER = [
+    "LKG EM", "UKG EM", "KG EM",
+    "1ST EM", "2ND EM", "3RD EM", "4TH EM", "5TH EM", "6TH A EM", "7TH A EM", "8TH A EM", "9TH A EM", "10TH A EM",
+    "11TH SCI EM", "12TH ARTS EM", "12TH SCI EM",
+    "1ST", "2ND", "3RD", "4TH", "5TH", "6TH A", "6TH B", "7TH A", "7TH B", "8TH A", "8TH B", "9TH A", "9TH B", "10TH A", "10TH B", "10TH C",
+    "11TH AGR", "11TH ARTS", "11TH SCI",
+    "12TH AGR", "12TH ARTS", "12TH SCI"
+];
 
 // Mapping class name (from MAIN) to grade name in TC Report
 const CLASS_TO_GRADE_MAP = {
@@ -167,7 +177,13 @@ function switchTab(tabId) {
     
     const pageSubtitle = document.getElementById('page-subtitle');
     if (pageSubtitle) {
-        pageSubtitle.innerText = tabId === 'directory' ? 'Student Directory' : 'TC Report';
+        if (tabId === 'directory') {
+            pageSubtitle.innerText = 'Student Directory';
+        } else if (tabId === 'tc') {
+            pageSubtitle.innerText = 'TC Report';
+        } else {
+            pageSubtitle.innerText = 'Student Counts Summary';
+        }
     }
     
     updateUIState();
@@ -180,7 +196,7 @@ function handleSearch() {
     
     if (currentTab === 'directory') {
         renderDirectoryTable();
-    } else {
+    } else if (currentTab === 'tc') {
         renderTCTable();
     }
 }
@@ -190,30 +206,46 @@ function updateUIState() {
     const placeholder = document.getElementById('no-class-placeholder');
     const tabDir = document.getElementById('tab-directory');
     const tabTc = document.getElementById('tab-tc');
+    const tabCounts = document.getElementById('tab-counts');
+    const filterPanel = document.getElementById('filter-panel-section');
     const searchRow = document.getElementById('search-row');
     
-    if (!selectedClass) {
-        if (placeholder) placeholder.style.display = 'block';
+    if (currentTab === 'counts') {
+        // Global view: hide filter class selection and show full summary table
+        if (placeholder) placeholder.style.display = 'none';
+        if (filterPanel) filterPanel.style.display = 'none';
         if (tabDir) tabDir.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
-        if (searchRow) searchRow.style.display = 'none';
+        if (tabCounts) tabCounts.style.display = 'block';
+        renderCountsTable();
     } else {
-        if (placeholder) placeholder.style.display = 'none';
-        if (searchRow) searchRow.style.display = 'flex';
+        // Class-specific views: require class selection
+        if (filterPanel) filterPanel.style.display = 'block';
+        if (tabCounts) tabCounts.style.display = 'none';
         
-        if (currentTab === 'directory') {
-            if (tabDir) tabDir.style.display = 'block';
-            if (tabTc) tabTc.style.display = 'none';
-            renderDirectoryTable();
-        } else {
+        if (!selectedClass) {
+            if (placeholder) placeholder.style.display = 'block';
             if (tabDir) tabDir.style.display = 'none';
-            if (tabTc) tabTc.style.display = 'block';
-            renderTCTable();
+            if (tabTc) tabTc.style.display = 'none';
+            if (searchRow) searchRow.style.display = 'none';
+        } else {
+            if (placeholder) placeholder.style.display = 'none';
+            if (searchRow) searchRow.style.display = 'flex';
+            
+            if (currentTab === 'directory') {
+                if (tabDir) tabDir.style.display = 'block';
+                if (tabTc) tabTc.style.display = 'none';
+                renderDirectoryTable();
+            } else {
+                if (tabDir) tabDir.style.display = 'none';
+                if (tabTc) tabTc.style.display = 'block';
+                renderTCTable();
+            }
         }
     }
 }
 
-// Render Directory Table (Active Students) with mobile data-labels
+// Render Directory Table (Active Students)
 function renderDirectoryTable() {
     const tbody = document.getElementById('directory-tbody');
     const showingCount = document.getElementById('directory-showing-count');
@@ -296,7 +328,7 @@ function renderDirectoryTable() {
     });
 }
 
-// Render TC Report Table with mobile data-labels
+// Render TC Report Table
 function renderTCTable() {
     const tbody = document.getElementById('tc-tbody');
     const selectedGrade = document.getElementById('selected-tc-grade-name');
@@ -386,6 +418,131 @@ function renderTCTable() {
         `;
         tbody.appendChild(tr);
     });
+}
+
+// Render BGT Student Counts Table (B: Boy, G: Girl, T: Total)
+function renderCountsTable() {
+    const tbody = document.getElementById('counts-tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    // Categories to calculate
+    const categories = ['GENERAL', 'OBC', 'SC', 'ST', 'SBC'];
+    
+    // Sort active classes based on custom logical order
+    const sortedClasses = [...classesMain].sort((a, b) => {
+        const idxA = CLASS_SORT_ORDER.indexOf(a);
+        const idxB = CLASS_SORT_ORDER.indexOf(b);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.localeCompare(b);
+    });
+    
+    // Global running totals initialization
+    const globalTotals = {
+        GENERAL: { boys: 0, girls: 0 },
+        OBC: { boys: 0, girls: 0 },
+        SC: { boys: 0, girls: 0 },
+        ST: { boys: 0, girls: 0 },
+        SBC: { boys: 0, girls: 0 },
+        GRAND: { boys: 0, girls: 0 }
+    };
+    
+    sortedClasses.forEach(className => {
+        // Filter students in this class
+        const classStudents = activeStudents.filter(s => s.class === className);
+        if (classStudents.length === 0) return;
+        
+        // Find medium of this class (based on the first student in the class)
+        const medium = classStudents[0].medium || '-';
+        
+        const tr = document.createElement('tr');
+        
+        // Class and Medium columns
+        let rowHtml = `
+            <td style="font-weight: 600;">${className}</td>
+            <td style="text-align: center;">${medium}</td>
+        `;
+        
+        let classGrandBoys = 0;
+        let classGrandGirls = 0;
+        
+        // Calculate each category counts
+        categories.forEach(cat => {
+            const catStudents = classStudents.filter(s => s.social_category.toUpperCase() === cat);
+            const boys = catStudents.filter(s => s.gender === 'Male').length;
+            const girls = catStudents.filter(s => s.gender === 'Female').length;
+            const total = boys + girls;
+            
+            // Accumulate class grand totals
+            classGrandBoys += boys;
+            classGrandGirls += girls;
+            
+            // Accumulate global totals
+            globalTotals[cat].boys += boys;
+            globalTotals[cat].girls += girls;
+            
+            rowHtml += `
+                <td style="text-align: center;">${boys || '-'}</td>
+                <td style="text-align: center;">${girls || '-'}</td>
+                <td style="text-align: center; font-weight: 600; background-color: var(--slate-50);">${total || '-'}</td>
+            `;
+        });
+        
+        // Accumulate global grand totals
+        globalTotals.GRAND.boys += classGrandBoys;
+        globalTotals.GRAND.girls += classGrandGirls;
+        
+        const classGrandTotal = classGrandBoys + classGrandGirls;
+        
+        // Class Grand Total columns
+        rowHtml += `
+            <td style="text-align: center; font-weight: 600; background-color: var(--slate-100);">${classGrandBoys || '-'}</td>
+            <td style="text-align: center; font-weight: 600; background-color: var(--slate-100);">${classGrandGirls || '-'}</td>
+            <td style="text-align: center; font-weight: 800; background-color: var(--slate-200); color: var(--primary-dark);">${classGrandTotal || '-'}</td>
+        `;
+        
+        tr.innerHTML = rowHtml;
+        tbody.appendChild(tr);
+    });
+    
+    // Append the highlighted TOTAL row at the bottom
+    const totalTr = document.createElement('tr');
+    totalTr.style.borderTop = '2px solid var(--slate-900)';
+    totalTr.style.borderBottom = '2px solid var(--slate-900)';
+    totalTr.style.backgroundColor = '#f1f5f9';
+    totalTr.style.fontWeight = '800';
+    
+    let totalRowHtml = `
+        <td colspan="2" style="text-align: center; font-family: var(--font-heading); font-size: 0.9rem; letter-spacing: 0.5px;">TOTAL (ALL CLASSES)</td>
+    `;
+    
+    categories.forEach(cat => {
+        const boys = globalTotals[cat].boys;
+        const girls = globalTotals[cat].girls;
+        const total = boys + girls;
+        
+        totalRowHtml += `
+            <td style="text-align: center; color: var(--slate-900);">${boys}</td>
+            <td style="text-align: center; color: var(--slate-900);">${girls}</td>
+            <td style="text-align: center; font-weight: 900; background-color: #cbd5e1; color: black;">${total}</td>
+        `;
+    });
+    
+    const grandBoys = globalTotals.GRAND.boys;
+    const grandGirls = globalTotals.GRAND.girls;
+    const grandTotalVal = grandBoys + grandGirls;
+    
+    totalRowHtml += `
+        <td style="text-align: center; background-color: #cbd5e1; color: black;">${grandBoys}</td>
+        <td style="text-align: center; background-color: #cbd5e1; color: black;">${grandGirls}</td>
+        <td style="text-align: center; font-size: 0.95rem; background-color: #94a3b8; color: white;">${grandTotalVal}</td>
+    `;
+    
+    totalTr.innerHTML = totalRowHtml;
+    tbody.appendChild(totalTr);
 }
 
 // Open Student Details Profile Modal
