@@ -13,6 +13,7 @@ let currentTab = 'directory'; // 'directory', 'tc', or 'counts'
 let currentMediumFilter = 'all';
 let selectedClass = '';
 let currentSearchQuery = '';
+let currentCountsFormat = 'hindi-pri'; // 'hindi-pri', 'hindi-sec', 'english', 'consolidated'
 
 // Logical sort order for classes
 const CLASS_SORT_ORDER = [
@@ -94,6 +95,7 @@ const CLASS_TO_GRADE_MAP = {
 // Initialize Application
 document.addEventListener("DOMContentLoaded", () => {
     loadData();
+    initStats();
     populateClassDropdown();
     updateUIState();
 });
@@ -109,6 +111,51 @@ function loadData() {
         classByMedium = window.STUDENTS_DATA.class_by_medium || {};
     } else {
         console.error("Database variables (data.js) not loaded.");
+    }
+}
+
+// Compute and render stats dashboard
+function initStats() {
+    const totalActive = activeStudents.length;
+    const totalTc = tcStudents.length;
+    const englishCount = activeStudents.filter(s => s.medium === 'English').length;
+    const hindiCount = activeStudents.filter(s => s.medium === 'Hindi').length;
+    
+    const activeBoys = activeStudents.filter(s => s.gender === 'Male').length;
+    const activeGirls = activeStudents.filter(s => s.gender === 'Female').length;
+    
+    const englishBoys = activeStudents.filter(s => s.medium === 'English' && s.gender === 'Male').length;
+    const englishGirls = activeStudents.filter(s => s.medium === 'English' && s.gender === 'Female').length;
+    
+    const hindiBoys = activeStudents.filter(s => s.medium === 'Hindi' && s.gender === 'Male').length;
+    const hindiGirls = activeStudents.filter(s => s.medium === 'Hindi' && s.gender === 'Female').length;
+    
+    document.getElementById('stat-active-count').innerText = totalActive.toLocaleString();
+    document.getElementById('stat-active-boys').innerText = activeBoys.toLocaleString();
+    document.getElementById('stat-active-girls').innerText = activeGirls.toLocaleString();
+    
+    document.getElementById('stat-english-count').innerText = englishCount.toLocaleString();
+    document.getElementById('stat-english-boys').innerText = englishBoys.toLocaleString();
+    document.getElementById('stat-english-girls').innerText = englishGirls.toLocaleString();
+    
+    document.getElementById('stat-hindi-count').innerText = hindiCount.toLocaleString();
+    document.getElementById('stat-hindi-boys').innerText = hindiBoys.toLocaleString();
+    document.getElementById('stat-hindi-girls').innerText = hindiGirls.toLocaleString();
+    
+    document.getElementById('stat-tc-count').innerText = totalTc.toLocaleString();
+    
+    const highlightedActive = activeStudents.filter(s => s.is_highlighted).length;
+    const highlightedTc = tcStudents.filter(s => s.is_highlighted).length;
+    const totalHighlighted = highlightedActive + highlightedTc;
+    
+    const highlightBadge = document.getElementById('directory-highlight-count');
+    if (highlightBadge) {
+        highlightBadge.innerText = `${totalHighlighted} Updated Rows`;
+        if (totalHighlighted > 0) {
+            highlightBadge.style.display = 'inline-flex';
+        } else {
+            highlightBadge.style.display = 'none';
+        }
     }
 }
 
@@ -160,7 +207,6 @@ function handleClassChange() {
     
     selectedClass = classSelect.value;
     
-    // Reset search
     const searchInput = document.getElementById('directory-search');
     if (searchInput) searchInput.value = '';
     currentSearchQuery = '';
@@ -189,6 +235,47 @@ function switchTab(tabId) {
     updateUIState();
 }
 
+// Switch BGT Counts Formats
+function switchCountsFormat(formatId) {
+    currentCountsFormat = formatId;
+    
+    document.querySelectorAll('.report-tab-pill-group .pill-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const btnMap = {
+        'hindi-pri': 'btn-format-hindi-pri',
+        'hindi-sec': 'btn-format-hindi-sec',
+        'english': 'btn-format-english',
+        'consolidated': 'btn-format-consolidated'
+    };
+    
+    const activeBtn = document.getElementById(btnMap[formatId]);
+    if (activeBtn) activeBtn.classList.add('active');
+    
+    // Update format title text on header
+    const formatTitle = document.getElementById('counts-format-title');
+    const metaTitle = document.getElementById('counts-results-meta');
+    
+    if (formatTitle) {
+        if (formatId === 'hindi-pri') {
+            formatTitle.innerText = "नामांकन सूचना वर्गवार : हिंदी माध्यम (प्राथमिक)";
+            if (metaTitle) metaTitle.innerText = "Hindi Medium (Primary 1st to 5th) Category Wise Student Count";
+        } else if (formatId === 'hindi-sec') {
+            formatTitle.innerText = "नामांकन सूचना वर्गवार : हिंदी माध्यम (माध्यमिक/उच्च माध्यमिक)";
+            if (metaTitle) metaTitle.innerText = "Hindi Medium (Secondary 6th to 12th) Category Wise Student Count";
+        } else if (formatId === 'english') {
+            formatTitle.innerText = "नामांकन सूचना वर्गवार : अंग्रेजी माध्यम";
+            if (metaTitle) metaTitle.innerText = "English Medium (Pre-Primary to 12th) Category Wise Student Count";
+        } else {
+            formatTitle.innerText = "नामांकन सूचना वर्गवार : समेकित विवरण (हिन्दी + अंग्रेजी)";
+            if (metaTitle) metaTitle.innerText = "Consolidated Summary (English + Hindi) Category Wise Student Count";
+        }
+    }
+    
+    renderCountsTable();
+}
+
 // Handle Search Query input
 function handleSearch() {
     const searchInput = document.getElementById('directory-search');
@@ -201,7 +288,7 @@ function handleSearch() {
     }
 }
 
-// Update the visible elements based on selection state
+// Update UI State
 function updateUIState() {
     const placeholder = document.getElementById('no-class-placeholder');
     const tabDir = document.getElementById('tab-directory');
@@ -211,15 +298,13 @@ function updateUIState() {
     const searchRow = document.getElementById('search-row');
     
     if (currentTab === 'counts') {
-        // Global view: hide filter class selection and show full summary table
         if (placeholder) placeholder.style.display = 'none';
         if (filterPanel) filterPanel.style.display = 'none';
         if (tabDir) tabDir.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'block';
-        renderCountsTable();
+        switchCountsFormat(currentCountsFormat);
     } else {
-        // Class-specific views: require class selection
         if (filterPanel) filterPanel.style.display = 'block';
         if (tabCounts) tabCounts.style.display = 'none';
         
@@ -420,27 +505,88 @@ function renderTCTable() {
     });
 }
 
-// Render BGT Student Counts Table (B: Boy, G: Girl, T: Total)
+// Helper to filter active students by a list of database classes
+function getStudentCountsForClasses(classNames) {
+    return activeStudents.filter(s => classNames.includes(s.class));
+}
+
+// Render Student Counts Table based on Selected Format
 function renderCountsTable() {
     const tbody = document.getElementById('counts-tbody');
     if (!tbody) return;
     
     tbody.innerHTML = '';
     
-    // Categories to calculate
     const categories = ['GENERAL', 'OBC', 'SC', 'ST', 'SBC'];
+    let rowSpecifications = [];
     
-    // Sort active classes based on custom logical order
-    const sortedClasses = [...classesMain].sort((a, b) => {
-        const idxA = CLASS_SORT_ORDER.indexOf(a);
-        const idxB = CLASS_SORT_ORDER.indexOf(b);
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
-        return a.localeCompare(b);
-    });
+    // Define rows based on the active format
+    if (currentCountsFormat === 'hindi-pri') {
+        rowSpecifications = [
+            { label: "1ST", medium: "Hindi", queryClasses: ["1ST"] },
+            { label: "2ND", medium: "Hindi", queryClasses: ["2ND"] },
+            { label: "3RD", medium: "Hindi", queryClasses: ["3RD"] },
+            { label: "4TH", medium: "Hindi", queryClasses: ["4TH"] },
+            { label: "5TH", medium: "Hindi", queryClasses: ["5TH"] }
+        ];
+    } else if (currentCountsFormat === 'hindi-sec') {
+        rowSpecifications = [
+            { label: "6TH A", medium: "Hindi", queryClasses: ["6TH A"] },
+            { label: "6TH B", medium: "Hindi", queryClasses: ["6TH B"] },
+            { label: "7TH A", medium: "Hindi", queryClasses: ["7TH A"] },
+            { label: "7TH B", medium: "Hindi", queryClasses: ["7TH B"] },
+            { label: "8TH A", medium: "Hindi", queryClasses: ["8TH A"] },
+            { label: "8TH B", medium: "Hindi", queryClasses: ["8TH B"] },
+            { label: "9TH A", medium: "Hindi", queryClasses: ["9TH A"] },
+            { label: "9TH B", medium: "Hindi", queryClasses: ["9TH B"] },
+            { label: "10TH A", medium: "Hindi", queryClasses: ["10TH A"] },
+            { label: "10TH B", medium: "Hindi", queryClasses: ["10TH B"] },
+            { label: "10TH C", medium: "Hindi", queryClasses: ["10TH C"] },
+            { label: "11TH ARTS", medium: "Hindi", queryClasses: ["11TH ARTS"] },
+            { label: "11TH AGR", medium: "Hindi", queryClasses: ["11TH AGR"] },
+            { label: "11TH SCI", medium: "Hindi", queryClasses: ["11TH SCI"] },
+            { label: "12TH ARTS", medium: "Hindi", queryClasses: ["12TH ARTS"] },
+            { label: "12TH AGR", medium: "Hindi", queryClasses: ["12TH AGR"] },
+            { label: "12TH SCI", medium: "Hindi", queryClasses: ["12TH SCI"] }
+        ];
+    } else if (currentCountsFormat === 'english') {
+        rowSpecifications = [
+            { label: "KG (PP.3+)", medium: "English", queryClasses: ["KG EM"] },
+            { label: "LKG(PP.4+)", medium: "English", queryClasses: ["LKG EM"] },
+            { label: "UKG(PP.5+)", medium: "English", queryClasses: ["UKG EM"] },
+            { label: "1ST", medium: "English", queryClasses: ["1ST EM"] },
+            { label: "2ND", medium: "English", queryClasses: ["2ND EM"] },
+            { label: "3RD", medium: "English", queryClasses: ["3RD EM"] },
+            { label: "4TH", medium: "English", queryClasses: ["4TH EM"] },
+            { label: "5TH", medium: "English", queryClasses: ["5TH EM"] },
+            { label: "6TH", medium: "English", queryClasses: ["6TH A EM"] },
+            { label: "7TH", medium: "English", queryClasses: ["7TH A EM"] },
+            { label: "8TH", medium: "English", queryClasses: ["8TH A EM"] },
+            { label: "9TH", medium: "English", queryClasses: ["9TH A EM"] },
+            { label: "10TH", medium: "English", queryClasses: ["10TH A EM"] },
+            { label: "11TH SCI", medium: "English", queryClasses: ["11TH SCI EM"] },
+            { label: "12TH ARTS", medium: "English", queryClasses: ["12TH ARTS EM"] },
+            { label: "12TH SCI", medium: "English", queryClasses: ["12TH SCI EM"] }
+        ];
+    } else if (currentCountsFormat === 'consolidated') {
+        rowSpecifications = [
+            { label: "PRE-PRIMARY", medium: "Combined", queryClasses: ["KG EM", "LKG EM", "UKG EM"] },
+            { label: "1ST", medium: "Combined", queryClasses: ["1ST", "1ST EM"] },
+            { label: "2ND", medium: "Combined", queryClasses: ["2ND", "2ND EM"] },
+            { label: "3RD", medium: "Combined", queryClasses: ["3RD", "3RD EM"] },
+            { label: "4TH", medium: "Combined", queryClasses: ["4TH", "4TH EM"] },
+            { label: "5TH", medium: "Combined", queryClasses: ["5TH", "5TH EM"] },
+            { label: "6TH", medium: "Combined", queryClasses: ["6TH A", "6TH B", "6TH A EM"] },
+            { label: "7TH", medium: "Combined", queryClasses: ["7TH A", "7TH B", "7TH A EM"] },
+            { label: "8TH", medium: "Combined", queryClasses: ["8TH A", "8TH B", "8TH A EM"] },
+            { label: "9TH", medium: "Combined", queryClasses: ["9TH A", "9TH B", "9TH A EM"] },
+            { label: "10TH", medium: "Combined", queryClasses: ["10TH A", "10TH B", "10TH C", "10TH A EM"] },
+            { label: "11TH", medium: "Combined", queryClasses: ["11TH ARTS", "11TH AGR", "11TH SCI", "11TH SCI EM"] },
+            { label: "12TH", medium: "Combined", queryClasses: ["12TH ARTS", "12TH AGR", "12TH SCI", "12TH SCI EM"] }
+        ];
+    }
     
-    // Global running totals initialization
+    // Initialize running sums
     const globalTotals = {
         GENERAL: { boys: 0, girls: 0 },
         OBC: { boys: 0, girls: 0 },
@@ -450,37 +596,27 @@ function renderCountsTable() {
         GRAND: { boys: 0, girls: 0 }
     };
     
-    sortedClasses.forEach(className => {
-        // Filter students in this class
-        const classStudents = activeStudents.filter(s => s.class === className);
-        if (classStudents.length === 0) return;
-        
-        // Find medium of this class (based on the first student in the class)
-        const medium = classStudents[0].medium || '-';
-        
+    rowSpecifications.forEach(rowSpec => {
+        const rowStudents = getStudentCountsForClasses(rowSpec.queryClasses);
         const tr = document.createElement('tr');
         
-        // Class and Medium columns
         let rowHtml = `
-            <td style="font-weight: 600;">${className}</td>
-            <td style="text-align: center;">${medium}</td>
+            <td style="font-weight: 600;">${rowSpec.label}</td>
+            <td style="text-align: center;">${rowSpec.medium}</td>
         `;
         
-        let classGrandBoys = 0;
-        let classGrandGirls = 0;
+        let rowGrandBoys = 0;
+        let rowGrandGirls = 0;
         
-        // Calculate each category counts
         categories.forEach(cat => {
-            const catStudents = classStudents.filter(s => s.social_category.toUpperCase() === cat);
+            const catStudents = rowStudents.filter(s => s.social_category.toUpperCase() === cat);
             const boys = catStudents.filter(s => s.gender === 'Male').length;
             const girls = catStudents.filter(s => s.gender === 'Female').length;
             const total = boys + girls;
             
-            // Accumulate class grand totals
-            classGrandBoys += boys;
-            classGrandGirls += girls;
+            rowGrandBoys += boys;
+            rowGrandGirls += girls;
             
-            // Accumulate global totals
             globalTotals[cat].boys += boys;
             globalTotals[cat].girls += girls;
             
@@ -491,24 +627,22 @@ function renderCountsTable() {
             `;
         });
         
-        // Accumulate global grand totals
-        globalTotals.GRAND.boys += classGrandBoys;
-        globalTotals.GRAND.girls += classGrandGirls;
+        globalTotals.GRAND.boys += rowGrandBoys;
+        globalTotals.GRAND.girls += rowGrandGirls;
         
-        const classGrandTotal = classGrandBoys + classGrandGirls;
+        const rowGrandTotal = rowGrandBoys + rowGrandGirls;
         
-        // Class Grand Total columns
         rowHtml += `
-            <td style="text-align: center; font-weight: 600; background-color: var(--slate-100);">${classGrandBoys || '-'}</td>
-            <td style="text-align: center; font-weight: 600; background-color: var(--slate-100);">${classGrandGirls || '-'}</td>
-            <td style="text-align: center; font-weight: 800; background-color: var(--slate-200); color: var(--primary-dark);">${classGrandTotal || '-'}</td>
+            <td style="text-align: center; font-weight: 600; background-color: var(--slate-100);">${rowGrandBoys || '-'}</td>
+            <td style="text-align: center; font-weight: 600; background-color: var(--slate-100);">${rowGrandGirls || '-'}</td>
+            <td style="text-align: center; font-weight: 800; background-color: var(--slate-200); color: var(--primary-dark);">${rowGrandTotal || '-'}</td>
         `;
         
         tr.innerHTML = rowHtml;
         tbody.appendChild(tr);
     });
     
-    // Append the highlighted TOTAL row at the bottom
+    // Bottom TOTAL row
     const totalTr = document.createElement('tr');
     totalTr.style.borderTop = '2px solid var(--slate-900)';
     totalTr.style.borderBottom = '2px solid var(--slate-900)';
@@ -516,7 +650,7 @@ function renderCountsTable() {
     totalTr.style.fontWeight = '800';
     
     let totalRowHtml = `
-        <td colspan="2" style="text-align: center; font-family: var(--font-heading); font-size: 0.9rem; letter-spacing: 0.5px;">TOTAL (ALL CLASSES)</td>
+        <td colspan="2" style="text-align: center; font-family: var(--font-heading); font-size: 0.9rem; letter-spacing: 0.5px;">TOTAL</td>
     `;
     
     categories.forEach(cat => {
