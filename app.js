@@ -254,14 +254,33 @@ function switchTab(tabId) {
         }
     }
     
+    // Explicitly close and clear all search result overlay dropdowns when switching tabs
+    const globalResults = document.getElementById('global-search-results');
+    const globalInput = document.getElementById('global-student-search');
+    if (globalResults) {
+        globalResults.style.display = 'none';
+        globalResults.innerHTML = '';
+    }
+    if (globalInput) globalInput.value = '';
+    globalSearchResultsList = [];
+    searchFocusedIndex = -1;
+    
+    const feeResults = document.getElementById('fee-search-results');
+    const feeInput = document.getElementById('fee-student-search');
+    if (feeResults) {
+        feeResults.style.display = 'none';
+        feeResults.innerHTML = '';
+    }
+    if (feeInput) feeInput.value = '';
+    feeSearchResultsList = [];
+    feeSearchFocusedIndex = -1;
+    
     // Reset fee search state only when switching tabs
     if (tabId === 'fees') {
         const feeReportCard = document.getElementById('fee-report-card');
         const feePlaceholder = document.getElementById('fee-placeholder-card');
-        const feeSearchInput = document.getElementById('fee-student-search');
         if (feeReportCard) feeReportCard.style.display = 'none';
         if (feePlaceholder) feePlaceholder.style.display = 'block';
-        if (feeSearchInput) feeSearchInput.value = '';
     }
     
     updateUIState();
@@ -307,6 +326,52 @@ function switchCountsFormat(formatId) {
     renderCountsTable();
 }
 
+// Search ranking algorithm to sort matches by priority
+function rankSearchResults(list, query) {
+    const isDigit = /^\d+$/.test(query);
+    
+    const scoredList = list.map(item => {
+        let score = 9999;
+        
+        if (item.type === 'Class') {
+            const nameLower = item.name.toLowerCase();
+            if (nameLower === query) score = 0;
+            else if (nameLower.startsWith(query)) score = 1;
+            else if (nameLower.includes(query)) score = 2;
+        } else {
+            const nameLower = (item.student_name || '').toLowerCase();
+            const fatherLower = (item.father_name || '').toLowerCase();
+            const srVal = (item.sr_no || item.scholar_no || '').toLowerCase();
+            const mobVal = (item.mobile_no || '').toLowerCase();
+            
+            if (isDigit) {
+                // Numeric query priority order: SR No first, then Mobile No, then others
+                if (srVal === query) score = 5;
+                else if (srVal.startsWith(query)) score = 10;
+                else if (srVal.includes(query)) score = 20;
+                else if (mobVal === query) score = 30;
+                else if (mobVal.startsWith(query)) score = 40;
+                else if (mobVal.includes(query)) score = 50;
+            } else {
+                // Alphabetical query priority order: Student Name first, then Father Name, then others
+                if (nameLower === query) score = 5;
+                else if (nameLower.startsWith(query)) score = 10;
+                else if (nameLower.includes(query)) score = 20;
+                else if (fatherLower === query) score = 30;
+                else if (fatherLower.startsWith(query)) score = 40;
+                else if (fatherLower.includes(query)) score = 50;
+            }
+        }
+        
+        return { item, score };
+    });
+    
+    // Sort items by priority score ascending
+    const matches = scoredList.filter(x => x.score < 9999);
+    matches.sort((a, b) => a.score - b.score);
+    return matches.map(x => x.item);
+}
+
 // Global Spotlight Search Handler (searches school-wide for both students and classes)
 function handleGlobalSearch() {
     const input = document.getElementById('global-student-search');
@@ -330,11 +395,12 @@ function handleGlobalSearch() {
         cls.toLowerCase().includes(query)
     ).map(cls => ({ name: cls, type: 'Class' }));
     
-    // 2. Filter Active Students
+    // 2. Filter Active Students (searches Name, Father, SR, NIC and Mobile number)
     const matchedActive = activeStudents.filter(s => 
         s.student_name.toLowerCase().includes(query) ||
         s.father_name.toLowerCase().includes(query) ||
         s.sr_no.toLowerCase().includes(query) ||
+        (s.mobile_no && s.mobile_no.toLowerCase().includes(query)) ||
         (s.student_nic_id && s.student_nic_id.toLowerCase().includes(query))
     ).map(s => ({ ...s, type: 'Active' }));
     
@@ -346,8 +412,9 @@ function handleGlobalSearch() {
         (s.student_nic_id && s.student_nic_id.toLowerCase().includes(query))
     ).map(s => ({ ...s, type: 'TC' }));
     
-    // Combine (classes first, then active/tc students) and slice to top 10 items
-    globalSearchResultsList = [...matchedClasses, ...matchedActive, ...matchedTc].slice(0, 10);
+    // Combine and rank all matches
+    const allMatches = [...matchedClasses, ...matchedActive, ...matchedTc];
+    globalSearchResultsList = rankSearchResults(allMatches, query).slice(0, 10);
     searchFocusedIndex = -1;
     
     if (globalSearchResultsList.length === 0) {
@@ -485,30 +552,17 @@ function updateSearchFocus(items) {
     }
 }
 
-// Global Student Fee Search Handler (searches exclusively in dueFees)
-function handleFeeSearch() {
-    const input = document.getElementById('fee-student-search');
-    const resultsDiv = document.getElementById('fee-search-results');
-    if (!input || !resultsDiv) return;
-    
-    const query = input.value.toLowerCase().trim();
-    if (!query) {
-        resultsDiv.style.display = 'none';
-        resultsDiv.innerHTML = '';
-        feeSearchResultsList = [];
-        feeSearchFocusedIndex = -1;
-        return;
-    }
-    
     const feeRecords = Object.values(dueFees);
     
-    // Filter matching fee records
-    feeSearchResultsList = feeRecords.filter(f => 
+    // Filter matching fee records (searches Name, Father, SR, and Mobile number)
+    const matchedFees = feeRecords.filter(f => 
         f.student_name.toLowerCase().includes(query) ||
         f.father_name.toLowerCase().includes(query) ||
-        f.scholar_no.toLowerCase().includes(query)
-    ).slice(0, 8);
+        f.scholar_no.toLowerCase().includes(query) ||
+        (f.mobile_no && f.mobile_no.toLowerCase().includes(query))
+    );
     
+    feeSearchResultsList = rankSearchResults(matchedFees, query).slice(0, 8);
     feeSearchFocusedIndex = -1;
     
     if (feeSearchResultsList.length === 0) {
@@ -615,6 +669,7 @@ function renderStudentFeeDue(feeRecord) {
     document.getElementById('fee-stud-sr').innerText = feeRecord.scholar_no;
     document.getElementById('fee-stud-father').innerText = feeRecord.father_name;
     document.getElementById('fee-stud-class').innerText = feeRecord.class_name;
+    document.getElementById('fee-stud-mobile').innerText = feeRecord.mobile_no || 'N/A';
     
     tbody.innerHTML = '';
     

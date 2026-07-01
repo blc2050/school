@@ -43,6 +43,8 @@ try:
     
     # Extract and format active students (MAIN)
     active_students = []
+    active_by_sr = {}
+    
     for _, row in main_df.iterrows():
         student_name = str(row.get('STUDENT NAME', '')).strip()
         if not student_name or student_name == "nan":
@@ -69,11 +71,12 @@ try:
             if "2026-06-30" in adm_date_str or "30-06-2026" in adm_date_str:
                 is_highlighted = True
         
-        # Clean numeric fields to prevent decimals (e.g. 1001.0 -> 1001)
+        # Clean numeric fields to prevent decimals
         sr_no = clean_int_str(row.get('SR No.', ''))
         roll_no = clean_int_str(row.get('ROLL NO', ''))
         rbse_roll = clean_int_str(row.get('RBSE Roll No', ''))
         student_nic = clean_int_str(row.get('Student NIC ID', ''))
+        mobile_no = clean_int_str(row.get('ERP Mobile No', ''))
         
         student_rec = {
             "sr_no": sr_no,
@@ -91,6 +94,7 @@ try:
             "religion": str(row.get('Religion', '')).strip(),
             "date_of_admission": adm_date_str,
             "rte": str(row.get('RTE', '')).strip(),
+            "mobile_no": mobile_no,
             "is_highlighted": is_highlighted
         }
         
@@ -100,6 +104,8 @@ try:
                 student_rec[k] = ""
         
         active_students.append(student_rec)
+        if sr_no:
+            active_by_sr[sr_no] = student_rec
         
     # Sort active students by Student Name, Father Name
     active_students.sort(key=lambda x: (x['student_name'].upper(), x['father_name'].upper()))
@@ -157,6 +163,8 @@ try:
     
     # Process Fee Data from duefeereport.xlsx
     due_fees = {}
+    ignored_fee_count = 0
+    
     if os.path.exists(fee_excel_path):
         fee_xl = pd.ExcelFile(fee_excel_path)
         print(f"Reading fee sheets: {fee_xl.sheet_names}")
@@ -170,7 +178,15 @@ try:
                 if not scholar_no:
                     continue
                 
-                # Fetch hostel fee based on column names (English vs Hindi sheet name variations)
+                # IGNORE fee records where SR number is not in active students (MAIN sheet)
+                if scholar_no not in active_by_sr:
+                    ignored_fee_count += 1
+                    continue
+                
+                # Retrieve mobile number from corresponding active student record
+                mobile_no = active_by_sr[scholar_no].get("mobile_no", "")
+                
+                # Fetch hostel fee based on column names (English vs Hindi sheet variations)
                 hostel_1 = row.get('1ST INS HOSTEL FEE', row.get('1ST INS HOSTEL FEE EM', 0))
                 hostel_2 = row.get('2ND INS HOSTEL FEE', row.get('2ND INS HOSTEL FEE EM', 0))
                 
@@ -191,7 +207,8 @@ try:
                     "school_fee_3": parse_fee_val(row.get('3RD INS SCHOOL FEE', 0)),
                     "late_fee": parse_fee_val(row.get('Late Fee', 0)),
                     "advance_adjustable": parse_fee_val(row.get('Advance Adjustable', 0)),
-                    "total": parse_fee_val(row.get('Total', 0))
+                    "total": parse_fee_val(row.get('Total', 0)),
+                    "mobile_no": mobile_no
                 }
                 
                 # Clean up student name comparison or empty strings
@@ -200,7 +217,7 @@ try:
                         fee_record[k] = ""
                         
                 due_fees[scholar_no] = fee_record
-        print(f"Loaded {len(due_fees)} fee due records.")
+        print(f"Loaded {len(due_fees)} fee due records. Ignored {ignored_fee_count} records not present in active roster.")
     else:
         print(f"Warning: Fee report Excel file '{fee_excel_path}' not found. Skipping fee data loading.")
 
