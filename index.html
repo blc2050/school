@@ -175,6 +175,17 @@
                         <div class="progress" style="width: 100%; background: var(--amber-500);"></div>
                     </div>
                 </div>
+
+                <!-- Pending Admissions Card -->
+                <div class="stat-card" id="card-pending-admissions">
+                    <div class="stat-icon" style="background-color: var(--primary-light); color: var(--primary);">
+                        <i class="fa-solid fa-user-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Pending Admissions</span>
+                        <h3 class="stat-value" id="stat-pending-count">0</h3>
+                    </div>
+                </div>
             </section>
 
             <!-- Selection and Filter Panel -->
@@ -603,6 +614,13 @@
                         <button class="btn btn-secondary" onclick="printReport()" style="margin-top: 10px;">
                             <i class="fa-solid fa-print"></i> Print Lists
                         </button>
+                    </div>
+                    
+                    <!-- Grand Total display inside the tab -->
+                    <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--slate-200); display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.9rem; font-weight: 600; color: var(--slate-700);">
+                            Total Pending Admissions (Filtered): <strong id="pending-total-badge" style="color: var(--primary-dark); font-size: 1.05rem;">0</strong> students
+                        </span>
                     </div>
                 </div>
 

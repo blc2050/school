@@ -169,6 +169,7 @@ function initStats() {
     document.getElementById('stat-new-girls').innerText = newGirls.toLocaleString();
     
     document.getElementById('stat-tc-count').innerText = totalTc.toLocaleString();
+    document.getElementById('stat-pending-count').innerText = pendingStudents.length.toLocaleString();
     
     const highlightedActive = activeStudents.filter(s => s.is_highlighted).length;
     const highlightedTc = tcStudents.filter(s => s.is_highlighted).length;
@@ -1470,7 +1471,6 @@ function setPendingLevelFilter(level) {
     renderPendingTables();
 }
 
-// Render separate class-wise tables for pending admissions
 function renderPendingTables() {
     const container = document.getElementById('pending-tables-container');
     if (!container) return;
@@ -1489,6 +1489,10 @@ function renderPendingTables() {
     } else if (pendingLevelFilter === 'senior') {
         list = list.filter(s => isSeniorClass(s.class));
     }
+    
+    // Set dynamic total count badge inside the filter summary row
+    const totalBadge = document.getElementById('pending-total-badge');
+    if (totalBadge) totalBadge.innerText = list.length.toLocaleString();
     
     if (list.length === 0) {
         container.innerHTML = `
