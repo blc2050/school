@@ -10,11 +10,16 @@ let classByMedium = {};
 let dueFees = {};
 
 // Application states
-let currentTab = 'directory'; // 'directory', 'tc', 'counts', or 'fees'
+let currentTab = 'directory'; // 'directory', 'tc', 'counts', 'fees', or 'pending'
 let currentMediumFilter = 'all';
 let selectedClass = '';
 let currentSearchQuery = '';
 let currentCountsFormat = 'hindi-pri'; // 'hindi-pri', 'hindi-sec', 'english', 'consolidated'
+
+// Pending Admission states
+let pendingStudents = [];
+let pendingMediumFilter = 'all';
+let pendingLevelFilter = 'all';
 
 // Global Search States
 let searchFocusedIndex = -1;
@@ -121,6 +126,7 @@ function loadData() {
         mediums = window.STUDENTS_DATA.mediums || [];
         classByMedium = window.STUDENTS_DATA.class_by_medium || {};
         dueFees = window.STUDENTS_DATA.due_fees || {};
+        pendingStudents = window.STUDENTS_DATA.pending_students || [];
     } else {
         console.error("Database variables (data.js) not loaded.");
     }
@@ -249,6 +255,8 @@ function switchTab(tabId) {
             pageSubtitle.innerText = 'TC Report';
         } else if (tabId === 'counts') {
             pageSubtitle.innerText = 'Student Counts Summary';
+        } else if (tabId === 'pending') {
+            pageSubtitle.innerText = 'Pending Admissions';
         } else {
             pageSubtitle.innerText = 'Student Fee Due Report';
         }
@@ -281,6 +289,21 @@ function switchTab(tabId) {
         const feePlaceholder = document.getElementById('fee-placeholder-card');
         if (feeReportCard) feeReportCard.style.display = 'none';
         if (feePlaceholder) feePlaceholder.style.display = 'block';
+    }
+    
+    // Reset pending filters state only when switching tabs
+    if (tabId === 'pending') {
+        pendingMediumFilter = 'all';
+        pendingLevelFilter = 'all';
+        
+        document.querySelectorAll('#pending-medium-filters .segment-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-medium') === 'all') btn.classList.add('active');
+        });
+        document.querySelectorAll('#pending-level-filters .segment-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-level') === 'all') btn.classList.add('active');
+        });
     }
     
     updateUIState();
@@ -815,6 +838,7 @@ function updateUIState() {
     const tabTc = document.getElementById('tab-tc');
     const tabCounts = document.getElementById('tab-counts');
     const tabFees = document.getElementById('tab-fees');
+    const tabPending = document.getElementById('tab-pending');
     
     const filterPanel = document.getElementById('filter-panel-section');
     const classFilterRow = document.getElementById('class-filter-row');
@@ -830,23 +854,35 @@ function updateUIState() {
         if (tabDir) tabDir.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
         if (tabFees) tabFees.style.display = 'none';
+        if (tabPending) tabPending.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'block';
         switchCountsFormat(currentCountsFormat);
     } else if (currentTab === 'fees') {
-        // Fee tab is search-only: hide filters completely, hide other tables
         if (filterPanel) filterPanel.style.display = 'none';
         if (placeholder) placeholder.style.display = 'none';
         
         if (tabDir) tabDir.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'none';
+        if (tabPending) tabPending.style.display = 'none';
         if (tabFees) tabFees.style.display = 'block';
+    } else if (currentTab === 'pending') {
+        if (filterPanel) filterPanel.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'none';
+        
+        if (tabDir) tabDir.style.display = 'none';
+        if (tabTc) tabTc.style.display = 'none';
+        if (tabCounts) tabCounts.style.display = 'none';
+        if (tabFees) tabFees.style.display = 'none';
+        if (tabPending) tabPending.style.display = 'block';
+        renderPendingTables();
     } else {
         if (filterPanel) filterPanel.style.display = 'block';
         if (classFilterRow) classFilterRow.style.display = 'flex';
         
         if (tabCounts) tabCounts.style.display = 'none';
         if (tabFees) tabFees.style.display = 'none';
+        if (tabPending) tabPending.style.display = 'none';
         
         if (!selectedClass) {
             if (placeholder) placeholder.style.display = 'block';
@@ -1389,4 +1425,202 @@ function closeModal() {
 // Print Handler
 function printReport() {
     window.print();
+}
+
+// Check if a class is primary (KG/Nursery EM or 1st-5th grade)
+function isPrimaryClass(className) {
+    const name = className.toUpperCase();
+    if (name.includes("KG") || name.includes("NURSERY")) return true;
+    if (name.startsWith("1ST") || name.startsWith("2ND") || name.startsWith("3RD") || name.startsWith("4TH") || name.startsWith("5TH")) return true;
+    return false;
+}
+
+// Check if a class is senior (6th to 12th grade)
+function isSeniorClass(className) {
+    const name = className.toUpperCase();
+    if (name.startsWith("6TH") || name.startsWith("7TH") || name.startsWith("8TH") || name.startsWith("9TH") || name.startsWith("10TH") || name.startsWith("11TH") || name.startsWith("12TH")) return true;
+    return false;
+}
+
+// Filter pending students by medium
+function setPendingMediumFilter(medium) {
+    pendingMediumFilter = medium;
+    
+    document.querySelectorAll('#pending-medium-filters .segment-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-medium') === medium) {
+            btn.classList.add('active');
+        }
+    });
+    
+    renderPendingTables();
+}
+
+// Filter pending students by grade level
+function setPendingLevelFilter(level) {
+    pendingLevelFilter = level;
+    
+    document.querySelectorAll('#pending-level-filters .segment-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-level') === level) {
+            btn.classList.add('active');
+        }
+    });
+    
+    renderPendingTables();
+}
+
+// Render separate class-wise tables for pending admissions
+function renderPendingTables() {
+    const container = document.getElementById('pending-tables-container');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    // Apply local filters
+    let list = pendingStudents;
+    
+    if (pendingMediumFilter !== 'all') {
+        list = list.filter(s => s.medium === pendingMediumFilter);
+    }
+    
+    if (pendingLevelFilter === 'primary') {
+        list = list.filter(s => isPrimaryClass(s.class));
+    } else if (pendingLevelFilter === 'senior') {
+        list = list.filter(s => isSeniorClass(s.class));
+    }
+    
+    if (list.length === 0) {
+        container.innerHTML = `
+            <div class="card" style="text-align: center; padding: 40px; color: var(--slate-700);">
+                <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: var(--slate-300); display: block;"></i>
+                No pending admission records found matching the selected filters.
+            </div>
+        `;
+        return;
+    }
+    
+    // Group filtered students by class name
+    const groups = {};
+    list.forEach(s => {
+        if (!groups[s.class]) groups[s.class] = [];
+        groups[s.class].push(s);
+    });
+    
+    // Sort class list using standard sorting order
+    const sortedClasses = Object.keys(groups).sort((a, b) => {
+        const idxA = CLASS_SORT_ORDER.indexOf(a);
+        const idxB = CLASS_SORT_ORDER.indexOf(b);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.localeCompare(b);
+    });
+    
+    // Create class-wise cards
+    sortedClasses.forEach(className => {
+        const classStudents = groups[className];
+        classStudents.sort((a, b) => a.student_name.localeCompare(b.student_name));
+        
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.style.marginBottom = '28px';
+        
+        // Print letterhead logo and title
+        const headerHtml = `
+            <div class="school-official-header print-only">
+                <div class="letterhead-brand-row">
+                    <img src="SSVM%20Hindi%20Logo%20500x..jpg" alt="SSVM Logo" class="letterhead-logo-img">
+                    <div class="letterhead-text-block">
+                        <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
+                        <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
+                        <p class="school-contact">Mob : 9413030806, E-mail : ssvmorg@gmail.com</p>
+                    </div>
+                </div>
+                <div class="header-divider-row">
+                    <span>Session : 2026-27</span>
+                    <span class="report-tag">Pending Admission List</span>
+                </div>
+            </div>
+        `;
+        
+        // Coordinator Note printed on top of the list
+        const noteHtml = `
+            <div class="coordinator-print-note" style="margin-bottom: 14px; font-size: 0.85rem; font-weight: 700; color: #92400e; padding: 6px 12px; border-left: 3px solid var(--amber-500); background-color: var(--amber-50);">
+                Note to Coordinator: Please complete documentations and admission process for the students listed below.
+            </div>
+        `;
+        
+        const tableHeader = `
+            <div class="directory-header" style="margin-bottom: 12px;">
+                <div class="results-meta" style="font-size: 1.1rem; font-weight: 700; color: var(--slate-900);">
+                    <i class="fa-solid fa-graduation-cap" style="color: var(--primary); margin-right: 6px;"></i>Class: ${className} (${classStudents[0].medium} Medium)
+                </div>
+                <div class="results-meta no-print">
+                    Total Pending: <strong>${classStudents.length}</strong>
+                </div>
+            </div>
+        `;
+        
+        let rowsHtml = '';
+        classStudents.forEach((student, index) => {
+            const sNo = index + 1;
+            const mobile = student.mobile_no || 'N/A';
+            const mother = student.mother_name || '-';
+            
+            // Render SR/Scholar No as clickable detail if available
+            const srDisplay = student.sr_no ? `
+                <a href="#" onclick="viewStudentDetails('${student.sr_no}', true); return false;" class="sr-link">${student.sr_no}</a>
+            ` : '-';
+            
+            rowsHtml += `
+                <tr>
+                    <td style="text-align: center;"><strong>${sNo}</strong></td>
+                    <td style="text-align: center;">${srDisplay}</td>
+                    <td>${student.student_name}</td>
+                    <td>${student.father_name}</td>
+                    <td>${mother}</td>
+                    <td style="text-align: center;">${mobile}</td>
+                    <td style="text-align: center; color: var(--amber-500); font-weight: 700;">Pending Verification</td>
+                </tr>
+            `;
+        });
+        
+        const tableHtml = `
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px; text-align: center;">S.No</th>
+                            <th style="width: 120px; text-align: center;">Scholar No / SR</th>
+                            <th>Student Name</th>
+                            <th>Father Name</th>
+                            <th>Mother Name</th>
+                            <th style="width: 140px; text-align: center;">Mobile No</th>
+                            <th style="width: 160px; text-align: center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        const footerHtml = `
+            <div class="report-footer print-only" style="margin-top: 28px; margin-bottom: 8px;">
+                <div class="report-signature">
+                    <div class="signature-line"></div>
+                    <span>Coordinator Signature</span>
+                </div>
+                <div class="report-signature">
+                    <div class="signature-line"></div>
+                    <span>Principal Signature</span>
+                </div>
+            </div>
+        `;
+        
+        card.innerHTML = headerHtml + noteHtml + tableHeader + tableHtml + footerHtml;
+        container.appendChild(card);
+    });
 }

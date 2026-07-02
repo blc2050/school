@@ -33,13 +33,16 @@ try:
     xl = pd.ExcelFile(excel_path)
     main_df = xl.parse('MAIN')
     tc_df = xl.parse('tcreport01072026')
+    pending_df = xl.parse('pendigadmission')
     
     # Clean columns and handle NaN
     main_df.columns = main_df.columns.str.strip()
     tc_df.columns = tc_df.columns.str.strip()
+    pending_df.columns = pending_df.columns.str.strip()
     
     main_df = main_df.fillna("")
     tc_df = tc_df.fillna("")
+    pending_df = pending_df.fillna("")
     
     # Extract and format active students (MAIN)
     active_students = []
@@ -161,6 +164,39 @@ try:
     # Sort TC students by Student Name, Father Name
     tc_students.sort(key=lambda x: (x['student_name'].upper(), x['father_name'].upper()))
     
+    # Process Pending Admission Students (pendigadmission)
+    pending_students = []
+    for _, row in pending_df.iterrows():
+        student_name = str(row.get('Student Name', '')).strip()
+        if not student_name or student_name == "nan":
+            continue
+            
+        father_name = str(row.get('Father Name', '')).strip()
+        mother_name = str(row.get('Mother Name', '')).strip()
+        sr_no = clean_int_str(row.get('Scholar No.', ''))
+        class_name = str(row.get('Current Class', '')).strip()
+        medium = str(row.get('Med', '')).strip()
+        mobile_no = clean_int_str(row.get('Mobile No', ''))
+        
+        pending_rec = {
+            "sr_no": sr_no,
+            "student_name": student_name,
+            "father_name": father_name,
+            "mother_name": mother_name,
+            "class": class_name,
+            "medium": medium,
+            "mobile_no": mobile_no
+        }
+        
+        for k, v in list(pending_rec.items()):
+            if v == "nan" or v == "NaN":
+                pending_rec[k] = ""
+                
+        pending_students.append(pending_rec)
+        
+    # Sort pending students by Class, Student Name
+    pending_students.sort(key=lambda x: (x['class'].upper(), x['student_name'].upper()))
+    
     # Process Fee Data from duefeereport.xlsx
     due_fees = {}
     ignored_fee_count = 0
@@ -237,7 +273,8 @@ try:
         "mediums": mediums,
         "classes_tc": classes_tc,
         "class_by_medium": class_by_medium,
-        "due_fees": due_fees
+        "due_fees": due_fees,
+        "pending_students": pending_students
     }
     
     # Write to data.js
@@ -248,7 +285,7 @@ try:
         f.write(";\n")
         
     print(f"Data export successful. Saved to {js_output_path}.")
-    print(f"Exported {len(active_students)} active students, {len(tc_students)} TC students, and {len(due_fees)} fee records.")
+    print(f"Exported {len(active_students)} active students, {len(tc_students)} TC students, {len(pending_students)} pending students, and {len(due_fees)} fee records.")
     
 except Exception as e:
     print("Error during data export:", e)
