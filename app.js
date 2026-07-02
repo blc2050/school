@@ -25,10 +25,6 @@ let pendingLevelFilter = 'all';
 let searchFocusedIndex = -1;
 let globalSearchResultsList = [];
 
-// Fee Search States
-let feeSearchFocusedIndex = -1;
-let feeSearchResultsList = [];
-
 // Logical sort order for classes
 const CLASS_SORT_ORDER = [
     "LKG EM", "UKG EM", "KG EM",
@@ -258,8 +254,6 @@ function switchTab(tabId) {
             pageSubtitle.innerText = 'Student Counts Summary';
         } else if (tabId === 'pending') {
             pageSubtitle.innerText = 'Pending Admissions';
-        } else {
-            pageSubtitle.innerText = 'Student Fee Due Report';
         }
     }
     
@@ -273,24 +267,6 @@ function switchTab(tabId) {
     if (globalInput) globalInput.value = '';
     globalSearchResultsList = [];
     searchFocusedIndex = -1;
-    
-    const feeResults = document.getElementById('fee-search-results');
-    const feeInput = document.getElementById('fee-student-search');
-    if (feeResults) {
-        feeResults.style.display = 'none';
-        feeResults.innerHTML = '';
-    }
-    if (feeInput) feeInput.value = '';
-    feeSearchResultsList = [];
-    feeSearchFocusedIndex = -1;
-    
-    // Reset fee search state only when switching tabs
-    if (tabId === 'fees') {
-        const feeReportCard = document.getElementById('fee-report-card');
-        const feePlaceholder = document.getElementById('fee-placeholder-card');
-        if (feeReportCard) feeReportCard.style.display = 'none';
-        if (feePlaceholder) feePlaceholder.style.display = 'block';
-    }
     
     // Reset pending filters state only when switching tabs
     if (tabId === 'pending') {
@@ -576,258 +552,6 @@ function updateSearchFocus(items) {
     }
 }
 
-// Global Student Fee Search Handler (searches exclusively in dueFees)
-function handleFeeSearch() {
-    const input = document.getElementById('fee-student-search');
-    const resultsDiv = document.getElementById('fee-search-results');
-    if (!input || !resultsDiv) return;
-    
-    const query = input.value.toLowerCase().trim();
-    if (!query) {
-        resultsDiv.style.display = 'none';
-        resultsDiv.innerHTML = '';
-        feeSearchResultsList = [];
-        feeSearchFocusedIndex = -1;
-        return;
-    }
-    
-    const feeRecords = Object.values(dueFees);
-    
-    // Filter matching fee records (searches Name, Father, SR, and Mobile number)
-    const matchedFees = feeRecords.filter(f => 
-        f.student_name.toLowerCase().includes(query) ||
-        f.father_name.toLowerCase().includes(query) ||
-        f.scholar_no.toLowerCase().includes(query) ||
-        (f.mobile_no && f.mobile_no.toLowerCase().includes(query))
-    );
-    
-    feeSearchResultsList = rankSearchResults(matchedFees, query).slice(0, 8);
-    feeSearchFocusedIndex = -1;
-    
-    if (feeSearchResultsList.length === 0) {
-        resultsDiv.style.display = 'block';
-        resultsDiv.innerHTML = `
-            <div style="padding: 14px; text-align: center; color: var(--slate-700); font-size: 0.85rem;">
-                <i class="fa-regular fa-face-frown" style="font-size: 1.2rem; display: block; margin-bottom: 6px; color: var(--slate-300);"></i>
-                No matching student fee records found.
-            </div>
-        `;
-        return;
-    }
-    
-    resultsDiv.style.display = 'block';
-    resultsDiv.innerHTML = '';
-    
-    feeSearchResultsList.forEach((feeData, index) => {
-        const item = document.createElement('div');
-        item.classList.add('search-result-item');
-        item.setAttribute('data-index', index);
-        
-        item.innerHTML = `
-            <div class="result-details">
-                <span class="result-name">${feeData.student_name}</span>
-                <span class="result-meta">SR: ${feeData.scholar_no} | Father: ${feeData.father_name}</span>
-            </div>
-            <div class="result-status">
-                <span class="result-class-tag">${feeData.class_name}</span>
-                <span class="status-indicator-badge" style="background-color: var(--primary-light); color: var(--primary-dark);">SELECT</span>
-            </div>
-        `;
-        
-        item.onclick = () => {
-            selectFeeSearchResult(feeData);
-        };
-        
-        resultsDiv.appendChild(item);
-    });
-}
-
-// Select student item from fee search results
-function selectFeeSearchResult(feeData) {
-    const input = document.getElementById('fee-student-search');
-    const resultsDiv = document.getElementById('fee-search-results');
-    if (input) input.value = '';
-    if (resultsDiv) {
-        resultsDiv.style.display = 'none';
-        resultsDiv.innerHTML = '';
-    }
-    
-    renderStudentFeeDue(feeData);
-}
-
-// Keyboard navigation in Fee Search Dropdown
-function handleFeeSearchKey(event) {
-    const resultsDiv = document.getElementById('fee-search-results');
-    if (!resultsDiv || resultsDiv.style.display === 'none') return;
-    
-    const items = resultsDiv.getElementsByClassName('search-result-item');
-    if (items.length === 0) return;
-    
-    if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        feeSearchFocusedIndex++;
-        if (feeSearchFocusedIndex >= items.length) feeSearchFocusedIndex = 0;
-        updateFeeSearchFocus(items);
-    } else if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        feeSearchFocusedIndex--;
-        if (feeSearchFocusedIndex < 0) feeSearchFocusedIndex = items.length - 1;
-        updateFeeSearchFocus(items);
-    } else if (event.key === 'Enter') {
-        event.preventDefault();
-        if (feeSearchFocusedIndex >= 0 && feeSearchFocusedIndex < items.length) {
-            items[feeSearchFocusedIndex].click();
-        }
-    } else if (event.key === 'Escape') {
-        event.preventDefault();
-        const input = document.getElementById('fee-student-search');
-        if (input) input.value = '';
-        resultsDiv.style.display = 'none';
-        resultsDiv.innerHTML = '';
-    }
-}
-
-// Apply visual highlight class for focused fee search item
-function updateFeeSearchFocus(items) {
-    for (let i = 0; i < items.length; i++) {
-        items[i].classList.remove('focused');
-    }
-    if (feeSearchFocusedIndex >= 0 && feeSearchFocusedIndex < items.length) {
-        items[feeSearchFocusedIndex].classList.add('focused');
-        items[feeSearchFocusedIndex].scrollIntoView({ block: 'nearest' });
-    }
-}
-
-// Render dynamic student fee dues statement
-function renderStudentFeeDue(feeRecord) {
-    const tbody = document.getElementById('fee-report-tbody');
-    if (!tbody) return;
-    
-    // Bind meta student details
-    document.getElementById('fee-stud-name').innerText = feeRecord.student_name;
-    document.getElementById('fee-stud-sr').innerText = feeRecord.scholar_no;
-    document.getElementById('fee-stud-father').innerText = feeRecord.father_name;
-    document.getElementById('fee-stud-class').innerText = feeRecord.class_name;
-    document.getElementById('fee-stud-mobile').innerText = feeRecord.mobile_no || 'N/A';
-    
-    tbody.innerHTML = '';
-    
-    // Map Excel values into Installment rows
-    const rows = [
-        {
-            label: "School Fee",
-            ins1: feeRecord.school_fee_1,
-            ins2: feeRecord.school_fee_2,
-            ins3: feeRecord.school_fee_3,
-            prev: 0,
-            total: feeRecord.school_fee_1 + feeRecord.school_fee_2 + feeRecord.school_fee_3
-        },
-        {
-            label: "Bus & Transport Fee",
-            ins1: feeRecord.bus_fee_1,
-            ins2: feeRecord.bus_fee_2,
-            ins3: feeRecord.bus_fee_3,
-            prev: 0,
-            total: feeRecord.bus_fee_1 + feeRecord.bus_fee_2 + feeRecord.bus_fee_3
-        },
-        {
-            label: "Admission Fee",
-            ins1: feeRecord.admission_fee_1,
-            ins2: 0,
-            ins3: 0,
-            prev: 0,
-            total: feeRecord.admission_fee_1
-        },
-        {
-            label: "Hostel Fee",
-            ins1: feeRecord.hostel_fee_1,
-            ins2: feeRecord.hostel_fee_2,
-            ins3: 0,
-            prev: 0,
-            total: feeRecord.hostel_fee_1 + feeRecord.hostel_fee_2
-        },
-        {
-            label: "Previous Year Balance",
-            ins1: 0,
-            ins2: 0,
-            ins3: 0,
-            prev: feeRecord.prev_due,
-            total: feeRecord.prev_due
-        },
-        {
-            label: "Late Fee",
-            ins1: 0,
-            ins2: 0,
-            ins3: 0,
-            prev: 0,
-            total: feeRecord.late_fee
-        },
-        {
-            label: "Advance Adjustable (Prepaid)",
-            ins1: 0,
-            ins2: 0,
-            ins3: 0,
-            prev: 0,
-            total: -feeRecord.advance_adjustable // Render as negative balance deduction
-        }
-    ];
-    
-    rows.forEach(r => {
-        // Hide row if all values are zero
-        if (r.total === 0 && r.ins1 === 0 && r.ins2 === 0 && r.ins3 === 0 && r.prev === 0) return;
-        
-        const tr = document.createElement('tr');
-        
-        const val1 = r.ins1 ? `₹${r.ins1.toLocaleString()}` : '-';
-        const val2 = r.ins2 ? `₹${r.ins2.toLocaleString()}` : '-';
-        const val3 = r.ins3 ? `₹${r.ins3.toLocaleString()}` : '-';
-        const valP = r.prev ? `₹${r.prev.toLocaleString()}` : '-';
-        
-        let totalStr = `₹${r.total.toLocaleString()}`;
-        if (r.total < 0) {
-            totalStr = `-₹${Math.abs(r.total).toLocaleString()}`;
-        }
-        
-        tr.innerHTML = `
-            <td style="font-weight: 600; text-align: left;">${r.label}</td>
-            <td style="text-align: center;">${val1}</td>
-            <td style="text-align: center;">${val2}</td>
-            <td style="text-align: center;">${val3}</td>
-            <td style="text-align: center;">${valP}</td>
-            <td style="text-align: center; font-weight: 700; background-color: var(--slate-50);">${totalStr}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-    
-    // Render highlighted Grand Total Row
-    const totalTr = document.createElement('tr');
-    totalTr.style.borderTop = '2px solid var(--slate-900)';
-    totalTr.style.borderBottom = '2px solid var(--slate-900)';
-    totalTr.style.backgroundColor = 'var(--slate-100)';
-    totalTr.style.fontWeight = '800';
-    
-    const tot1 = feeRecord.school_fee_1 + feeRecord.bus_fee_1 + feeRecord.admission_fee_1 + feeRecord.hostel_fee_1;
-    const tot2 = feeRecord.school_fee_2 + feeRecord.bus_fee_2 + feeRecord.hostel_fee_2;
-    const tot3 = feeRecord.school_fee_3 + feeRecord.bus_fee_3;
-    const totP = feeRecord.prev_due;
-    
-    const valTot1 = tot1 ? `₹${tot1.toLocaleString()}` : '-';
-    const valTot2 = tot2 ? `₹${tot2.toLocaleString()}` : '-';
-    const valTot3 = tot3 ? `₹${tot3.toLocaleString()}` : '-';
-    const valTotP = totP ? `₹${totP.toLocaleString()}` : '-';
-    
-    totalTr.innerHTML = `
-        <td style="font-weight: 800; text-align: left;">TOTAL YEARLY DUE</td>
-        <td style="text-align: center;">${valTot1}</td>
-        <td style="text-align: center;">${valTot2}</td>
-        <td style="text-align: center;">${valTot3}</td>
-        <td style="text-align: center;">${valTotP}</td>
-        <td style="text-align: center; font-weight: 900; background-color: var(--slate-200); color: var(--primary-dark); font-size: 0.95rem;">₹${feeRecord.total.toLocaleString()}</td>
-    `;
-    
-    tbody.appendChild(totalTr);
-    
-    // Toggle containers
     document.getElementById('fee-report-card').style.display = 'block';
     document.getElementById('fee-placeholder-card').style.display = 'none';
 }
@@ -838,7 +562,6 @@ function updateUIState() {
     const tabDir = document.getElementById('tab-directory');
     const tabTc = document.getElementById('tab-tc');
     const tabCounts = document.getElementById('tab-counts');
-    const tabFees = document.getElementById('tab-fees');
     const tabPending = document.getElementById('tab-pending');
     
     const filterPanel = document.getElementById('filter-panel-section');
@@ -854,19 +577,9 @@ function updateUIState() {
         
         if (tabDir) tabDir.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
-        if (tabFees) tabFees.style.display = 'none';
         if (tabPending) tabPending.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'block';
         switchCountsFormat(currentCountsFormat);
-    } else if (currentTab === 'fees') {
-        if (filterPanel) filterPanel.style.display = 'none';
-        if (placeholder) placeholder.style.display = 'none';
-        
-        if (tabDir) tabDir.style.display = 'none';
-        if (tabTc) tabTc.style.display = 'none';
-        if (tabCounts) tabCounts.style.display = 'none';
-        if (tabPending) tabPending.style.display = 'none';
-        if (tabFees) tabFees.style.display = 'block';
     } else if (currentTab === 'pending') {
         if (filterPanel) filterPanel.style.display = 'none';
         if (placeholder) placeholder.style.display = 'none';
@@ -874,7 +587,6 @@ function updateUIState() {
         if (tabDir) tabDir.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'none';
-        if (tabFees) tabFees.style.display = 'none';
         if (tabPending) tabPending.style.display = 'block';
         renderPendingTables();
     } else {
@@ -882,7 +594,6 @@ function updateUIState() {
         if (classFilterRow) classFilterRow.style.display = 'flex';
         
         if (tabCounts) tabCounts.style.display = 'none';
-        if (tabFees) tabFees.style.display = 'none';
         if (tabPending) tabPending.style.display = 'none';
         
         if (!selectedClass) {
