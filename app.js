@@ -552,9 +552,7 @@ function updateSearchFocus(items) {
     }
 }
 
-    document.getElementById('fee-report-card').style.display = 'block';
-    document.getElementById('fee-placeholder-card').style.display = 'none';
-}
+
 
 // Update UI State Contexts
 function updateUIState() {
