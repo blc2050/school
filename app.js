@@ -1280,11 +1280,16 @@ function renderPendingTables() {
             const sNo = index + 1;
             const mobile = student.mobile_no || 'N/A';
             const mother = student.mother_name || '-';
+            const displayStatus = student.status_remark || 'Pending Verification';
             
             // Render SR/Scholar No as clickable detail if available
             const srDisplay = student.sr_no ? `
                 <a href="#" onclick="viewStudentDetails('${student.sr_no}', true); return false;" class="sr-link">${student.sr_no}</a>
             ` : '-';
+            
+            // Build WhatsApp feedback text template prefilled for convenience
+            const whatsappText = `SSVM Pending Admission Update:\nStudent: ${student.student_name}\nSR No: ${student.sr_no || 'N/A'}\nClass: ${className}\nCurrent Status: ${displayStatus}\n\n[Write new status or documentation updates here]`;
+            const whatsappUrl = `https://wa.me/919413030806?text=${encodeURIComponent(whatsappText)}`;
             
             rowsHtml += `
                 <tr>
@@ -1294,7 +1299,12 @@ function renderPendingTables() {
                     <td>${student.father_name}</td>
                     <td>${mother}</td>
                     <td style="text-align: center;">${mobile}</td>
-                    <td style="text-align: center; color: var(--amber-500); font-weight: 700;">Pending Verification</td>
+                    <td style="text-align: center;">
+                        <span style="display: block; color: var(--amber-600); font-weight: 700; font-size: 0.85rem;">${displayStatus}</span>
+                        <a href="${whatsappUrl}" target="_blank" class="no-print" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #25d366; text-decoration: none; margin-top: 4px; font-weight: 600;">
+                            <i class="fa-brands fa-whatsapp"></i> Update Status
+                        </a>
+                    </td>
                 </tr>
             `;
         });

@@ -185,11 +185,12 @@ try:
             "mother_name": mother_name,
             "class": class_name,
             "medium": medium,
-            "mobile_no": mobile_no
+            "mobile_no": mobile_no,
+            "status_remark": str(row.get('Remarks', row.get('Remark', row.get('Status', str(row.get('Status Remark', '')))))).strip()
         }
         
         for k, v in list(pending_rec.items()):
-            if v == "nan" or v == "NaN":
+            if v == "nan" or v == "NaN" or v == "NaT":
                 pending_rec[k] = ""
                 
         pending_students.append(pending_rec)
