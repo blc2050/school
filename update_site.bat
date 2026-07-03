@@ -13,7 +13,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 echo.
 echo Step 2: Staging files on Git...
-git add data.js index.html style.css app.js
+git add data.js index.html style.css app.js convert_excel_to_js.py update_site.bat
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [ERROR] Git add failed. Make sure Git is installed and initialized.
@@ -24,8 +24,7 @@ echo Step 3: Committing updates...
 git commit -m "Auto-update student database and website from Excel"
 if %ERRORLEVEL% NEQ 0 (
     echo.
-    echo [NOTE] No changes detected in data or site files. Nothing to upload.
-    goto end
+    echo [NOTE] No new changes detected. Proceeding to push any unpushed local commits.
 )
 echo.
 echo Step 4: Uploading to GitHub Pages...
