@@ -1278,7 +1278,7 @@ window.STUDENTS_DATA = {
             "sr_no": "5302",
             "student_nic_id": "545984770",
             "medium": "English",
-            "class": "UKG EM",
+            "class": "LKG EM",
             "roll_no": "",
             "rbse_roll_no": "",
             "student_name": "ANUSHKA",
@@ -56142,7 +56142,8 @@ window.STUDENTS_DATA = {
             "mother_name": "SAMDA",
             "class": "11TH ARTS",
             "medium": "Hindi",
-            "mobile_no": "9588817373"
+            "mobile_no": "9588817373",
+            "status_remark": ""
         },
         {
             "sr_no": "2041001",
@@ -56151,7 +56152,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "11TH SCI",
             "medium": "Hindi",
-            "mobile_no": "9571925512"
+            "mobile_no": "9571925512",
+            "status_remark": ""
         },
         {
             "sr_no": "7040849",
@@ -56160,7 +56162,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "11TH SCI",
             "medium": "Hindi",
-            "mobile_no": "9509834219"
+            "mobile_no": "9509834219",
+            "status_remark": ""
         },
         {
             "sr_no": "24061220",
@@ -56169,7 +56172,8 @@ window.STUDENTS_DATA = {
             "mother_name": "BINDU",
             "class": "1ST",
             "medium": "Hindi",
-            "mobile_no": "7976176424"
+            "mobile_no": "7976176424",
+            "status_remark": ""
         },
         {
             "sr_no": "15050809",
@@ -56178,7 +56182,8 @@ window.STUDENTS_DATA = {
             "mother_name": "BARAJU DEVI",
             "class": "1ST",
             "medium": "Hindi",
-            "mobile_no": "8949128768"
+            "mobile_no": "8949128768",
+            "status_remark": ""
         },
         {
             "sr_no": "NURS29071112",
@@ -56187,7 +56192,8 @@ window.STUDENTS_DATA = {
             "mother_name": "SANTOSH",
             "class": "1ST",
             "medium": "Hindi",
-            "mobile_no": "6377550249"
+            "mobile_no": "6377550249",
+            "status_remark": ""
         },
         {
             "sr_no": "15050815",
@@ -56196,7 +56202,8 @@ window.STUDENTS_DATA = {
             "mother_name": "HIRO",
             "class": "1ST",
             "medium": "Hindi",
-            "mobile_no": "7020171617"
+            "mobile_no": "7020171617",
+            "status_remark": ""
         },
         {
             "sr_no": "15050812",
@@ -56205,7 +56212,8 @@ window.STUDENTS_DATA = {
             "mother_name": "MULI DEVI",
             "class": "1ST",
             "medium": "Hindi",
-            "mobile_no": "8854030806"
+            "mobile_no": "8854030806",
+            "status_remark": ""
         },
         {
             "sr_no": "15050810",
@@ -56214,7 +56222,8 @@ window.STUDENTS_DATA = {
             "mother_name": "SARITA",
             "class": "1ST",
             "medium": "Hindi",
-            "mobile_no": "9799030458"
+            "mobile_no": "9799030458",
+            "status_remark": ""
         },
         {
             "sr_no": "15050811",
@@ -56223,7 +56232,8 @@ window.STUDENTS_DATA = {
             "mother_name": "KHETU DEVI",
             "class": "1ST",
             "medium": "Hindi",
-            "mobile_no": "9970909502"
+            "mobile_no": "9970909502",
+            "status_remark": ""
         },
         {
             "sr_no": "15050813",
@@ -56232,7 +56242,8 @@ window.STUDENTS_DATA = {
             "mother_name": "LAHARKI",
             "class": "1ST",
             "medium": "Hindi",
-            "mobile_no": "7014558342"
+            "mobile_no": "7014558342",
+            "status_remark": ""
         },
         {
             "sr_no": "9041243",
@@ -56241,7 +56252,8 @@ window.STUDENTS_DATA = {
             "mother_name": "CHOLA KANWAR",
             "class": "1ST",
             "medium": "Hindi",
-            "mobile_no": "8668106911"
+            "mobile_no": "8668106911",
+            "status_remark": ""
         },
         {
             "sr_no": "8040652",
@@ -56250,7 +56262,8 @@ window.STUDENTS_DATA = {
             "mother_name": "PRAMILA CHOUDHARY",
             "class": "1ST EM",
             "medium": "English",
-            "mobile_no": "9660492007"
+            "mobile_no": "9660492007",
+            "status_remark": ""
         },
         {
             "sr_no": "29061118",
@@ -56259,7 +56272,8 @@ window.STUDENTS_DATA = {
             "mother_name": "MOOLI",
             "class": "1ST EM",
             "medium": "English",
-            "mobile_no": "8949863388"
+            "mobile_no": "8949863388",
+            "status_remark": ""
         },
         {
             "sr_no": "16050903",
@@ -56268,7 +56282,8 @@ window.STUDENTS_DATA = {
             "mother_name": "DEVI",
             "class": "1ST EM",
             "medium": "English",
-            "mobile_no": "9036621224"
+            "mobile_no": "9036621224",
+            "status_remark": ""
         },
         {
             "sr_no": "29061716",
@@ -56277,7 +56292,8 @@ window.STUDENTS_DATA = {
             "mother_name": "MUNNI DEV",
             "class": "1ST EM",
             "medium": "English",
-            "mobile_no": "9182322391"
+            "mobile_no": "9182322391",
+            "status_remark": ""
         },
         {
             "sr_no": "6041259",
@@ -56286,7 +56302,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "2ND",
             "medium": "Hindi",
-            "mobile_no": "9970978025"
+            "mobile_no": "9970978025",
+            "status_remark": ""
         },
         {
             "sr_no": "16050902",
@@ -56295,7 +56312,8 @@ window.STUDENTS_DATA = {
             "mother_name": "BHAGWATI",
             "class": "2ND EM",
             "medium": "English",
-            "mobile_no": "7665941169"
+            "mobile_no": "7665941169",
+            "status_remark": ""
         },
         {
             "sr_no": "15050902",
@@ -56304,7 +56322,8 @@ window.STUDENTS_DATA = {
             "mother_name": "KHUSHI",
             "class": "2ND EM",
             "medium": "English",
-            "mobile_no": "8432524760"
+            "mobile_no": "8432524760",
+            "status_remark": ""
         },
         {
             "sr_no": "15050903",
@@ -56313,7 +56332,8 @@ window.STUDENTS_DATA = {
             "mother_name": "SANGITA",
             "class": "2ND EM",
             "medium": "English",
-            "mobile_no": "8619592830"
+            "mobile_no": "8619592830",
+            "status_remark": ""
         },
         {
             "sr_no": "16050901",
@@ -56322,7 +56342,8 @@ window.STUDENTS_DATA = {
             "mother_name": "RAWAL",
             "class": "2ND EM",
             "medium": "English",
-            "mobile_no": "9928226544"
+            "mobile_no": "9928226544",
+            "status_remark": ""
         },
         {
             "sr_no": "15050808",
@@ -56331,7 +56352,8 @@ window.STUDENTS_DATA = {
             "mother_name": "GULAB KANWAR",
             "class": "3RD",
             "medium": "Hindi",
-            "mobile_no": "8769396441"
+            "mobile_no": "8769396441",
+            "status_remark": ""
         },
         {
             "sr_no": "28041130",
@@ -56340,7 +56362,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "3RD",
             "medium": "Hindi",
-            "mobile_no": "8003373867"
+            "mobile_no": "8003373867",
+            "status_remark": ""
         },
         {
             "sr_no": "29061055",
@@ -56349,7 +56372,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "3RD EM",
             "medium": "English",
-            "mobile_no": "9611371397"
+            "mobile_no": "9611371397",
+            "status_remark": ""
         },
         {
             "sr_no": "30061237",
@@ -56358,7 +56382,8 @@ window.STUDENTS_DATA = {
             "mother_name": "VIMLA",
             "class": "4TH",
             "medium": "Hindi",
-            "mobile_no": "7087209238"
+            "mobile_no": "7087209238",
+            "status_remark": ""
         },
         {
             "sr_no": "15050807",
@@ -56367,7 +56392,8 @@ window.STUDENTS_DATA = {
             "mother_name": "VIMLA",
             "class": "4TH",
             "medium": "Hindi",
-            "mobile_no": "9352839424"
+            "mobile_no": "9352839424",
+            "status_remark": ""
         },
         {
             "sr_no": "30061231",
@@ -56376,7 +56402,8 @@ window.STUDENTS_DATA = {
             "mother_name": "MONIKA DEVI",
             "class": "4TH",
             "medium": "Hindi",
-            "mobile_no": "7726983026"
+            "mobile_no": "7726983026",
+            "status_remark": ""
         },
         {
             "sr_no": "15050804",
@@ -56385,7 +56412,8 @@ window.STUDENTS_DATA = {
             "mother_name": "SANTOSH KANWAR",
             "class": "4TH",
             "medium": "Hindi",
-            "mobile_no": "9680727940"
+            "mobile_no": "9680727940",
+            "status_remark": ""
         },
         {
             "sr_no": "15050805",
@@ -56394,7 +56422,8 @@ window.STUDENTS_DATA = {
             "mother_name": "LEELA DEVI",
             "class": "4TH",
             "medium": "Hindi",
-            "mobile_no": "9799660809"
+            "mobile_no": "9799660809",
+            "status_remark": ""
         },
         {
             "sr_no": "15050803",
@@ -56403,7 +56432,8 @@ window.STUDENTS_DATA = {
             "mother_name": "GULAB",
             "class": "4TH",
             "medium": "Hindi",
-            "mobile_no": "9950416713"
+            "mobile_no": "9950416713",
+            "status_remark": ""
         },
         {
             "sr_no": "15050806",
@@ -56412,7 +56442,8 @@ window.STUDENTS_DATA = {
             "mother_name": "SHOBHA KANWAR",
             "class": "4TH",
             "medium": "Hindi",
-            "mobile_no": "8149060183"
+            "mobile_no": "8149060183",
+            "status_remark": ""
         },
         {
             "sr_no": "12041630",
@@ -56421,7 +56452,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "4TH",
             "medium": "Hindi",
-            "mobile_no": "9413660353"
+            "mobile_no": "9413660353",
+            "status_remark": ""
         },
         {
             "sr_no": "15050802",
@@ -56430,7 +56462,8 @@ window.STUDENTS_DATA = {
             "mother_name": "JHAMU",
             "class": "4TH",
             "medium": "Hindi",
-            "mobile_no": "9024030347"
+            "mobile_no": "9024030347",
+            "status_remark": ""
         },
         {
             "sr_no": "15050901",
@@ -56439,7 +56472,8 @@ window.STUDENTS_DATA = {
             "mother_name": "KAMLA DEVI",
             "class": "4TH EM",
             "medium": "English",
-            "mobile_no": "9602237710"
+            "mobile_no": "9602237710",
+            "status_remark": ""
         },
         {
             "sr_no": "30060924",
@@ -56448,7 +56482,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "5TH",
             "medium": "Hindi",
-            "mobile_no": "7073622690"
+            "mobile_no": "7073622690",
+            "status_remark": ""
         },
         {
             "sr_no": "30061235",
@@ -56457,7 +56492,8 @@ window.STUDENTS_DATA = {
             "mother_name": "VIMLA",
             "class": "5TH",
             "medium": "Hindi",
-            "mobile_no": "7087209238"
+            "mobile_no": "7087209238",
+            "status_remark": ""
         },
         {
             "sr_no": "15050801",
@@ -56466,7 +56502,8 @@ window.STUDENTS_DATA = {
             "mother_name": "VIMLA",
             "class": "5TH",
             "medium": "Hindi",
-            "mobile_no": "9352839424"
+            "mobile_no": "9352839424",
+            "status_remark": ""
         },
         {
             "sr_no": "14041824",
@@ -56475,7 +56512,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "6TH A",
             "medium": "Hindi",
-            "mobile_no": "8000985433"
+            "mobile_no": "8000985433",
+            "status_remark": ""
         },
         {
             "sr_no": "13041517",
@@ -56484,7 +56522,8 @@ window.STUDENTS_DATA = {
             "mother_name": "SANTU DEVI",
             "class": "6TH A",
             "medium": "Hindi",
-            "mobile_no": ""
+            "mobile_no": "",
+            "status_remark": ""
         },
         {
             "sr_no": "10050802",
@@ -56493,7 +56532,8 @@ window.STUDENTS_DATA = {
             "mother_name": "LILA KANWAR",
             "class": "6TH B",
             "medium": "Hindi",
-            "mobile_no": "9950161635"
+            "mobile_no": "9950161635",
+            "status_remark": ""
         },
         {
             "sr_no": "9051058",
@@ -56502,7 +56542,8 @@ window.STUDENTS_DATA = {
             "mother_name": "MANOHAR KANWAR",
             "class": "6TH B",
             "medium": "Hindi",
-            "mobile_no": "8769120251"
+            "mobile_no": "8769120251",
+            "status_remark": ""
         },
         {
             "sr_no": "30060918",
@@ -56511,7 +56552,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "7TH A",
             "medium": "Hindi",
-            "mobile_no": "7073622690"
+            "mobile_no": "7073622690",
+            "status_remark": ""
         },
         {
             "sr_no": "12051047",
@@ -56520,7 +56562,8 @@ window.STUDENTS_DATA = {
             "mother_name": "PAPIYO DEVI",
             "class": "7TH A",
             "medium": "Hindi",
-            "mobile_no": "7878388574"
+            "mobile_no": "7878388574",
+            "status_remark": ""
         },
         {
             "sr_no": "9040925",
@@ -56529,7 +56572,8 @@ window.STUDENTS_DATA = {
             "mother_name": "SHYAMA DEVI",
             "class": "7TH B",
             "medium": "Hindi",
-            "mobile_no": "9929729329"
+            "mobile_no": "9929729329",
+            "status_remark": ""
         },
         {
             "sr_no": "7041152",
@@ -56538,7 +56582,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "7TH B",
             "medium": "Hindi",
-            "mobile_no": "7742000503"
+            "mobile_no": "7742000503",
+            "status_remark": ""
         },
         {
             "sr_no": "12041307",
@@ -56547,7 +56592,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "7TH B",
             "medium": "Hindi",
-            "mobile_no": "6378029859"
+            "mobile_no": "6378029859",
+            "status_remark": ""
         },
         {
             "sr_no": "1070816",
@@ -56556,7 +56602,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "8TH B",
             "medium": "Hindi",
-            "mobile_no": "9660036098"
+            "mobile_no": "9660036098",
+            "status_remark": ""
         },
         {
             "sr_no": "5060822",
@@ -56565,7 +56612,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "9TH A EM",
             "medium": "English",
-            "mobile_no": "9636226835"
+            "mobile_no": "9636226835",
+            "status_remark": ""
         },
         {
             "sr_no": "13040936",
@@ -56574,7 +56622,8 @@ window.STUDENTS_DATA = {
             "mother_name": "DHIRU DEVI",
             "class": "9TH B",
             "medium": "Hindi",
-            "mobile_no": "7742301729"
+            "mobile_no": "7742301729",
+            "status_remark": ""
         },
         {
             "sr_no": "30061135",
@@ -56583,7 +56632,8 @@ window.STUDENTS_DATA = {
             "mother_name": "MAMTA KANWAR",
             "class": "KG EM",
             "medium": "English",
-            "mobile_no": "9610577051"
+            "mobile_no": "9610577051",
+            "status_remark": ""
         },
         {
             "sr_no": "15050909",
@@ -56592,7 +56642,8 @@ window.STUDENTS_DATA = {
             "mother_name": "GUDDI KANWAR",
             "class": "LKG EM",
             "medium": "English",
-            "mobile_no": "8005739672"
+            "mobile_no": "8005739672",
+            "status_remark": ""
         },
         {
             "sr_no": "16050905",
@@ -56601,7 +56652,8 @@ window.STUDENTS_DATA = {
             "mother_name": "BHANU",
             "class": "LKG EM",
             "medium": "English",
-            "mobile_no": "8854030806"
+            "mobile_no": "8854030806",
+            "status_remark": ""
         },
         {
             "sr_no": "15050910",
@@ -56610,7 +56662,8 @@ window.STUDENTS_DATA = {
             "mother_name": "RINKU",
             "class": "LKG EM",
             "medium": "English",
-            "mobile_no": "8854030806"
+            "mobile_no": "8854030806",
+            "status_remark": ""
         },
         {
             "sr_no": "29061717",
@@ -56619,7 +56672,8 @@ window.STUDENTS_DATA = {
             "mother_name": "MUNNI DEVI",
             "class": "LKG EM",
             "medium": "English",
-            "mobile_no": "9182322391"
+            "mobile_no": "9182322391",
+            "status_remark": ""
         },
         {
             "sr_no": "15050906",
@@ -56628,7 +56682,8 @@ window.STUDENTS_DATA = {
             "mother_name": "MAMTA",
             "class": "LKG EM",
             "medium": "English",
-            "mobile_no": "6301345684"
+            "mobile_no": "6301345684",
+            "status_remark": ""
         },
         {
             "sr_no": "15050908",
@@ -56637,7 +56692,8 @@ window.STUDENTS_DATA = {
             "mother_name": "RASAL KANWAR",
             "class": "LKG EM",
             "medium": "English",
-            "mobile_no": "9166532181"
+            "mobile_no": "9166532181",
+            "status_remark": ""
         },
         {
             "sr_no": "15050907",
@@ -56646,7 +56702,8 @@ window.STUDENTS_DATA = {
             "mother_name": "KAMLA DEVI",
             "class": "LKG EM",
             "medium": "English",
-            "mobile_no": "8854030806"
+            "mobile_no": "8854030806",
+            "status_remark": ""
         },
         {
             "sr_no": "15050814",
@@ -56655,7 +56712,8 @@ window.STUDENTS_DATA = {
             "mother_name": "SUNDAR",
             "class": "NURSERY",
             "medium": "Hindi",
-            "mobile_no": "8780413020"
+            "mobile_no": "8780413020",
+            "status_remark": ""
         },
         {
             "sr_no": "28040848",
@@ -56664,7 +56722,8 @@ window.STUDENTS_DATA = {
             "mother_name": "LEELA",
             "class": "NURSERY",
             "medium": "Hindi",
-            "mobile_no": "9602146750"
+            "mobile_no": "9602146750",
+            "status_remark": ""
         },
         {
             "sr_no": "24040518",
@@ -56673,7 +56732,8 @@ window.STUDENTS_DATA = {
             "mother_name": "",
             "class": "NURSERY",
             "medium": "Hindi",
-            "mobile_no": "9998602588"
+            "mobile_no": "9998602588",
+            "status_remark": ""
         },
         {
             "sr_no": "15050904",
@@ -56682,7 +56742,8 @@ window.STUDENTS_DATA = {
             "mother_name": "GUDDI DEVI",
             "class": "UKG EM",
             "medium": "English",
-            "mobile_no": "9602287594"
+            "mobile_no": "9602287594",
+            "status_remark": ""
         },
         {
             "sr_no": "15050905",
@@ -56691,7 +56752,8 @@ window.STUDENTS_DATA = {
             "mother_name": "SUKHA DEVI",
             "class": "UKG EM",
             "medium": "English",
-            "mobile_no": "8118899485"
+            "mobile_no": "8118899485",
+            "status_remark": ""
         },
         {
             "sr_no": "16050904",
@@ -56700,7 +56762,8 @@ window.STUDENTS_DATA = {
             "mother_name": "USHA KANWAR",
             "class": "UKG EM",
             "medium": "English",
-            "mobile_no": "9929483702"
+            "mobile_no": "9929483702",
+            "status_remark": ""
         }
     ]
 };
