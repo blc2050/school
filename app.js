@@ -1247,7 +1247,7 @@ function renderPendingTables() {
                     <div class="letterhead-text-block">
                         <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
                         <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
-                        <p class="school-contact">Mob : 9413030806, E-mail : ssvmorg@gmail.com</p>
+                        <p class="school-contact">Mob : 7976545260, E-mail : ssvmorg@gmail.com</p>
                     </div>
                 </div>
                 <div class="header-divider-row">
@@ -1289,7 +1289,7 @@ function renderPendingTables() {
             
             // Build WhatsApp feedback text template prefilled for convenience
             const whatsappText = `SSVM Pending Admission Update:\nStudent: ${student.student_name}\nSR No: ${student.sr_no || 'N/A'}\nClass: ${className}\nCurrent Status: ${displayStatus}\n\n[Write new status or documentation updates here]`;
-            const whatsappUrl = `https://wa.me/919413030806?text=${encodeURIComponent(whatsappText)}`;
+            const whatsappUrl = `https://wa.me/917976545260?text=${encodeURIComponent(whatsappText)}`;
             
             rowsHtml += `
                 <tr>
