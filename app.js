@@ -587,31 +587,33 @@ function updateUIState() {
         if (tabCounts) tabCounts.style.display = 'none';
         if (tabPending) tabPending.style.display = 'block';
         renderPendingTables();
+    } else if (currentTab === 'tc') {
+        if (filterPanel) filterPanel.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'none';
+        
+        if (tabDir) tabDir.style.display = 'none';
+        if (tabTc) tabTc.style.display = 'block';
+        if (tabCounts) tabCounts.style.display = 'none';
+        if (tabPending) tabPending.style.display = 'none';
+        renderTCTable();
     } else {
         if (filterPanel) filterPanel.style.display = 'block';
         if (classFilterRow) classFilterRow.style.display = 'flex';
         
         if (tabCounts) tabCounts.style.display = 'none';
         if (tabPending) tabPending.style.display = 'none';
+        if (tabTc) tabTc.style.display = 'none';
         
         if (!selectedClass) {
             if (placeholder) placeholder.style.display = 'block';
             if (tabDir) tabDir.style.display = 'none';
-            if (tabTc) tabTc.style.display = 'none';
             if (btnPrintList) btnPrintList.style.display = 'none';
         } else {
             if (placeholder) placeholder.style.display = 'none';
             if (btnPrintList) btnPrintList.style.display = 'inline-flex';
             
-            if (currentTab === 'directory') {
-                if (tabDir) tabDir.style.display = 'block';
-                if (tabTc) tabTc.style.display = 'none';
-                renderDirectoryTable();
-            } else {
-                if (tabDir) tabDir.style.display = 'none';
-                if (tabTc) tabTc.style.display = 'block';
-                renderTCTable();
-            }
+            if (tabDir) tabDir.style.display = 'block';
+            renderDirectoryTable();
         }
     }
 }
@@ -693,89 +695,153 @@ function renderDirectoryTable() {
     });
 }
 
-// Render TC Report Table
+// Render TC Report Table (Class-wise)
 function renderTCTable() {
-    const tbody = document.getElementById('tc-tbody');
-    const selectedGrade = document.getElementById('selected-tc-grade-name');
-    const highlightBadge = document.getElementById('tc-highlight-count');
+    const container = document.getElementById('tc-tables-container');
+    const totalBadge = document.getElementById('tc-total-badge');
     
-    if (!tbody) return;
+    if (!container) return;
     
-    const tcGrade = CLASS_TO_GRADE_MAP[selectedClass];
-    if (selectedGrade) {
-        const cleanGrade = tcGrade ? tcGrade.replace('\u00a0(2026-27)', '') : 'N/A';
-        selectedGrade.innerText = cleanGrade;
-    }
+    if (totalBadge) totalBadge.innerText = tcStudents.length.toLocaleString();
     
-    if (!tcGrade) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="9" class="table-empty-cell" style="text-align: center; padding: 40px; color: var(--slate-700);">
-                    No TC mappings found for class ${selectedClass}.
-                </td>
-            </tr>
+    if (tcStudents.length === 0) {
+        container.innerHTML = `
+            <div class="card" style="text-align: center; padding: 40px; color: var(--slate-700);">
+                <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: var(--slate-300); display: block;"></i>
+                No Transfer Certificate (TC) records found.
+            </div>
         `;
         return;
     }
     
-    const normalizedTcGrade = tcGrade.replace(/\s+/g, ' ').trim();
-    let list = tcStudents.filter(s => {
-        if (!s.class) return false;
-        const studentGrade = s.class.replace(/\s+/g, ' ').trim();
-        return studentGrade === normalizedTcGrade;
+    // Group TC students by class/grade
+    const groups = {};
+    tcStudents.forEach(s => {
+        const className = (s.class || 'Other').replace(/\s+/g, ' ').toUpperCase();
+        if (!groups[className]) groups[className] = [];
+        groups[className].push(s);
     });
     
-    tbody.innerHTML = '';
+    // Sort classes
+    const TC_GRADE_SORT_ORDER = [
+        'PP.3+ (2026-27)', 'PP.4+ (2026-27)', 'PP.5+ (2026-27)',
+        'FIRST (2026-27)', 'SECOND (2026-27)', 'THIRD (2026-27)', 'FOURTH (2026-27)', 'FIFTH (2026-27)',
+        'SIXTH (2026-27)', 'SEVENTH (2026-27)', 'EIGHT (2026-27)', 'NINTH (2026-27)', 'TENTH (2026-27)',
+        'ELEVENTH (2026-27)', 'TWELTH (2026-27)'
+    ];
     
-    const highlightedCount = list.filter(s => s.is_highlighted).length;
-    if (highlightBadge) {
-        if (highlightedCount > 0) {
-            highlightBadge.innerText = `${highlightedCount} Updated`;
-            highlightBadge.style.display = 'inline-flex';
-        } else {
-            highlightBadge.style.display = 'none';
-        }
-    }
+    const sortedClasses = Object.keys(groups).sort((a, b) => {
+        const idxA = TC_GRADE_SORT_ORDER.indexOf(a);
+        const idxB = TC_GRADE_SORT_ORDER.indexOf(b);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.localeCompare(b);
+    });
     
-    if (list.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="9" class="table-empty-cell" style="text-align: center; padding: 40px; color: var(--slate-700);">
-                    No TC records found.
-                </td>
-            </tr>
-        `;
-        return;
-    }
+    container.innerHTML = '';
     
-    list.forEach((student, index) => {
-        const tr = document.createElement('tr');
-        if (student.is_highlighted) {
-            tr.classList.add('row-highlighted');
-            tr.title = "Record updated on 30-06-2026";
-        }
+    sortedClasses.forEach(className => {
+        const classStudents = groups[className];
+        classStudents.sort((a, b) => a.student_name.localeCompare(b.student_name));
         
-        const sNo = index + 1;
-        const dob = student.dob || '-';
-        const exitType = student.exit_type || 'T.C. Issued';
-        const reason = student.exit_type_reason || 'Left School';
-        const exitDate = student.exit_date || '-';
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.style.marginBottom = '28px';
         
-        // Wrap SR No in clickable details link
-        tr.innerHTML = `
-            <td data-label="S.No"><strong>${sNo}</strong></td>
-            <td data-label="SR No">
-                <a href="#" onclick="viewStudentDetails('${student.sr_no}', false); return false;" class="sr-link">${student.sr_no}</a>
-            </td>
-            <td data-label="Student NIC ID">${student.student_nic_id || '-'}</td>
-            <td data-label="Student Name">${student.student_name}</td>
-            <td data-label="Father Name">${student.father_name}</td>
-            <td data-label="DOB">${dob}</td>
-            <td data-label="Exit Type">${exitType}</td>
-            <td data-label="Exit Reason">${reason}</td>
-            <td data-label="Exit Date">${exitDate}</td>
+        // Print letterhead logo and title
+        const headerHtml = `
+            <div class="school-official-header print-only">
+                <div class="letterhead-brand-row">
+                    <img src="SSVM%20Hindi%20Logo%20500x..jpg" alt="SSVM Logo" class="letterhead-logo-img">
+                    <div class="letterhead-text-block">
+                        <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
+                        <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
+                        <p class="school-contact">Mob : 7976545260, E-mail : ssvmorg@gmail.com</p>
+                    </div>
+                </div>
+                <div class="header-divider-row">
+                    <span>Session : 2026-27</span>
+                    <span class="report-tag">Transfer Certificate (TC) List</span>
+                </div>
+            </div>
         `;
-        tbody.appendChild(tr);
+        
+        // Header for TC Group
+        const tableHeader = `
+            <div class="directory-header" style="margin-bottom: 12px;">
+                <div class="results-meta" style="font-size: 1.1rem; font-weight: 700; color: var(--slate-900);">
+                    <i class="fa-solid fa-file-invoice" style="color: var(--primary); margin-right: 6px;"></i>Class/Grade: ${className}
+                </div>
+                <div class="results-meta no-print">
+                    Total TCs: <strong>${classStudents.length}</strong>
+                </div>
+            </div>
+        `;
+        
+        let rowsHtml = '';
+        classStudents.forEach((student, index) => {
+            const sNo = index + 1;
+            const dob = student.dob || '-';
+            const exitType = student.exit_type || 'T.C. Issued';
+            const reason = student.exit_type_reason || 'Left School';
+            const exitDate = student.exit_date || '-';
+            
+            rowsHtml += `
+                <tr class="${student.is_highlighted ? 'row-highlighted' : ''}">
+                    <td style="text-align: center;"><strong>${sNo}</strong></td>
+                    <td style="text-align: center;">
+                        <a href="#" onclick="viewStudentDetails('${student.sr_no}', false); return false;" class="sr-link">${student.sr_no}</a>
+                    </td>
+                    <td>${student.student_nic_id || '-'}</td>
+                    <td>${student.student_name}</td>
+                    <td>${student.father_name}</td>
+                    <td style="text-align: center;">${dob}</td>
+                    <td>${exitType}</td>
+                    <td>${reason}</td>
+                    <td style="text-align: center;">${exitDate}</td>
+                </tr>
+            `;
+        });
+        
+        const tableHtml = `
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px; text-align: center;">S.No</th>
+                            <th style="width: 100px; text-align: center;">SR No</th>
+                            <th>Student NIC ID</th>
+                            <th>Student Name</th>
+                            <th>Father Name</th>
+                            <th style="text-align: center;">DOB</th>
+                            <th>Exit Type</th>
+                            <th>Reason for Exit</th>
+                            <th style="text-align: center;">Exit Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        const footerHtml = `
+            <div class="report-footer print-only">
+                <div class="report-signature">
+                    <div class="signature-line"></div>
+                    <span>Class Teacher Signature</span>
+                </div>
+                <div class="report-signature">
+                    <div class="signature-line"></div>
+                    <span>Principal Signature</span>
+                </div>
+            </div>
+        `;
+        
+        card.innerHTML = headerHtml + tableHeader + tableHtml + footerHtml;
+        container.appendChild(card);
     });
 }
 

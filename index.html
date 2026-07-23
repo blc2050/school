@@ -301,63 +301,13 @@
 
             <!-- Tab Content 2: TC Report -->
             <section id="tab-tc" class="tab-content">
-                <div class="directory-container card">
-                    <!-- Official Header block for printing TC report -->
-                    <div class="school-official-header print-only">
-                        <div class="letterhead-brand-row">
-                            <img src="SSVM%20Hindi%20Logo%20500x..jpg" alt="SSVM Logo" class="letterhead-logo-img">
-                            <div class="letterhead-text-block">
-                                <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
-                                <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
-                                <p class="school-contact">Mob : 7976545260, E-mail : ssvmorg@gmail.com</p>
-                            </div>
-                        </div>
-                        <div class="header-divider-row">
-                            <span>Session : 2026-27</span>
-                            <span class="report-tag">स्थानांतरण प्रमाण पत्र (TC) रिपोर्ट</span>
-                        </div>
+                <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 1.15rem; font-weight: 700; color: var(--slate-800);">
+                        Total TC Issued: <strong id="tc-total-badge" style="color: var(--primary-dark);">0</strong> students
                     </div>
-
-                    <div class="directory-header no-print">
-                        <div class="results-meta">
-                            Transfer Certificate (TC) records for Grade: <span id="selected-tc-grade-name"></span>
-                        </div>
-                        <div class="view-options">
-                            <span class="badge badge-amber" id="tc-highlight-count" style="display: none;">0 Updated</span>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="data-table" id="table-tc">
-                            <thead>
-                                <tr>
-                                    <th>S.No</th>
-                                    <th>SR No</th>
-                                    <th>Student NIC ID</th>
-                                    <th>Student Name</th>
-                                    <th>Father Name</th>
-                                    <th>DOB</th>
-                                    <th>Exit Type</th>
-                                    <th>Reason for Exit</th>
-                                    <th>Exit Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tc-tbody">
-                                <!-- Dynamic rows -->
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="report-footer print-only">
-                        <div class="report-signature">
-                            <div class="signature-line"></div>
-                            <span>Class Teacher Signature</span>
-                        </div>
-                        <div class="report-signature">
-                            <div class="signature-line"></div>
-                            <span>Principal Signature</span>
-                        </div>
-                    </div>
+                </div>
+                <div id="tc-tables-container">
+                    <!-- Dynamic class-wise cards will be generated here -->
                 </div>
             </section>
 
