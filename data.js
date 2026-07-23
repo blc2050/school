@@ -208,7 +208,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-06-30",
             "rte": "No",
             "mobile_no": "7087209238",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "4397",
@@ -5148,7 +5148,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-06-30",
             "rte": "No",
             "mobile_no": "7726983026",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "4797",
@@ -9176,7 +9176,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-06-30",
             "rte": "No",
             "mobile_no": "9928800610",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "5161",
@@ -12615,7 +12615,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-06-30",
             "rte": "No",
             "mobile_no": "8619592830",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "4116",
@@ -23540,7 +23540,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-06-30",
             "rte": "No",
             "mobile_no": "9928800610",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "3411",
@@ -27606,7 +27606,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-06-30",
             "rte": "No",
             "mobile_no": "9928800610",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "4831",
@@ -28841,7 +28841,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-06-30",
             "rte": "No",
             "mobile_no": "9500047023",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "3720",
@@ -29335,7 +29335,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-06-30",
             "rte": "No",
             "mobile_no": "9950161635",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "5275",
@@ -29620,7 +29620,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-06-30",
             "rte": "No",
             "mobile_no": "7087209238",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "5457",
@@ -30227,7 +30227,7 @@ window.STUDENTS_DATA = {
             "exit_type": "टी.सी.",
             "exit_type_reason": "अन्यत्र अध्ययन के कारण",
             "exit_date": "30-06-2026",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "4435",
@@ -31187,7 +31187,7 @@ window.STUDENTS_DATA = {
             "exit_type": "टी.सी.",
             "exit_type_reason": "अन्यत्र अध्ययन के कारण",
             "exit_date": "30-06-2026",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "5255",

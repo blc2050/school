@@ -664,7 +664,7 @@ function renderDirectoryTable() {
         const tr = document.createElement('tr');
         if (student.is_highlighted) {
             tr.classList.add('row-highlighted');
-            tr.title = "Record updated on 30-06-2026";
+            tr.title = "Record updated on 23-07-2026";
         }
         
         const sNo = index + 1;
@@ -1126,7 +1126,7 @@ function viewStudentDetails(srNo, isActive = true) {
                 ${student.is_highlighted ? `
                 <div class="detail-item detail-span-full" style="background-color: var(--amber-50); border: 1px solid var(--amber-100); border-radius: var(--radius-sm); padding: 8px 12px; margin-top: 8px;">
                     <span class="detail-label" style="color: #b45309; font-weight: 700;">Update Log</span>
-                    <span class="detail-val" style="color: #92400e; font-size: 0.85rem;"><i class="fa-solid fa-clock-rotate-left"></i> Record was updated in the database on 30-06-2026.</span>
+                    <span class="detail-val" style="color: #92400e; font-size: 0.85rem;"><i class="fa-solid fa-clock-rotate-left"></i> Record was updated in the database on 23-07-2026.</span>
                 </div>` : ''}
             </div>
         `;
@@ -1188,7 +1188,7 @@ function viewStudentDetails(srNo, isActive = true) {
                 ${student.is_highlighted ? `
                 <div class="detail-item detail-span-full" style="background-color: var(--amber-50); border: 1px solid var(--amber-100); border-radius: var(--radius-sm); padding: 8px 12px;">
                     <span class="detail-label" style="color: #b45309; font-weight: 700;">Update Log</span>
-                    <span class="detail-val" style="color: #92400e; font-size: 0.85rem;"><i class="fa-solid fa-clock-rotate-left"></i> Record was updated in the database on 30-06-2026.</span>
+                    <span class="detail-val" style="color: #92400e; font-size: 0.85rem;"><i class="fa-solid fa-clock-rotate-left"></i> Record was updated in the database on 23-07-2026.</span>
                 </div>` : ''}
             </div>
         `;

@@ -87,11 +87,11 @@ try:
         is_highlighted = False
         if isinstance(adm_date, pd.Timestamp):
             adm_date_str = adm_date.strftime('%d-%m-%Y')
-            if adm_date.strftime('%Y-%m-%d') == '2026-06-30' or adm_date.strftime('%d-%m-%Y') == '30-06-2026':
+            if adm_date.strftime('%Y-%m-%d') == '2026-07-23' or adm_date.strftime('%d-%m-%Y') == '23-07-2026':
                 is_highlighted = True
         else:
             adm_date_str = str(adm_date).split(" ")[0] if adm_date else ""
-            if "2026-06-30" in adm_date_str or "30-06-2026" in adm_date_str:
+            if "2026-07-23" in adm_date_str or "23-07-2026" in adm_date_str:
                 is_highlighted = True
         
         # Clean numeric fields to prevent decimals
@@ -152,11 +152,11 @@ try:
         is_highlighted = False
         if isinstance(exit_date, pd.Timestamp):
             exit_date_str = exit_date.strftime('%d-%m-%Y')
-            if exit_date.strftime('%Y-%m-%d') == '2026-06-30' or exit_date.strftime('%d-%m-%Y') == '30-06-2026':
+            if exit_date.strftime('%Y-%m-%d') == '2026-07-23' or exit_date.strftime('%d-%m-%Y') == '23-07-2026':
                 is_highlighted = True
         else:
             exit_date_str = str(exit_date).split(" ")[0] if exit_date else ""
-            if "2026-06-30" in exit_date_str or "30-06-2026" in exit_date_str:
+            if "2026-07-23" in exit_date_str or "23-07-2026" in exit_date_str:
                 is_highlighted = True
                 
         tc_sr = clean_int_str(get_case_insensitive(row, 'SR NO'))
