@@ -2,7 +2,7 @@ import pandas as pd
 import json
 import os
 
-excel_path = r"Roll No List.xlsx"
+excel_path = r"RollList.xlsx" if os.path.exists("RollList.xlsx") else r"Roll No List.xlsx"
 fee_excel_path = r"duefeereport.xlsx"
 js_output_path = r"data.js"
 
@@ -25,16 +25,36 @@ def parse_fee_val(val):
     except ValueError:
         return 0
 
+def get_case_insensitive(row, key, default=""):
+    for k in row.index:
+        if str(k).strip().lower() == key.lower():
+            return row[k]
+    return default
+
 try:
     if not os.path.exists(excel_path):
         print(f"Error: Excel file '{excel_path}' not found in the current directory.")
         exit(1)
         
     xl = pd.ExcelFile(excel_path)
-    main_df = xl.parse('MAIN')
-    tc_df = xl.parse('tcreport01072026')
-    pending_df = xl.parse('pendigadmission')
     
+    # Dynamically find sheet names
+    main_sheet = 'Active Students 2026-27' if 'Active Students 2026-27' in xl.sheet_names else 'MAIN'
+    tc_sheet = 'TC Issued' if 'TC Issued' in xl.sheet_names else ('tcreport01072026' if 'tcreport01072026' in xl.sheet_names else xl.sheet_names[1])
+    pending_sheet = 'Temp Admission In ERP' if 'Temp Admission In ERP' in xl.sheet_names else ('pendigadmission' if 'pendigadmission' in xl.sheet_names else xl.sheet_names[2])
+    
+    print(f"Loading sheets: Active='{main_sheet}', TC='{tc_sheet}', Pending='{pending_sheet}'")
+    
+    main_df = xl.parse(main_sheet)
+    tc_df = xl.parse(tc_sheet)
+    
+    # Check for title row in pending sheet
+    pending_test_df = xl.parse(pending_sheet)
+    if pending_test_df.columns.shape[0] > 0 and any('TEMPORARY' in str(col).upper() or 'LIST' in str(col).upper() for col in pending_test_df.columns):
+        pending_df = xl.parse(pending_sheet, header=1)
+    else:
+        pending_df = pending_test_df
+        
     # Clean columns and handle NaN
     main_df.columns = main_df.columns.str.strip()
     tc_df.columns = tc_df.columns.str.strip()
@@ -44,26 +64,26 @@ try:
     tc_df = tc_df.fillna("")
     pending_df = pending_df.fillna("")
     
-    # Extract and format active students (MAIN)
+    # Extract and format active students (MAIN / Active Students)
     active_students = []
     active_by_sr = {}
     
     for _, row in main_df.iterrows():
-        student_name = str(row.get('STUDENT NAME', '')).strip()
+        student_name = str(get_case_insensitive(row, 'STUDENT NAME')).strip()
         if not student_name or student_name == "nan":
             continue
             
-        father_name = str(row.get('FATHER NAME', '')).strip()
-        mother_name = str(row.get('MOTHER NAME', '')).strip()
+        father_name = str(get_case_insensitive(row, 'FATHER NAME')).strip()
+        mother_name = str(get_case_insensitive(row, 'MOTHER NAME')).strip()
         
         # Handle dates
-        dob = row.get('DOB', '')
+        dob = get_case_insensitive(row, 'DOB')
         if isinstance(dob, pd.Timestamp):
             dob_str = dob.strftime('%d-%m-%Y')
         else:
             dob_str = str(dob).split(" ")[0] if dob else ""
             
-        adm_date = row.get('Date of Admission', '')
+        adm_date = get_case_insensitive(row, 'Date of Admission')
         is_highlighted = False
         if isinstance(adm_date, pd.Timestamp):
             adm_date_str = adm_date.strftime('%d-%m-%Y')
@@ -75,28 +95,28 @@ try:
                 is_highlighted = True
         
         # Clean numeric fields to prevent decimals
-        sr_no = clean_int_str(row.get('SR No.', ''))
-        roll_no = clean_int_str(row.get('ROLL NO', ''))
-        rbse_roll = clean_int_str(row.get('RBSE Roll No', ''))
-        student_nic = clean_int_str(row.get('Student NIC ID', ''))
-        mobile_no = clean_int_str(row.get('ERP Mobile No', ''))
+        sr_no = clean_int_str(get_case_insensitive(row, 'SR No.'))
+        roll_no = clean_int_str(get_case_insensitive(row, 'ROLL NO'))
+        rbse_roll = clean_int_str(get_case_insensitive(row, 'RBSE Roll No'))
+        student_nic = clean_int_str(get_case_insensitive(row, 'Student NIC ID'))
+        mobile_no = clean_int_str(get_case_insensitive(row, 'ERP Mobile No'))
         
         student_rec = {
             "sr_no": sr_no,
             "student_nic_id": student_nic,
-            "medium": str(row.get('Medium', '')).strip(),
-            "class": str(row.get('Class', '')).strip(),
+            "medium": str(get_case_insensitive(row, 'Medium')).strip(),
+            "class": str(get_case_insensitive(row, 'Class')).strip(),
             "roll_no": roll_no,
             "rbse_roll_no": rbse_roll,
             "student_name": student_name,
             "father_name": father_name,
             "mother_name": mother_name,
             "dob": dob_str,
-            "gender": str(row.get('Gender', '')).strip(),
-            "social_category": str(row.get('Social Category', '')).strip(),
-            "religion": str(row.get('Religion', '')).strip(),
+            "gender": str(get_case_insensitive(row, 'Gender')).strip(),
+            "social_category": str(get_case_insensitive(row, 'Social Category')).strip(),
+            "religion": str(get_case_insensitive(row, 'Religion')).strip(),
             "date_of_admission": adm_date_str,
-            "rte": str(row.get('RTE', '')).strip(),
+            "rte": str(get_case_insensitive(row, 'RTE')).strip(),
             "mobile_no": mobile_no,
             "is_highlighted": is_highlighted
         }
@@ -113,22 +133,22 @@ try:
     # Sort active students by Student Name, Father Name
     active_students.sort(key=lambda x: (x['student_name'].upper(), x['father_name'].upper()))
     
-    # Extract and format TC students (tcreport01072026)
+    # Extract and format TC students (TC Issued / tcreport01072026)
     tc_students = []
     for _, row in tc_df.iterrows():
-        student_name = str(row.get('Student Name', '')).strip()
+        student_name = str(get_case_insensitive(row, 'Student Name')).strip()
         if not student_name or student_name == "nan":
             continue
             
-        father_name = str(row.get('Father Name', '')).strip()
+        father_name = str(get_case_insensitive(row, 'Father Name')).strip()
         
-        dob = row.get('DOB', '')
+        dob = get_case_insensitive(row, 'DOB')
         if isinstance(dob, pd.Timestamp):
             dob_str = dob.strftime('%d-%m-%Y')
         else:
             dob_str = str(dob).split(" ")[0] if dob else ""
             
-        exit_date = row.get('Exit Date', '')
+        exit_date = get_case_insensitive(row, 'Exit Date')
         is_highlighted = False
         if isinstance(exit_date, pd.Timestamp):
             exit_date_str = exit_date.strftime('%d-%m-%Y')
@@ -139,18 +159,18 @@ try:
             if "2026-06-30" in exit_date_str or "30-06-2026" in exit_date_str:
                 is_highlighted = True
                 
-        tc_sr = clean_int_str(row.get('SR NO', ''))
-        tc_nic = clean_int_str(row.get('Nic Student ID', ''))
+        tc_sr = clean_int_str(get_case_insensitive(row, 'SR NO'))
+        tc_nic = clean_int_str(get_case_insensitive(row, 'Nic Student ID'))
         
         tc_rec = {
             "sr_no": tc_sr,
             "student_nic_id": tc_nic,
-            "class": str(row.get('Class', '')).strip(),
+            "class": str(get_case_insensitive(row, 'Class')).strip(),
             "student_name": student_name,
             "father_name": father_name,
             "dob": dob_str,
-            "exit_type": str(row.get('Exit Type', '')).strip(),
-            "exit_type_reason": str(row.get('Exit Type Reason', '')).strip(),
+            "exit_type": str(get_case_insensitive(row, 'Exit Type')).strip(),
+            "exit_type_reason": str(get_case_insensitive(row, 'Exit Type Reason')).strip(),
             "exit_date": exit_date_str,
             "is_highlighted": is_highlighted
         }
@@ -164,19 +184,19 @@ try:
     # Sort TC students by Student Name, Father Name
     tc_students.sort(key=lambda x: (x['student_name'].upper(), x['father_name'].upper()))
     
-    # Process Pending Admission Students (pendigadmission)
+    # Process Pending Admission Students (Temp Admission In ERP / pendigadmission)
     pending_students = []
     for _, row in pending_df.iterrows():
-        student_name = str(row.get('Student Name', '')).strip()
+        student_name = str(get_case_insensitive(row, 'Student Name')).strip()
         if not student_name or student_name == "nan":
             continue
             
-        father_name = str(row.get('Father Name', '')).strip()
-        mother_name = str(row.get('Mother Name', '')).strip()
-        sr_no = clean_int_str(row.get('Scholar No.', ''))
-        class_name = str(row.get('Current Class', '')).strip()
-        medium = str(row.get('Med', '')).strip()
-        mobile_no = clean_int_str(row.get('Mobile No', ''))
+        father_name = str(get_case_insensitive(row, 'Father Name')).strip()
+        mother_name = str(get_case_insensitive(row, 'Mother Name')).strip()
+        sr_no = clean_int_str(get_case_insensitive(row, 'Temp SR No')) or clean_int_str(get_case_insensitive(row, 'Scholar No.'))
+        class_name = str(get_case_insensitive(row, 'Current Class')) or str(get_case_insensitive(row, 'Class'))
+        medium = str(get_case_insensitive(row, 'Medium')) or str(get_case_insensitive(row, 'Med'))
+        mobile_no = clean_int_str(get_case_insensitive(row, 'Mobile No'))
         
         pending_rec = {
             "sr_no": sr_no,
@@ -186,7 +206,7 @@ try:
             "class": class_name,
             "medium": medium,
             "mobile_no": mobile_no,
-            "status_remark": str(row.get('Remarks', row.get('Remark', row.get('Status', str(row.get('Status Remark', '')))))).strip()
+            "status_remark": str(get_case_insensitive(row, 'Remark')) or str(get_case_insensitive(row, 'Remarks')) or str(get_case_insensitive(row, 'Status')) or str(get_case_insensitive(row, 'Status Remark'))
         }
         
         for k, v in list(pending_rec.items()):
