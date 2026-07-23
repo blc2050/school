@@ -624,10 +624,14 @@ function renderDirectoryTable() {
     const showingCount = document.getElementById('directory-showing-count');
     const selectedClassName = document.getElementById('selected-class-name');
     const highlightBadge = document.getElementById('directory-highlight-count');
+    const printSessionLabel = document.getElementById('active-print-session-label');
     
     if (!tbody) return;
     
     if (selectedClassName) selectedClassName.innerText = selectedClass;
+    if (printSessionLabel) {
+        printSessionLabel.innerText = `Session : 2026-27 | Class : ${selectedClass}`;
+    }
     
     let list = activeStudents.filter(s => s.class === selectedClass);
     
@@ -761,7 +765,7 @@ function renderTCTable() {
                     </div>
                 </div>
                 <div class="header-divider-row">
-                    <span>Session : 2026-27</span>
+                    <span>Session : 2026-27 | Class : ${className}</span>
                     <span class="report-tag">Transfer Certificate (TC) List</span>
                 </div>
             </div>
@@ -1317,7 +1321,7 @@ function renderPendingTables() {
                     </div>
                 </div>
                 <div class="header-divider-row">
-                    <span>Session : 2026-27</span>
+                    <span>Session : 2026-27 | Class : ${className} (${classStudents[0].medium} Medium)</span>
                     <span class="report-tag">Pending Admission List</span>
                 </div>
             </div>

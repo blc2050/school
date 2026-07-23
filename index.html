@@ -248,7 +248,7 @@
                             </div>
                         </div>
                         <div class="header-divider-row">
-                            <span>Session : 2026-27</span>
+                            <span id="active-print-session-label">Session : 2026-27</span>
                             <span class="report-tag">छात्र विवरण पंजी (सक्रिय नामांकित सूची)</span>
                         </div>
                     </div>
@@ -301,10 +301,13 @@
 
             <!-- Tab Content 2: TC Report -->
             <section id="tab-tc" class="tab-content">
-                <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="font-size: 1.15rem; font-weight: 700; color: var(--slate-800);">
-                        Total TC Issued: <strong id="tc-total-badge" style="color: var(--primary-dark);">0</strong> students
+                <div class="card no-print" style="margin-bottom: 24px; padding: 16px; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--slate-700);">
+                        Total TC Issued: <strong id="tc-total-badge" style="color: var(--primary-dark); font-size: 1.2rem;">0</strong> students
                     </div>
+                    <button class="btn btn-secondary" onclick="printReport()">
+                        <i class="fa-solid fa-print"></i> Print TC Report
+                    </button>
                 </div>
                 <div id="tc-tables-container">
                     <!-- Dynamic class-wise cards will be generated here -->
