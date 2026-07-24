@@ -32183,16 +32183,6 @@ window.STUDENTS_DATA = {
             "status_remark": ""
         },
         {
-            "sr_no": "15050804",
-            "student_name": "DUNGAR SINGH",
-            "father_name": "MAHENDRA SINGH",
-            "mother_name": "",
-            "class": "4TH",
-            "medium": "Hindi",
-            "mobile_no": "9680727940",
-            "status_remark": ""
-        },
-        {
             "sr_no": "15050805",
             "student_name": "PANKAJ VAGHELA",
             "father_name": "TIKMA RAM",
@@ -32220,16 +32210,6 @@ window.STUDENTS_DATA = {
             "class": "4TH",
             "medium": "Hindi",
             "mobile_no": "8149060183",
-            "status_remark": ""
-        },
-        {
-            "sr_no": "12041630",
-            "student_name": "VIKASH",
-            "father_name": "MOHANRAM",
-            "mother_name": "",
-            "class": "4TH",
-            "medium": "Hindi",
-            "mobile_no": "9413660353",
             "status_remark": ""
         },
         {
@@ -32303,16 +32283,6 @@ window.STUDENTS_DATA = {
             "status_remark": ""
         },
         {
-            "sr_no": "8071226",
-            "student_name": "BHAVYA",
-            "father_name": "DEVENDRA SINGH",
-            "mother_name": "",
-            "class": "7TH A",
-            "medium": "Hindi",
-            "mobile_no": "7073343703",
-            "status_remark": ""
-        },
-        {
             "sr_no": "9071256",
             "student_name": "HITESH",
             "father_name": "TILA RAM",
@@ -32343,16 +32313,6 @@ window.STUDENTS_DATA = {
             "status_remark": ""
         },
         {
-            "sr_no": "9040925",
-            "student_name": "RAVINDRA",
-            "father_name": "GOKUL RAM",
-            "mother_name": "",
-            "class": "7TH B",
-            "medium": "Hindi",
-            "mobile_no": "9929729329",
-            "status_remark": ""
-        },
-        {
             "sr_no": "12041307",
             "student_name": "RISHABH",
             "father_name": "SHRWAN RAM",
@@ -32360,26 +32320,6 @@ window.STUDENTS_DATA = {
             "class": "7TH B",
             "medium": "Hindi",
             "mobile_no": "6378029859",
-            "status_remark": ""
-        },
-        {
-            "sr_no": "4071159",
-            "student_name": "PRIYANKA",
-            "father_name": "MANOHAR SINGH PUROHIT",
-            "mother_name": "",
-            "class": "8TH A",
-            "medium": "English",
-            "mobile_no": "8814883697",
-            "status_remark": ""
-        },
-        {
-            "sr_no": "5060822",
-            "student_name": "PANKAJ",
-            "father_name": "BHANWARA RAM",
-            "mother_name": "",
-            "class": "9TH A",
-            "medium": "English",
-            "mobile_no": "9636226835",
             "status_remark": ""
         },
         {
