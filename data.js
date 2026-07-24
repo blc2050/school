@@ -32433,16 +32433,6 @@ window.STUDENTS_DATA = {
             "status_remark": ""
         },
         {
-            "sr_no": "10071112",
-            "student_name": "VINOD KUMAR",
-            "father_name": "BHOMA RAM",
-            "mother_name": "",
-            "class": "LKG",
-            "medium": "English",
-            "mobile_no": "6377423093",
-            "status_remark": ""
-        },
-        {
             "sr_no": "28040848",
             "student_name": "PREMI",
             "father_name": "OMA RAM",
