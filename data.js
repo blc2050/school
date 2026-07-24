@@ -29984,25 +29984,6 @@ window.STUDENTS_DATA = {
             "is_highlighted": false
         },
         {
-            "sr_no": "2517",
-            "student_nic_id": "525813934",
-            "medium": "Hindi",
-            "class": "12TH SCI",
-            "roll_no": "12169",
-            "rbse_roll_no": "",
-            "student_name": "YUVRAJ SINGH",
-            "father_name": "HUKAM SINGH",
-            "mother_name": "GANGA KANWAR",
-            "dob": "22-03-2011",
-            "gender": "Male",
-            "social_category": "GENERAL",
-            "religion": "Hindu",
-            "date_of_admission": "2018-08-08",
-            "rte": "No",
-            "mobile_no": "8854030806",
-            "is_highlighted": false
-        },
-        {
             "sr_no": "3112",
             "student_nic_id": "529839107",
             "medium": "Hindi",
@@ -31907,6 +31888,18 @@ window.STUDENTS_DATA = {
             "exit_type": "नाम पृथक",
             "exit_type_reason": "गलत प्रविष्टि के कारण नाम पृथक",
             "exit_date": "01-05-2026",
+            "is_highlighted": false
+        },
+        {
+            "sr_no": "2517",
+            "student_nic_id": "525813934",
+            "class": "TWELTH (2026-27)",
+            "student_name": "YUVRAJ SINGH",
+            "father_name": "HUKAM SINGH",
+            "dob": "22-03-2011",
+            "exit_type": "नाम पृथक",
+            "exit_type_reason": "लगातार अनुपस्थित रहने के कारण",
+            "exit_date": "15-07-2026",
             "is_highlighted": false
         }
     ],
