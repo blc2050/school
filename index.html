@@ -46,6 +46,10 @@
                     <i class="fa-solid fa-user-clock"></i>
                     <span>Pending Admissions</span>
                 </button>
+                <button class="menu-item" id="btn-rte" onclick="switchTab('rte')">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                    <span>RTE Students</span>
+                </button>
             </nav>
             
             <div class="sidebar-footer">
@@ -474,6 +478,70 @@
                 <!-- Container where separate class-wise tables are rendered dynamically -->
                 <div id="pending-tables-container">
                     <!-- Loaded dynamically -->
+                </div>
+            </section>
+
+            <!-- Tab Content 5: RTE Students -->
+            <section id="tab-rte" class="tab-content">
+                <div class="card no-print" style="margin-bottom: 24px; padding: 16px; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--slate-700);">
+                        Total RTE Students: <strong id="rte-total-badge" style="color: var(--primary-dark); font-size: 1.2rem;">0</strong> students
+                    </div>
+                    <button class="btn btn-secondary" onclick="printReport()">
+                        <i class="fa-solid fa-print"></i> Print RTE List
+                    </button>
+                </div>
+                
+                <div class="directory-container card">
+                    <!-- Official Header block for printing RTE students -->
+                    <div class="school-official-header print-only">
+                        <div class="letterhead-brand-row">
+                            <img src="SSVM%20Hindi%20Logo%20500x..jpg" alt="SSVM Logo" class="letterhead-logo-img">
+                            <div class="letterhead-text-block">
+                                <h2 class="school-title-hindi">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
+                                <p class="school-details">VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
+                                <p class="school-contact">Mob : 7976545260, E-mail : ssvmorg@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="header-divider-row">
+                            <span id="rte-print-session-label">Session : 2026-27</span>
+                            <span class="report-tag">RTE Students List</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-rte">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Class</th>
+                                    <th>SR No</th>
+                                    <th>Student NIC ID</th>
+                                    <th>Student Name</th>
+                                    <th>Father Name</th>
+                                    <th>Mother Name</th>
+                                    <th>DOB</th>
+                                    <th>Gender</th>
+                                    <th>Category</th>
+                                    <th>Adm. Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rte-tbody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="report-footer print-only">
+                        <div class="report-signature">
+                            <div class="signature-line"></div>
+                            <span>Class Teacher Signature</span>
+                        </div>
+                        <div class="report-signature">
+                            <div class="signature-line"></div>
+                            <span>Principal Signature</span>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>

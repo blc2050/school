@@ -254,6 +254,8 @@ function switchTab(tabId) {
             pageSubtitle.innerText = 'Student Counts Summary';
         } else if (tabId === 'pending') {
             pageSubtitle.innerText = 'Pending Admissions';
+        } else if (tabId === 'rte') {
+            pageSubtitle.innerText = 'RTE Students';
         }
     }
     
@@ -561,6 +563,7 @@ function updateUIState() {
     const tabTc = document.getElementById('tab-tc');
     const tabCounts = document.getElementById('tab-counts');
     const tabPending = document.getElementById('tab-pending');
+    const tabRte = document.getElementById('tab-rte');
     
     const filterPanel = document.getElementById('filter-panel-section');
     const classFilterRow = document.getElementById('class-filter-row');
@@ -576,6 +579,7 @@ function updateUIState() {
         if (tabDir) tabDir.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
         if (tabPending) tabPending.style.display = 'none';
+        if (tabRte) tabRte.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'block';
         switchCountsFormat(currentCountsFormat);
     } else if (currentTab === 'pending') {
@@ -585,6 +589,7 @@ function updateUIState() {
         if (tabDir) tabDir.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'none';
+        if (tabRte) tabRte.style.display = 'none';
         if (tabPending) tabPending.style.display = 'block';
         renderPendingTables();
     } else if (currentTab === 'tc') {
@@ -595,7 +600,18 @@ function updateUIState() {
         if (tabTc) tabTc.style.display = 'block';
         if (tabCounts) tabCounts.style.display = 'none';
         if (tabPending) tabPending.style.display = 'none';
+        if (tabRte) tabRte.style.display = 'none';
         renderTCTable();
+    } else if (currentTab === 'rte') {
+        if (filterPanel) filterPanel.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'none';
+        
+        if (tabDir) tabDir.style.display = 'none';
+        if (tabTc) tabTc.style.display = 'none';
+        if (tabCounts) tabCounts.style.display = 'none';
+        if (tabPending) tabPending.style.display = 'none';
+        if (tabRte) tabRte.style.display = 'block';
+        renderRteTable();
     } else {
         if (filterPanel) filterPanel.style.display = 'block';
         if (classFilterRow) classFilterRow.style.display = 'flex';
@@ -603,6 +619,7 @@ function updateUIState() {
         if (tabCounts) tabCounts.style.display = 'none';
         if (tabPending) tabPending.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
+        if (tabRte) tabRte.style.display = 'none';
         
         if (!selectedClass) {
             if (placeholder) placeholder.style.display = 'block';
@@ -1415,5 +1432,69 @@ function renderPendingTables() {
         
         card.innerHTML = headerHtml + noteHtml + tableHeader + tableHtml + footerHtml;
         container.appendChild(card);
+    });
+}
+
+// Render RTE Students Table
+function renderRteTable() {
+    const tbody = document.getElementById('rte-tbody');
+    const totalBadge = document.getElementById('rte-total-badge');
+    
+    if (!tbody) return;
+    
+    // Filter active students for RTE === 'Yes'
+    const rteStudents = activeStudents.filter(s => (s.rte || '').trim().toUpperCase() === 'YES');
+    
+    if (totalBadge) totalBadge.innerText = rteStudents.length.toLocaleString();
+    
+    tbody.innerHTML = '';
+    
+    if (rteStudents.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="11" class="table-empty-cell" style="text-align: center; padding: 40px; color: var(--slate-700);">
+                    <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: var(--slate-300); display: block;"></i>
+                    No RTE students found in the active directory.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Sort RTE students by Class and then Name
+    rteStudents.sort((a, b) => {
+        const idxA = CLASS_SORT_ORDER.indexOf(a.class);
+        const idxB = CLASS_SORT_ORDER.indexOf(b.class);
+        if (idxA !== -1 && idxB !== -1 && idxA !== idxB) return idxA - idxB;
+        return a.student_name.localeCompare(b.student_name);
+    });
+    
+    rteStudents.forEach((student, index) => {
+        const tr = document.createElement('tr');
+        if (student.is_highlighted) {
+            tr.classList.add('row-highlighted');
+        }
+        
+        const sNo = index + 1;
+        const dob = student.dob || '-';
+        const category = student.social_category || '-';
+        const admDate = student.date_of_admission || '-';
+        
+        tr.innerHTML = `
+            <td style="text-align: center;"><strong>${sNo}</strong></td>
+            <td>${student.class}</td>
+            <td style="text-align: center;">
+                <a href="#" onclick="viewStudentDetails('${student.sr_no}', true); return false;" class="sr-link">${student.sr_no}</a>
+            </td>
+            <td>${student.student_nic_id || '-'}</td>
+            <td>${student.student_name}</td>
+            <td>${student.father_name}</td>
+            <td>${student.mother_name || '-'}</td>
+            <td style="text-align: center;">${dob}</td>
+            <td style="text-align: center;">${student.gender || '-'}</td>
+            <td style="text-align: center;">${category}</td>
+            <td style="text-align: center;">${admDate}</td>
+        `;
+        tbody.appendChild(tr);
     });
 }
