@@ -1185,7 +1185,7 @@ tr.row-highlighted td:first-child {
 }
 
 /* Responsiveness adjustments */
-@media (max-width: 768px) {
+@media (max-width: 1px) {
     .app-container {
         flex-direction: column;
     }
