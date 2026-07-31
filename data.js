@@ -1316,7 +1316,7 @@ window.STUDENTS_DATA = {
             "sr_no": "5582",
             "student_nic_id": "547594989",
             "medium": "Hindi",
-            "class": "6TH B",
+            "class": "6TH A",
             "roll_no": "634",
             "rbse_roll_no": "",
             "student_name": "ANWAR KHAN",
