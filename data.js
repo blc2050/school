@@ -5547,7 +5547,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-07-31",
             "rte": "No",
             "mobile_no": "8299398795",
-            "is_highlighted": false
+            "is_highlighted": true
         },
         {
             "sr_no": "2120",
@@ -18619,7 +18619,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-07-31",
             "rte": "No",
             "mobile_no": "8619592830",
-            "is_highlighted": false
+            "is_highlighted": true
         },
         {
             "sr_no": "4456",
@@ -19740,7 +19740,7 @@ window.STUDENTS_DATA = {
             "date_of_admission": "2026-07-31",
             "rte": "No",
             "mobile_no": "7483347607",
-            "is_highlighted": false
+            "is_highlighted": true
         },
         {
             "sr_no": "5039",
@@ -30301,7 +30301,7 @@ window.STUDENTS_DATA = {
             "exit_type": "टी.सी.",
             "exit_type_reason": "अन्यत्र अध्ययन के कारण",
             "exit_date": "23-07-2026",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "4985",
@@ -30697,7 +30697,7 @@ window.STUDENTS_DATA = {
             "exit_type": "नाम पृथक",
             "exit_type_reason": "लगातार अनुपस्थित रहने के कारण",
             "exit_date": "23-07-2026",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "5494",
@@ -31057,7 +31057,7 @@ window.STUDENTS_DATA = {
             "exit_type": "नाम पृथक",
             "exit_type_reason": "लगातार अनुपस्थित रहने के कारण",
             "exit_date": "31-07-2026",
-            "is_highlighted": false
+            "is_highlighted": true
         },
         {
             "sr_no": "4706",
@@ -31141,7 +31141,7 @@ window.STUDENTS_DATA = {
             "exit_type": "नाम पृथक",
             "exit_type_reason": "लगातार अनुपस्थित रहने के कारण",
             "exit_date": "31-07-2026",
-            "is_highlighted": false
+            "is_highlighted": true
         },
         {
             "sr_no": "4849",
@@ -31309,7 +31309,7 @@ window.STUDENTS_DATA = {
             "exit_type": "नाम पृथक",
             "exit_type_reason": "गलत प्रविष्टि के कारण नाम पृथक",
             "exit_date": "31-07-2026",
-            "is_highlighted": false
+            "is_highlighted": true
         },
         {
             "sr_no": "4057",
@@ -31501,7 +31501,7 @@ window.STUDENTS_DATA = {
             "exit_type": "नाम पृथक",
             "exit_type_reason": "लगातार अनुपस्थित रहने के कारण",
             "exit_date": "23-07-2026",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "4658",
@@ -31573,7 +31573,7 @@ window.STUDENTS_DATA = {
             "exit_type": "टी.सी.",
             "exit_type_reason": "अन्यत्र अध्ययन के कारण",
             "exit_date": "23-07-2026",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "4475",
@@ -31669,7 +31669,7 @@ window.STUDENTS_DATA = {
             "exit_type": "नाम पृथक",
             "exit_type_reason": "लगातार अनुपस्थित रहने के कारण",
             "exit_date": "31-07-2026",
-            "is_highlighted": false
+            "is_highlighted": true
         },
         {
             "sr_no": "5313",
@@ -31789,7 +31789,7 @@ window.STUDENTS_DATA = {
             "exit_type": "नाम पृथक",
             "exit_type_reason": "लगातार अनुपस्थित रहने के कारण",
             "exit_date": "23-07-2026",
-            "is_highlighted": true
+            "is_highlighted": false
         },
         {
             "sr_no": "4789",
@@ -32149,7 +32149,7 @@ window.STUDENTS_DATA = {
             "exit_type": "नाम पृथक",
             "exit_type_reason": "लगातार अनुपस्थित रहने के कारण",
             "exit_date": "31-07-2026",
-            "is_highlighted": false
+            "is_highlighted": true
         },
         {
             "sr_no": "5657",
@@ -32161,7 +32161,7 @@ window.STUDENTS_DATA = {
             "exit_type": "नाम पृथक",
             "exit_type_reason": "लगातार अनुपस्थित रहने के कारण",
             "exit_date": "31-07-2026",
-            "is_highlighted": false
+            "is_highlighted": true
         },
         {
             "sr_no": "2517",
