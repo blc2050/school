@@ -961,7 +961,7 @@ function renderCountsTable() {
             { label: "9TH", medium: "Combined", queryClasses: ["9TH A", "9TH B", "9TH A EM"] },
             { label: "10TH", medium: "Combined", queryClasses: ["10TH A", "10TH B", "10TH C", "10TH A EM"] },
             { label: "11TH", medium: "Combined", queryClasses: ["11TH ARTS", "11TH AGR", "11TH SCI", "11TH SCI EM"] },
-            { label: "12TH", medium: "Combined", queryClasses: ["12TH ARTS", "12TH AGR", "12TH SCI", "12TH SCI EM"] }
+            { label: "12TH", medium: "Combined", queryClasses: ["12TH ARTS", "12TH AGR", "12TH SCI", "12TH SCI EM", "12TH ARTS EM"] }
         ];
     }
     
