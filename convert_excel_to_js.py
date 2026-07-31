@@ -2,7 +2,7 @@ import pandas as pd
 import json
 import os
 
-excel_path = r"RollList.xlsx" if os.path.exists("RollList.xlsx") else r"Roll No List.xlsx"
+excel_path = r"NEW DATABASE ROLLLIST.xlsx" if os.path.exists("NEW DATABASE ROLLLIST.xlsx") else (r"RollList.xlsx" if os.path.exists("RollList.xlsx") else r"Roll No List.xlsx")
 fee_excel_path = r"duefeereport.xlsx"
 js_output_path = r"data.js"
 
@@ -39,9 +39,9 @@ try:
     xl = pd.ExcelFile(excel_path)
     
     # Dynamically find sheet names
-    main_sheet = 'Active Students 2026-27' if 'Active Students 2026-27' in xl.sheet_names else 'MAIN'
-    tc_sheet = 'TC Issued' if 'TC Issued' in xl.sheet_names else ('tcreport01072026' if 'tcreport01072026' in xl.sheet_names else xl.sheet_names[1])
-    pending_sheet = 'Temp Admission In ERP' if 'Temp Admission In ERP' in xl.sheet_names else ('pendigadmission' if 'pendigadmission' in xl.sheet_names else xl.sheet_names[2])
+    main_sheet = next((s for s in xl.sheet_names if s.upper() in ['ACTIVE STUDENTS 2026-27', 'MAIN', 'ACTIVE']), xl.sheet_names[0])
+    tc_sheet = next((s for s in xl.sheet_names if s.upper() in ['TC ISSUED', 'TCREPORT01072026', 'TC REPORT']), xl.sheet_names[1] if len(xl.sheet_names) > 1 else xl.sheet_names[0])
+    pending_sheet = next((s for s in xl.sheet_names if s.upper() in ['TEMP ADMISSION IN ERP', 'PENDIGADMISSION', 'TEMPORARY ADMISSION']), xl.sheet_names[2] if len(xl.sheet_names) > 2 else xl.sheet_names[0])
     
     print(f"Loading sheets: Active='{main_sheet}', TC='{tc_sheet}', Pending='{pending_sheet}'")
     
@@ -196,6 +196,8 @@ try:
         sr_no = clean_int_str(get_case_insensitive(row, 'Temp SR No')) or clean_int_str(get_case_insensitive(row, 'Scholar No.'))
         class_name = str(get_case_insensitive(row, 'Current Class')) or str(get_case_insensitive(row, 'Class'))
         medium = str(get_case_insensitive(row, 'Medium')) or str(get_case_insensitive(row, 'Med'))
+        if not medium or medium == "nan":
+            medium = "English" if "EM" in str(class_name).upper() else "Hindi"
         mobile_no = clean_int_str(get_case_insensitive(row, 'Mobile No'))
         
         pending_rec = {

@@ -74,10 +74,10 @@ body {
 
 /* Sidebar Navigation */
 .app-sidebar {
-    width: 260px;
+    width: 72px;
     background-color: var(--slate-900);
     color: white;
-    padding: 24px;
+    padding: 24px 12px;
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -85,6 +85,13 @@ body {
     left: 0;
     top: 0;
     z-index: 100;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.app-sidebar:hover {
+    width: 260px;
+    padding: 24px;
 }
 
 .sidebar-brand {
@@ -94,6 +101,7 @@ body {
     padding-bottom: 24px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     margin-bottom: 24px;
+    width: 100%;
 }
 
 .brand-logo-container {
@@ -106,12 +114,25 @@ body {
     justify-content: center;
     padding: 2px;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
 }
 
 .brand-logo-img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+.brand-text {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.app-sidebar:hover .brand-text {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .brand-text h1 {
@@ -133,28 +154,51 @@ body {
     flex-direction: column;
     gap: 8px;
     flex-grow: 1;
+    width: 100%;
 }
 
 .menu-item {
     background: none;
     border: none;
     color: var(--slate-300);
-    padding: 12px 16px;
+    padding: 12px;
     border-radius: var(--radius-md);
     cursor: pointer;
     font-size: 0.95rem;
     font-weight: 500;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
     text-align: left;
     transition: var(--transition-fast);
+    width: 100%;
+}
+
+.app-sidebar:hover .menu-item {
+    justify-content: flex-start;
+    padding: 12px 16px;
 }
 
 .menu-item i {
     font-size: 1.1rem;
     width: 20px;
     text-align: center;
+    flex-shrink: 0;
+}
+
+.menu-item span {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+.app-sidebar:hover .menu-item span {
+    opacity: 1;
+    width: auto;
+    overflow: visible;
 }
 
 .menu-item:hover {
@@ -170,40 +214,53 @@ body {
 
 .sidebar-footer {
     margin-top: auto;
+    width: 100%;
 }
 
 .update-badge {
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: var(--radius-md);
-    padding: 12px;
+    padding: 12px 8px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
+    width: 100%;
+}
+
+.app-sidebar:hover .update-badge {
+    padding: 12px;
+    justify-content: flex-start;
 }
 
 .update-badge i {
-    color: var(--primary);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    color: var(--primary-light);
+    flex-shrink: 0;
 }
 
-.badge-title {
-    font-size: 0.75rem;
-    color: var(--slate-300);
-    font-weight: 600;
+.update-badge div {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
 }
 
-.badge-desc {
-    font-size: 0.75rem;
-    color: var(--slate-300);
+.app-sidebar:hover .update-badge div {
+    opacity: 1;
+    width: auto;
+    overflow: visible;
 }
 
 /* Main Area */
 .app-main {
     flex-grow: 1;
-    margin-left: 260px;
+    margin-left: 72px;
     padding: 32px;
-    max-width: calc(100% - 260px);
+    max-width: calc(100% - 72px);
+    transition: margin-left 0.3s ease, max-width 0.3s ease;
 }
 
 /* Glass Header */
@@ -1133,11 +1190,18 @@ tr.row-highlighted td:first-child {
         flex-direction: column;
     }
     
-    .app-sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        padding: 16px;
+    .app-sidebar, .app-sidebar:hover {
+        width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+        padding: 16px !important;
+    }
+    
+    .brand-text, .menu-item span, .update-badge div {
+        opacity: 1 !important;
+        width: auto !important;
+        overflow: visible !important;
+        pointer-events: auto !important;
     }
     
     .sidebar-brand {
@@ -1152,9 +1216,10 @@ tr.row-highlighted td:first-child {
         padding-bottom: 8px;
     }
     
-    .menu-item {
-        padding: 8px 12px;
-        white-space: nowrap;
+    .menu-item, .app-sidebar:hover .menu-item {
+        padding: 8px 12px !important;
+        white-space: nowrap !important;
+        justify-content: flex-start !important;
     }
     
     .sidebar-footer {
@@ -1162,9 +1227,9 @@ tr.row-highlighted td:first-child {
     }
     
     .app-main {
-        margin-left: 0;
+        margin-left: 0 !important;
+        max-width: 100% !important;
         padding: 16px;
-        max-width: 100%;
     }
     
     .controls-row {
@@ -1393,6 +1458,17 @@ tr.row-highlighted td:first-child {
         margin-bottom: 15px !important;
         padding-bottom: 8px !important;
         display: block !important;
+        page-break-before: always !important;
+        break-before: page !important;
+    }
+    
+    /* Avoid blank page on first printed header in each container */
+    .app-main > section > .card:first-child .school-official-header,
+    .app-main > section > .directory-container:first-child .school-official-header,
+    #pending-tables-container > .card:first-child .school-official-header,
+    #tc-tables-container > .card:first-child .school-official-header {
+        page-break-before: avoid !important;
+        break-before: avoid !important;
     }
     
     .letterhead-brand-row {
