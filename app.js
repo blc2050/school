@@ -144,7 +144,25 @@ function initStats() {
     const hindiBoys = activeStudents.filter(s => s.medium === 'Hindi' && s.gender === 'Male').length;
     const hindiGirls = activeStudents.filter(s => s.medium === 'Hindi' && s.gender === 'Female').length;
     
-    const newAdmissions = activeStudents.filter(s => s.date_of_admission && s.date_of_admission >= '2026-04-01');
+    const newAdmissions = activeStudents.filter(s => {
+        if (!s.date_of_admission) return false;
+        let year, month, day;
+        if (s.date_of_admission.includes('-')) {
+            const parts = s.date_of_admission.split('-');
+            if (parts[0].length === 4) {
+                year = parseInt(parts[0]);
+                month = parseInt(parts[1]);
+                day = parseInt(parts[2]);
+            } else {
+                day = parseInt(parts[0]);
+                month = parseInt(parts[1]);
+                year = parseInt(parts[2]);
+            }
+        } else {
+            return false;
+        }
+        return (year > 2026) || (year === 2026 && month >= 4);
+    });
     const newBoys = newAdmissions.filter(s => s.gender === 'Male').length;
     const newGirls = newAdmissions.filter(s => s.gender === 'Female').length;
     
@@ -883,6 +901,7 @@ function renderCountsTable() {
     
     if (currentCountsFormat === 'hindi-pri') {
         rowSpecifications = [
+            { label: "UKG(PP.5+)", medium: "Hindi", queryClasses: ["UKG"] },
             { label: "1ST", medium: "Hindi", queryClasses: ["1ST"] },
             { label: "2ND", medium: "Hindi", queryClasses: ["2ND"] },
             { label: "3RD", medium: "Hindi", queryClasses: ["3RD"] },
@@ -930,7 +949,7 @@ function renderCountsTable() {
         ];
     } else if (currentCountsFormat === 'consolidated') {
         rowSpecifications = [
-            { label: "PRE-PRIMARY", medium: "Combined", queryClasses: ["KG EM", "LKG EM", "UKG EM"] },
+            { label: "PRE-PRIMARY", medium: "Combined", queryClasses: ["KG EM", "LKG EM", "UKG EM", "UKG"] },
             { label: "1ST", medium: "Combined", queryClasses: ["1ST", "1ST EM"] },
             { label: "2ND", medium: "Combined", queryClasses: ["2ND", "2ND EM"] },
             { label: "3RD", medium: "Combined", queryClasses: ["3RD", "3RD EM"] },
