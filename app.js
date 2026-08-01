@@ -643,6 +643,7 @@ function updateUIState() {
         if (filterPanel) filterPanel.style.display = 'block';
         if (classFilterRow) classFilterRow.style.display = 'flex';
         
+        if (tabDir) tabDir.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'none';
         if (tabPending) tabPending.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
