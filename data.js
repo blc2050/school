@@ -7472,7 +7472,7 @@ window.STUDENTS_DATA = {
             "sr_no": "4308",
             "student_nic_id": "538824279",
             "medium": "Hindi",
-            "class": "8TH B",
+            "class": "8TH A",
             "roll_no": "8022",
             "rbse_roll_no": "",
             "student_name": "GHANSHYAM",
