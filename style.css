@@ -1568,37 +1568,46 @@ tr.row-highlighted td:first-child {
 }
 
 .marklist-header {
-    text-align: center;
-    border-bottom: 2px solid var(--slate-900);
-    padding-bottom: 6px;
+    border: 1px solid var(--slate-300);
+    border-radius: var(--radius-md);
+    padding: 10px;
     margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    background-color: var(--slate-50);
+}
+
+.marklist-header-logo {
+    width: 55px;
+    height: 55px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.marklist-header-text {
+    flex-grow: 1;
+    text-align: center;
 }
 
 .marklist-title {
     font-family: var(--font-heading);
-    font-size: 1.05rem;
+    font-size: 1.0rem;
     font-weight: 800;
     color: var(--slate-900);
-    margin-bottom: 4px;
-    letter-spacing: -0.5px;
+    margin-bottom: 2px;
+    letter-spacing: -0.3px;
     line-height: 1.2;
 }
 
-.marklist-meta-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px 12px;
-    font-size: 0.78rem;
+.marklist-meta-lines {
+    font-size: 0.72rem;
     font-weight: 600;
     color: var(--slate-700);
-    border-top: 1px dashed var(--slate-200);
-    padding-top: 6px;
-    text-align: left;
+    line-height: 1.3;
 }
 
-.marklist-meta-item span {
-    font-weight: 500;
-    color: var(--slate-500);
+.marklist-meta-line {
+    margin-bottom: 1px;
 }
 
 .marklist-table {
@@ -1689,18 +1698,20 @@ tr.row-highlighted td:first-child {
     }
     
     .marklist-header {
-        border-bottom: 2px solid #000 !important;
+        border: 1px solid #000 !important;
+        background-color: #f8fafc !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
     
     .marklist-title {
         color: #000 !important;
-        font-size: 0.95rem !important;
+        font-size: 0.90rem !important;
     }
     
-    .marklist-meta-grid {
-        border-top: 1px dashed #000 !important;
+    .marklist-meta-lines {
         color: #000 !important;
-        font-size: 0.72rem !important;
+        font-size: 0.68rem !important;
     }
     
     .marklist-table th,

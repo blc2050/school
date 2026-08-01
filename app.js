@@ -1653,16 +1653,13 @@ function renderMarklistTable() {
     // Sort slots by roll number
     slots.sort((a, b) => a.roll_no - b.roll_no);
     
-    // Sort slots by roll number
-    slots.sort((a, b) => a.roll_no - b.roll_no);
-    
-    // Split slots into pages. Each page has at most 45 lines.
-    // We do NOT pad the final page to 45 lines.
-    const numPages = Math.max(1, Math.ceil(slots.length / 45));
+    // Split slots into pages. Each page has at most 44 lines.
+    // We do NOT pad the final page to 44 lines.
+    const numPages = Math.max(1, Math.ceil(slots.length / 44));
     container.innerHTML = '';
     
     for (let p = 0; p < numPages; p++) {
-        const pageSlots = slots.slice(p * 45, (p + 1) * 45);
+        const pageSlots = slots.slice(p * 44, (p + 1) * 44);
         
         // Render a page wrapper
         const pageDiv = document.createElement('div');
@@ -1672,33 +1669,47 @@ function renderMarklistTable() {
         
         // Generate Left & Right tables side-by-side (identical half-sheets)
         for (let col = 0; col < 2; col++) {
-            gridHtml += `
-                <div class="marklist-half-sheet">
+            gridHtml += `<div class="marklist-half-sheet">`;
+            
+            // Header box: Only on Page 1 (p === 0)
+            if (p === 0) {
+                gridHtml += `
                     <div class="marklist-header">
-                        <h2 class="marklist-title">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
-                        <div class="marklist-meta-grid">
-                            <div class="marklist-meta-item">Session (सत्र): <span>2026-27</span></div>
-                            <div class="marklist-meta-item">Class (कक्षा): <span>${selectedClass}</span></div>
-                            <div class="marklist-meta-item">Subject (विषय): <span>_________________</span></div>
-                            <div class="marklist-meta-item">Date (दिनांक): <span>_________________</span></div>
+                        <img src="SSVM%20Hindi%20Logo%20500x..jpg" class="marklist-header-logo" alt="SSVM Logo">
+                        <div class="marklist-header-text">
+                            <h2 class="marklist-title">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मण्डली</h2>
+                            <div class="marklist-meta-lines">
+                                <div class="marklist-meta-line">................................................... : 2026-27</div>
+                                <div class="marklist-meta-line" style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                    <span>Class (कक्षा) : <strong>${selectedClass}</strong></span>
+                                    <span>Subject (विषय) : _________________</span>
+                                </div>
+                                <div class="marklist-meta-line" style="text-align: left; margin-top: 4px;">
+                                    Date (परीक्षा की दिनांक) : _____________________________
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <table class="marklist-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 35px;">S.No</th>
-                                <th style="width: 48px;">Roll No</th>
-                                <th>Student Name</th>
-                                <th style="width: 42px;">Oral</th>
-                                <th style="width: 42px;">Written</th>
-                                <th style="width: 42px;">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                `;
+            }
+            
+            gridHtml += `
+                <table class="marklist-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 35px;">S.No</th>
+                            <th style="width: 48px;">Roll No</th>
+                            <th>Student Name</th>
+                            <th style="width: 42px;">Oral</th>
+                            <th style="width: 42px;">Writt<br>en</th>
+                            <th style="width: 42px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
             `;
             
             pageSlots.forEach((slot, idx) => {
-                const sNo = p * 45 + idx + 1;
+                const sNo = p * 44 + idx + 1;
                 const rowClass = slot.is_nso ? 'class="row-nso"' : '';
                 const rollStr = slot.roll_no || '';
                 const nameStr = slot.student_name || '';
@@ -1716,16 +1727,21 @@ function renderMarklistTable() {
             });
             
             gridHtml += `
-                        </tbody>
-                    </table>
-                    <div class="marklist-footer">
-                        <div class="marklist-signature-block">
-                            <div class="marklist-sig-line"></div>
-                            <span>Sign (Subject Teacher)</span>
-                        </div>
-                    </div>
-                </div>
+                    </tbody>
+                </table>
             `;
+            
+            // Footer signature: Only on the last page (p === numPages - 1)
+            if (p === numPages - 1) {
+                gridHtml += `
+                    <div class="marklist-footer" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+                        <div style="font-weight: 600; font-size: 0.72rem; color: #000;">Sign (Subject Teacher)</div>
+                        <div style="font-weight: 600; font-size: 0.72rem; color: #000; margin-top: 4px;">Date (Submission) _________________</div>
+                    </div>
+                `;
+            }
+            
+            gridHtml += `</div>`;
         }
         
         gridHtml += `</div>`;
