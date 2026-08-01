@@ -1348,6 +1348,10 @@ tr.row-highlighted td:first-child {
 
 /* PRINT LAYOUT ADJUSTMENTS */
 @media print {
+    @page {
+        size: landscape !important;
+        margin: 0.8cm !important;
+    }
     
     body {
         background-color: white !important;
@@ -1637,9 +1641,12 @@ tr.row-highlighted td:first-child {
 }
 
 .marklist-table tr.row-nso td {
+    background-color: var(--slate-50) !important;
+}
+
+.marklist-table tr.row-nso td.student-name-col {
     color: var(--slate-400) !important;
     text-decoration: line-through !important;
-    background-color: var(--slate-50) !important;
 }
 
 .marklist-table td.mark-col {
@@ -1725,10 +1732,14 @@ tr.row-highlighted td:first-child {
     }
     
     .marklist-table tr.row-nso td {
-        color: #64748b !important;
         background-color: #f8fafc !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+    }
+    
+    .marklist-table tr.row-nso td.student-name-col {
+        color: #64748b !important;
+        text-decoration: line-through !important;
     }
     
     .marklist-footer {
