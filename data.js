@@ -24534,7 +24534,7 @@ window.STUDENTS_DATA = {
             "sr_no": "5610",
             "student_nic_id": "548069145",
             "medium": "Hindi",
-            "class": "10TH A",
+            "class": "10TH C",
             "roll_no": "10167",
             "rbse_roll_no": "",
             "student_name": "SAWAI RAM",
