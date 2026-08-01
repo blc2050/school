@@ -588,6 +588,19 @@ function updateUIState() {
     const tabRte = document.getElementById('tab-rte');
     const tabMarklist = document.getElementById('tab-marklist');
     
+    // Inject dynamic print style orientation for portrait (marklist) / landscape (others)
+    let orientationStyle = document.getElementById('print-orientation-style');
+    if (!orientationStyle) {
+        orientationStyle = document.createElement('style');
+        orientationStyle.id = 'print-orientation-style';
+        document.head.appendChild(orientationStyle);
+    }
+    if (currentTab === 'marklist') {
+        orientationStyle.innerHTML = `@media print { @page { size: portrait !important; margin: 0.8cm !important; } }`;
+    } else {
+        orientationStyle.innerHTML = `@media print { @page { size: landscape !important; margin: 0.8cm !important; } }`;
+    }
+    
     const filterPanel = document.getElementById('filter-panel-section');
     const classFilterRow = document.getElementById('class-filter-row');
     const btnPrintList = document.getElementById('btn-print-list');
