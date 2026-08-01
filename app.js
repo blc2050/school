@@ -1653,58 +1653,48 @@ function renderMarklistTable() {
     // Sort slots by roll number
     slots.sort((a, b) => a.roll_no - b.roll_no);
     
-    // Pad slots to fit pages cleanly. Each page has 45 lines.
-    // If slots <= 45, pad to 45 (1 page). If slots > 45, pad to 90 (2 pages).
-    // If slots > 90, pad to next multiple of 45.
-    const targetSize = slots.length <= 45 ? 45 : (slots.length <= 90 ? 90 : Math.ceil(slots.length / 45) * 45);
-    while (slots.length < targetSize) {
-        slots.push({
-            roll_no: '',
-            student_name: '',
-            is_nso: false,
-            is_blank: true
-        });
-    }
+    // Sort slots by roll number
+    slots.sort((a, b) => a.roll_no - b.roll_no);
     
-    const numPages = slots.length / 45;
+    // Split slots into pages. Each page has at most 45 lines.
+    // We do NOT pad the final page to 45 lines.
+    const numPages = Math.max(1, Math.ceil(slots.length / 45));
     container.innerHTML = '';
     
     for (let p = 0; p < numPages; p++) {
         const pageSlots = slots.slice(p * 45, (p + 1) * 45);
         
-        // Render a page
+        // Render a page wrapper
         const pageDiv = document.createElement('div');
         pageDiv.className = 'marklist-page';
         
-        // Header
-        let headerHtml = `
-            <div class="marklist-header">
-                <h2 class="marklist-title">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
-                <div class="marklist-meta-row">
-                    <div class="marklist-meta-item">Session (सत्र) : <span>2026-27</span></div>
-                    <div class="marklist-meta-item">Class (कक्षा) : <span>${selectedClass}</span></div>
-                    <div class="marklist-meta-item">Subject (विषय) : <span>_____________________</span></div>
-                    <div class="marklist-meta-item">Date (परीक्षा दिनांक) : <span>_____________________</span></div>
-                </div>
-            </div>
-            <div class="marklist-tables-grid">
-        `;
+        let gridHtml = `<div class="marklist-tables-grid">`;
         
-        // Generate Left & Right Tables side-by-side (they are identical lists)
+        // Generate Left & Right tables side-by-side (identical half-sheets)
         for (let col = 0; col < 2; col++) {
-            headerHtml += `
-                <table class="marklist-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 45px;">S.No.</th>
-                            <th style="width: 60px;">Roll No</th>
-                            <th>Student Name</th>
-                            <th style="width: 55px;">Oral</th>
-                            <th style="width: 55px;">Written</th>
-                            <th style="width: 55px;">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            gridHtml += `
+                <div class="marklist-half-sheet">
+                    <div class="marklist-header">
+                        <h2 class="marklist-title">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
+                        <div class="marklist-meta-grid">
+                            <div class="marklist-meta-item">Session (सत्र): <span>2026-27</span></div>
+                            <div class="marklist-meta-item">Class (कक्षा): <span>${selectedClass}</span></div>
+                            <div class="marklist-meta-item">Subject (विषय): <span>_________________</span></div>
+                            <div class="marklist-meta-item">Date (दिनांक): <span>_________________</span></div>
+                        </div>
+                    </div>
+                    <table class="marklist-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 35px;">S.No</th>
+                                <th style="width: 48px;">Roll No</th>
+                                <th>Student Name</th>
+                                <th style="width: 42px;">Oral</th>
+                                <th style="width: 42px;">Written</th>
+                                <th style="width: 42px;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
             `;
             
             pageSlots.forEach((slot, idx) => {
@@ -1713,7 +1703,7 @@ function renderMarklistTable() {
                 const rollStr = slot.roll_no || '';
                 const nameStr = slot.student_name || '';
                 
-                headerHtml += `
+                gridHtml += `
                     <tr ${rowClass}>
                         <td><strong>${sNo}</strong></td>
                         <td>${rollStr}</td>
@@ -1725,27 +1715,21 @@ function renderMarklistTable() {
                 `;
             });
             
-            headerHtml += `
-                    </tbody>
-                </table>
+            gridHtml += `
+                        </tbody>
+                    </table>
+                    <div class="marklist-footer">
+                        <div class="marklist-signature-block">
+                            <div class="marklist-sig-line"></div>
+                            <span>Sign (Subject Teacher)</span>
+                        </div>
+                    </div>
+                </div>
             `;
         }
         
-        headerHtml += `
-            </div>
-            <div class="report-footer" style="margin-top: 24px; display: flex; justify-content: space-between; border-top: 1px dashed var(--slate-200); padding-top: 15px;">
-                <div class="report-signature" style="text-align: center; width: 220px;">
-                    <div class="signature-line" style="border-bottom: 1px solid var(--slate-900); height: 35px; margin-bottom: 6px;"></div>
-                    <span style="font-size: 0.8rem; font-weight: 600; color: var(--slate-700);">Sign (Subject Teacher)</span>
-                </div>
-                <div class="report-signature" style="text-align: center; width: 220px;">
-                    <div class="signature-line" style="border-bottom: 1px solid var(--slate-900); height: 35px; margin-bottom: 6px;"></div>
-                    <span style="font-size: 0.8rem; font-weight: 600; color: var(--slate-700);">Sign (Subject Teacher)</span>
-                </div>
-            </div>
-        `;
-        
-        pageDiv.innerHTML = headerHtml;
+        gridHtml += `</div>`;
+        pageDiv.innerHTML = gridHtml;
         container.appendChild(pageDiv);
     }
 }

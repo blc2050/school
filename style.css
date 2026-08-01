@@ -1548,38 +1548,52 @@ tr.row-highlighted td:first-child {
     background-color: white;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    padding: 32px;
+    padding: 24px;
     margin-bottom: 32px;
     border: 1px solid var(--slate-150);
+}
+
+.marklist-tables-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    width: 100%;
+}
+
+.marklist-half-sheet {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
 }
 
 .marklist-header {
     text-align: center;
     border-bottom: 2px solid var(--slate-900);
-    padding-bottom: 12px;
-    margin-bottom: 20px;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
 }
 
 .marklist-title {
     font-family: var(--font-heading);
-    font-size: 1.35rem;
+    font-size: 1.05rem;
     font-weight: 800;
     color: var(--slate-900);
-    margin-bottom: 12px;
+    margin-bottom: 4px;
     letter-spacing: -0.5px;
+    line-height: 1.2;
 }
 
-.marklist-meta-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    font-size: 0.9rem;
+.marklist-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--slate-700);
     border-top: 1px dashed var(--slate-200);
-    padding-top: 10px;
+    padding-top: 6px;
+    text-align: left;
 }
 
 .marklist-meta-item span {
@@ -1587,24 +1601,20 @@ tr.row-highlighted td:first-child {
     color: var(--slate-500);
 }
 
-.marklist-tables-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    width: 100%;
-}
-
 .marklist-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
+    margin-bottom: 15px;
 }
 
 .marklist-table th,
 .marklist-table td {
     border: 1px solid var(--slate-200);
-    padding: 6px 8px;
+    padding: 4px 6px;
     text-align: center;
+    height: 28px;
+    box-sizing: border-box;
 }
 
 .marklist-table th {
@@ -1616,6 +1626,9 @@ tr.row-highlighted td:first-child {
 .marklist-table td.student-name-col {
     text-align: left;
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .marklist-table tr.row-nso td {
@@ -1624,14 +1637,33 @@ tr.row-highlighted td:first-child {
     background-color: var(--slate-50) !important;
 }
 
-.marklist-table td.empty-col {
-    color: transparent;
-    background-color: rgba(248, 250, 252, 0.5);
+.marklist-table td.mark-col {
+    background-color: var(--slate-50);
 }
 
-.marklist-table td.mark-col {
-    width: 55px;
-    background-color: var(--slate-50);
+.marklist-footer {
+    margin-top: auto;
+    border-top: 1px dashed var(--slate-200);
+    padding-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.marklist-signature-block {
+    text-align: center;
+    width: 150px;
+}
+
+.marklist-sig-line {
+    border-bottom: 1px solid var(--slate-900);
+    height: 25px;
+    margin-bottom: 4px;
+}
+
+.marklist-signature-block span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--slate-700);
 }
 
 /* Print specific rules for Marklist */
@@ -1642,7 +1674,7 @@ tr.row-highlighted td:first-child {
         box-shadow: none !important;
         border: none !important;
         padding: 0 !important;
-        margin: 0 0 30px 0 !important;
+        margin: 0 !important;
         background: transparent !important;
         width: 100% !important;
     }
@@ -1652,30 +1684,31 @@ tr.row-highlighted td:first-child {
         break-before: avoid !important;
     }
     
+    .marklist-tables-grid {
+        gap: 20px !important;
+    }
+    
     .marklist-header {
         border-bottom: 2px solid #000 !important;
     }
     
     .marklist-title {
         color: #000 !important;
-        font-size: 1.25rem !important;
+        font-size: 0.95rem !important;
     }
     
-    .marklist-meta-row {
+    .marklist-meta-grid {
         border-top: 1px dashed #000 !important;
         color: #000 !important;
-        font-size: 0.75rem !important;
-    }
-    
-    .marklist-tables-grid {
-        gap: 16px !important;
+        font-size: 0.72rem !important;
     }
     
     .marklist-table th,
     .marklist-table td {
         border: 1px solid #000 !important;
-        padding: 4px 6px !important;
-        font-size: 0.72rem !important;
+        padding: 2px 4px !important;
+        font-size: 0.7rem !important;
+        height: 24px !important;
     }
     
     .marklist-table th {
@@ -1689,5 +1722,17 @@ tr.row-highlighted td:first-child {
         background-color: #f8fafc !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+    }
+    
+    .marklist-footer {
+        border-top: 1px dashed #000 !important;
+    }
+    
+    .marklist-sig-line {
+        border-bottom: 1px solid #000 !important;
+    }
+    
+    .marklist-signature-block span {
+        color: #000 !important;
     }
 }
