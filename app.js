@@ -596,9 +596,9 @@ function updateUIState() {
         document.head.appendChild(orientationStyle);
     }
     if (currentTab === 'marklist') {
-        orientationStyle.innerHTML = `@media print { @page { size: portrait !important; margin: 0.8cm !important; } }`;
+        orientationStyle.innerHTML = `@page { size: portrait !important; margin: 0.8cm !important; }`;
     } else {
-        orientationStyle.innerHTML = `@media print { @page { size: landscape !important; margin: 0.8cm !important; } }`;
+        orientationStyle.innerHTML = `@page { size: landscape !important; margin: 0.8cm !important; }`;
     }
     
     const filterPanel = document.getElementById('filter-panel-section');
