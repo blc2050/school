@@ -8,6 +8,7 @@ let classesTc = [];
 let mediums = [];
 let classByMedium = {};
 let dueFees = {};
+let nsoStudents = [];
 
 // Application states
 let currentTab = 'directory'; // 'directory', 'tc', 'counts', 'fees', or 'pending'
@@ -123,6 +124,7 @@ function loadData() {
         classByMedium = window.STUDENTS_DATA.class_by_medium || {};
         dueFees = window.STUDENTS_DATA.due_fees || {};
         pendingStudents = window.STUDENTS_DATA.pending_students || [];
+        nsoStudents = window.STUDENTS_DATA.nso_students || [];
     } else {
         console.error("Database variables (data.js) not loaded.");
     }
@@ -274,6 +276,8 @@ function switchTab(tabId) {
             pageSubtitle.innerText = 'Pending Admissions';
         } else if (tabId === 'rte') {
             pageSubtitle.innerText = 'RTE Students';
+        } else if (tabId === 'marklist') {
+            pageSubtitle.innerText = 'Marklist';
         }
     }
     
@@ -582,6 +586,7 @@ function updateUIState() {
     const tabCounts = document.getElementById('tab-counts');
     const tabPending = document.getElementById('tab-pending');
     const tabRte = document.getElementById('tab-rte');
+    const tabMarklist = document.getElementById('tab-marklist');
     
     const filterPanel = document.getElementById('filter-panel-section');
     const classFilterRow = document.getElementById('class-filter-row');
@@ -598,6 +603,7 @@ function updateUIState() {
         if (tabTc) tabTc.style.display = 'none';
         if (tabPending) tabPending.style.display = 'none';
         if (tabRte) tabRte.style.display = 'none';
+        if (tabMarklist) tabMarklist.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'block';
         switchCountsFormat(currentCountsFormat);
     } else if (currentTab === 'pending') {
@@ -608,6 +614,7 @@ function updateUIState() {
         if (tabTc) tabTc.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'none';
         if (tabRte) tabRte.style.display = 'none';
+        if (tabMarklist) tabMarklist.style.display = 'none';
         if (tabPending) tabPending.style.display = 'block';
         renderPendingTables();
     } else if (currentTab === 'tc') {
@@ -619,6 +626,7 @@ function updateUIState() {
         if (tabCounts) tabCounts.style.display = 'none';
         if (tabPending) tabPending.style.display = 'none';
         if (tabRte) tabRte.style.display = 'none';
+        if (tabMarklist) tabMarklist.style.display = 'none';
         renderTCTable();
     } else if (currentTab === 'rte') {
         if (filterPanel) filterPanel.style.display = 'none';
@@ -629,7 +637,27 @@ function updateUIState() {
         if (tabCounts) tabCounts.style.display = 'none';
         if (tabPending) tabPending.style.display = 'none';
         if (tabRte) tabRte.style.display = 'block';
+        if (tabMarklist) tabMarklist.style.display = 'none';
         renderRteTable();
+    } else if (currentTab === 'marklist') {
+        if (filterPanel) filterPanel.style.display = 'block';
+        if (classFilterRow) classFilterRow.style.display = 'flex';
+        
+        if (tabCounts) tabCounts.style.display = 'none';
+        if (tabPending) tabPending.style.display = 'none';
+        if (tabTc) tabTc.style.display = 'none';
+        if (tabRte) tabRte.style.display = 'none';
+        
+        if (!selectedClass) {
+            if (placeholder) placeholder.style.display = 'block';
+            if (tabMarklist) tabMarklist.style.display = 'none';
+            if (btnPrintList) btnPrintList.style.display = 'none';
+        } else {
+            if (placeholder) placeholder.style.display = 'none';
+            if (btnPrintList) btnPrintList.style.display = 'inline-flex';
+            if (tabMarklist) tabMarklist.style.display = 'block';
+            renderMarklistTable();
+        }
     } else {
         if (filterPanel) filterPanel.style.display = 'block';
         if (classFilterRow) classFilterRow.style.display = 'flex';
@@ -638,6 +666,7 @@ function updateUIState() {
         if (tabPending) tabPending.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
         if (tabRte) tabRte.style.display = 'none';
+        if (tabMarklist) tabMarklist.style.display = 'none';
         
         if (!selectedClass) {
             if (placeholder) placeholder.style.display = 'block';
@@ -1516,4 +1545,193 @@ function renderRteTable() {
         `;
         tbody.appendChild(tr);
     });
+}
+
+// Render Marklist Table
+function renderMarklistTable() {
+    const container = document.getElementById('marklist-container');
+    if (!container) return;
+    
+    if (!selectedClass) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    // Filter active and NSO students for selectedClass
+    const classActive = activeStudents.filter(s => s.class === selectedClass);
+    const classNso = nsoStudents.filter(s => s.class === selectedClass);
+    
+    // Helper to parse roll numbers
+    const getRollInt = (s) => {
+        if (!s || !s.roll_no) return null;
+        const val = parseInt(s.roll_no);
+        return isNaN(val) ? null : val;
+    };
+    
+    // Gather all roll numbers
+    let allRolls = [];
+    classActive.forEach(s => {
+        const r = getRollInt(s);
+        if (r !== null) allRolls.push(r);
+    });
+    classNso.forEach(s => {
+        const r = getRollInt(s);
+        if (r !== null) allRolls.push(r);
+    });
+    
+    let slots = [];
+    if (allRolls.length === 0) {
+        // No roll numbers assigned. Sort active students alphabetically and assign virtual roll numbers starting from 1
+        const sortedActive = [...classActive].sort((a, b) => a.student_name.localeCompare(b.student_name));
+        sortedActive.forEach((s, idx) => {
+            slots.push({
+                roll_no: idx + 1,
+                student_name: s.student_name,
+                is_nso: false,
+                is_blank: false
+            });
+        });
+        // Also add any NSO students
+        const sortedNso = [...classNso].sort((a, b) => a.student_name.localeCompare(b.student_name));
+        sortedNso.forEach((s, idx) => {
+            slots.push({
+                roll_no: sortedActive.length + idx + 1,
+                student_name: s.student_name,
+                is_nso: true,
+                is_blank: false
+            });
+        });
+    } else {
+        // Roll numbers are assigned
+        const minRoll = Math.min(...allRolls);
+        const maxRoll = Math.max(...allRolls);
+        
+        for (let r = minRoll; r <= maxRoll; r++) {
+            const activeStd = classActive.find(s => getRollInt(s) === r);
+            if (activeStd) {
+                slots.push({
+                    roll_no: r,
+                    student_name: activeStd.student_name,
+                    is_nso: false,
+                    is_blank: false
+                });
+            } else {
+                const nsoStd = classNso.find(s => getRollInt(s) === r);
+                if (nsoStd) {
+                    slots.push({
+                        roll_no: r,
+                        student_name: nsoStd.student_name,
+                        is_nso: true,
+                        is_blank: false
+                    });
+                } else {
+                    slots.push({
+                        roll_no: r,
+                        student_name: '',
+                        is_nso: false,
+                        is_blank: true
+                    });
+                }
+            }
+        }
+    }
+    
+    // Sort slots by roll number
+    slots.sort((a, b) => a.roll_no - b.roll_no);
+    
+    // Pad slots to fit pages cleanly. Each page has 45 lines.
+    // If slots <= 45, pad to 45 (1 page). If slots > 45, pad to 90 (2 pages).
+    // If slots > 90, pad to next multiple of 45.
+    const targetSize = slots.length <= 45 ? 45 : (slots.length <= 90 ? 90 : Math.ceil(slots.length / 45) * 45);
+    while (slots.length < targetSize) {
+        slots.push({
+            roll_no: '',
+            student_name: '',
+            is_nso: false,
+            is_blank: true
+        });
+    }
+    
+    const numPages = slots.length / 45;
+    container.innerHTML = '';
+    
+    for (let p = 0; p < numPages; p++) {
+        const pageSlots = slots.slice(p * 45, (p + 1) * 45);
+        
+        // Render a page
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'marklist-page';
+        
+        // Header
+        let headerHtml = `
+            <div class="marklist-header">
+                <h2 class="marklist-title">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
+                <div class="marklist-meta-row">
+                    <div class="marklist-meta-item">Session (सत्र) : <span>2026-27</span></div>
+                    <div class="marklist-meta-item">Class (कक्षा) : <span>${selectedClass}</span></div>
+                    <div class="marklist-meta-item">Subject (विषय) : <span>_____________________</span></div>
+                    <div class="marklist-meta-item">Date (परीक्षा दिनांक) : <span>_____________________</span></div>
+                </div>
+            </div>
+            <div class="marklist-tables-grid">
+        `;
+        
+        // Generate Left & Right Tables side-by-side (they are identical lists)
+        for (let col = 0; col < 2; col++) {
+            headerHtml += `
+                <table class="marklist-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 45px;">S.No.</th>
+                            <th style="width: 60px;">Roll No</th>
+                            <th>Student Name</th>
+                            <th style="width: 55px;">Oral</th>
+                            <th style="width: 55px;">Written</th>
+                            <th style="width: 55px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            pageSlots.forEach((slot, idx) => {
+                const sNo = p * 45 + idx + 1;
+                const rowClass = slot.is_nso ? 'class="row-nso"' : '';
+                const rollStr = slot.roll_no || '';
+                const nameStr = slot.student_name || '';
+                
+                headerHtml += `
+                    <tr ${rowClass}>
+                        <td><strong>${sNo}</strong></td>
+                        <td>${rollStr}</td>
+                        <td class="student-name-col">${nameStr}</td>
+                        <td class="mark-col"></td>
+                        <td class="mark-col"></td>
+                        <td class="mark-col"></td>
+                    </tr>
+                `;
+            });
+            
+            headerHtml += `
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        headerHtml += `
+            </div>
+            <div class="report-footer" style="margin-top: 24px; display: flex; justify-content: space-between; border-top: 1px dashed var(--slate-200); padding-top: 15px;">
+                <div class="report-signature" style="text-align: center; width: 220px;">
+                    <div class="signature-line" style="border-bottom: 1px solid var(--slate-900); height: 35px; margin-bottom: 6px;"></div>
+                    <span style="font-size: 0.8rem; font-weight: 600; color: var(--slate-700);">Sign (Subject Teacher)</span>
+                </div>
+                <div class="report-signature" style="text-align: center; width: 220px;">
+                    <div class="signature-line" style="border-bottom: 1px solid var(--slate-900); height: 35px; margin-bottom: 6px;"></div>
+                    <span style="font-size: 0.8rem; font-weight: 600; color: var(--slate-700);">Sign (Subject Teacher)</span>
+                </div>
+            </div>
+        `;
+        
+        pageDiv.innerHTML = headerHtml;
+        container.appendChild(pageDiv);
+    }
 }

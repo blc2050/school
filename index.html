@@ -50,6 +50,10 @@
                     <i class="fa-solid fa-hand-holding-heart"></i>
                     <span>RTE Students</span>
                 </button>
+                <button class="menu-item" id="btn-marklist" onclick="switchTab('marklist')">
+                    <i class="fa-solid fa-list-ol"></i>
+                    <span>Marklist</span>
+                </button>
             </nav>
             
             <div class="sidebar-footer">
@@ -542,6 +546,20 @@
                             <span>Principal Signature</span>
                         </div>
                     </div>
+                </div>
+            <!-- Tab Content 6: Marklist -->
+            <section id="tab-marklist" class="tab-content">
+                <div class="card no-print" style="margin-bottom: 24px; padding: 16px; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--slate-700);">
+                        Marklist Evaluation Sheet
+                    </div>
+                    <button class="btn btn-secondary" onclick="printReport()">
+                        <i class="fa-solid fa-print"></i> Print Marklist
+                    </button>
+                </div>
+                
+                <div id="marklist-container">
+                    <!-- Dynamic Page 1 and Page 2 rendered here side-by-side -->
                 </div>
             </section>
         </main>

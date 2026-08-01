@@ -280,6 +280,33 @@ try:
     else:
         print(f"Warning: Fee report Excel file '{fee_excel_path}' not found. Skipping fee data loading.")
 
+    # Parse NSO students from FOR NEW TAB. MARKLIST FORMAT.xlsx sheet MAIN
+    nso_students = []
+    nso_path = "FOR NEW TAB. MARKLIST FORMAT.xlsx"
+    if os.path.exists(nso_path):
+        nso_xl = pd.ExcelFile(nso_path)
+        if 'MAIN' in nso_xl.sheet_names:
+            nso_df = nso_xl.parse('MAIN')
+            nso_df.columns = nso_df.columns.str.strip()
+            nso_df = nso_df.fillna("")
+            for _, row in nso_df.iterrows():
+                nso_val = str(get_case_insensitive(row, 'NSO')).strip()
+                if nso_val == "NSO":
+                    student_name = str(get_case_insensitive(row, 'STUDENT NAME')).strip()
+                    father_name = str(get_case_insensitive(row, 'FATHER NAME')).strip()
+                    class_name = str(get_case_insensitive(row, 'Class')).strip()
+                    roll_no = clean_int_str(get_case_insensitive(row, 'ROLL NO'))
+                    sr_no = clean_int_str(get_case_insensitive(row, 'SR No.'))
+                    nso_students.append({
+                        "sr_no": sr_no,
+                        "student_name": student_name,
+                        "father_name": father_name,
+                        "class": class_name,
+                        "roll_no": roll_no,
+                        "is_nso": True
+                    })
+            print(f"Loaded {len(nso_students)} NSO students from {nso_path}.")
+
     # Generate meta mapping for classes
     classes_main = sorted(list(set([s['class'] for s in active_students if s['class']])))
     mediums = sorted(list(set([s['medium'] for s in active_students if s['medium']])))
@@ -297,7 +324,8 @@ try:
         "classes_tc": classes_tc,
         "class_by_medium": class_by_medium,
         "due_fees": due_fees,
-        "pending_students": pending_students
+        "pending_students": pending_students,
+        "nso_students": nso_students
     }
     
     # Write to data.js

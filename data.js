@@ -32715,5 +32715,495 @@ window.STUDENTS_DATA = {
             "mobile_no": "9929483702",
             "status_remark": "English"
         }
+    ],
+    "nso_students": [
+        {
+            "sr_no": "2145",
+            "student_name": "GOPAL",
+            "father_name": "KANHEYA LAL",
+            "class": "11TH SCI EM",
+            "roll_no": "1104",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5078",
+            "student_name": "RACHIT MEENA",
+            "father_name": "RAMNIWAS MEENA",
+            "class": "2ND EM",
+            "roll_no": "",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5255",
+            "student_name": "PRIYANSHU MEENA",
+            "father_name": "RAMNIWAS MEENA",
+            "class": "4TH EM",
+            "roll_no": "421",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4407",
+            "student_name": "RISHI PARMAR",
+            "father_name": "MADAN LAL PARMAR",
+            "class": "6TH A EM",
+            "roll_no": "624",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4406",
+            "student_name": "VINOD",
+            "father_name": "BAJRANGLAL",
+            "class": "6TH A EM",
+            "roll_no": "629",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5022",
+            "student_name": "PANKAJ SUTHAR",
+            "father_name": "NARAYAN RAM",
+            "class": "8TH A EM",
+            "roll_no": "822",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5300",
+            "student_name": "KALPANA",
+            "father_name": "SATU RAM",
+            "class": "UKG EM",
+            "roll_no": "",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5494",
+            "student_name": "JYOTI",
+            "father_name": "BHANWAR SINGH",
+            "class": "10TH A",
+            "roll_no": "10058",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3646",
+            "student_name": "KARAN PALIWAL",
+            "father_name": "DEVI LAL",
+            "class": "10TH B",
+            "roll_no": "10061",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4260",
+            "student_name": "SHRAWAN RAM",
+            "father_name": "KHERAJ RAM",
+            "class": "10TH C",
+            "roll_no": "10140",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4976",
+            "student_name": "TARUN KUMAR",
+            "father_name": "ANOPA RAM",
+            "class": "11TH AGR",
+            "roll_no": "11218",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4570",
+            "student_name": "ASHOK",
+            "father_name": "TILA RAM",
+            "class": "11TH ARTS",
+            "roll_no": "11007",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4435",
+            "student_name": "BHAGWAN BHARTI",
+            "father_name": "GHEWAR BHARTI",
+            "class": "11TH ARTS",
+            "roll_no": "11008",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3780",
+            "student_name": "CHANDRA PRAKASH",
+            "father_name": "OM PRAKASH",
+            "class": "11TH ARTS",
+            "roll_no": "11014",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4800",
+            "student_name": "LAXMAN",
+            "father_name": "PARAS RAM",
+            "class": "11TH ARTS",
+            "roll_no": "11031",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4055",
+            "student_name": "MANISH",
+            "father_name": "PURKHA RAM",
+            "class": "11TH ARTS",
+            "roll_no": "11034",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4568",
+            "student_name": "NAVIN CHARAN",
+            "father_name": "BHANWAR DAN",
+            "class": "11TH ARTS",
+            "roll_no": "11038",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4592",
+            "student_name": "PRKASH DEVASI",
+            "father_name": "BHOMA RAM DEVASI",
+            "class": "11TH ARTS",
+            "roll_no": "11047",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5515",
+            "student_name": "ROSHAN KHAN",
+            "father_name": "SHAKUR KHAN",
+            "class": "11TH ARTS",
+            "roll_no": "11053",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3781",
+            "student_name": "VASUDEV",
+            "father_name": "OM PRAKASH",
+            "class": "11TH ARTS",
+            "roll_no": "11060",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4245",
+            "student_name": "VISHNU PRASAD SOLANKI",
+            "father_name": "LADHU RAM",
+            "class": "11TH ARTS",
+            "roll_no": "11064",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3026",
+            "student_name": "HITESH SINGH",
+            "father_name": "MEHTAB SINGH",
+            "class": "11TH ARTS",
+            "roll_no": "11025",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4737",
+            "student_name": "MAHENDRA",
+            "father_name": "BORA RAM",
+            "class": "11TH SCI",
+            "roll_no": "11140",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4899",
+            "student_name": "KHUSHBOO",
+            "father_name": "PEP SINGH",
+            "class": "12TH ARTS",
+            "roll_no": "12025",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4109",
+            "student_name": "RAVINDRA",
+            "father_name": "HADMANA RAM",
+            "class": "12TH ARTS",
+            "roll_no": "12056",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4242",
+            "student_name": "SURESH",
+            "father_name": "SURATA RAM",
+            "class": "12TH ARTS",
+            "roll_no": "12063",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5647",
+            "student_name": "PUSHPENDRA SINGH",
+            "father_name": "MANGU SINGH",
+            "class": "12TH ARTS",
+            "roll_no": "12074",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4080",
+            "student_name": "RANJEET",
+            "father_name": "BHABHUTA RAM",
+            "class": "12TH SCI",
+            "roll_no": "12151",
+            "is_nso": true
+        },
+        {
+            "sr_no": "2517",
+            "student_name": "YUVRAJ SINGH",
+            "father_name": "HUKAM SINGH",
+            "class": "12TH SCI",
+            "roll_no": "12169",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5142",
+            "student_name": "JIYA",
+            "father_name": "ASHOK",
+            "class": "2ND",
+            "roll_no": "2013",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4890",
+            "student_name": "LALITA",
+            "father_name": "SHERA RAM",
+            "class": "2ND",
+            "roll_no": "2015",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4480",
+            "student_name": "GUNJAN JOYA",
+            "father_name": "GANGA RAM",
+            "class": "3RD",
+            "roll_no": "3014",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4812",
+            "student_name": "NIKITA",
+            "father_name": "NARPAT SINGH",
+            "class": "3RD",
+            "roll_no": "3026",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4515",
+            "student_name": "PRIYANSHI CHOUDHARY",
+            "father_name": "BHANWARA RAM",
+            "class": "3RD",
+            "roll_no": "3030",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5226",
+            "student_name": "SANDIP",
+            "father_name": "VENA RAM",
+            "class": "3RD",
+            "roll_no": "3039",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5010",
+            "student_name": "RESHAMA",
+            "father_name": "VENA RAM",
+            "class": "4TH",
+            "roll_no": "4030",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5017",
+            "student_name": "HARSHIT",
+            "father_name": "MODA RAM",
+            "class": "5TH",
+            "roll_no": "5020",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4849",
+            "student_name": "NITESH SANKHLA",
+            "father_name": "PARAS RAM",
+            "class": "5TH",
+            "roll_no": "5044",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5019",
+            "student_name": "NITESH SUTHAR",
+            "father_name": "NARAYAN RAM",
+            "class": "5TH",
+            "roll_no": "5045",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5486",
+            "student_name": "ANISHA",
+            "father_name": "BARGAT KHAN",
+            "class": "6TH A",
+            "roll_no": "6002",
+            "is_nso": true
+        },
+        {
+            "sr_no": "P2832",
+            "student_name": "BHOM SINGH",
+            "father_name": "SAWAI SINGH",
+            "class": "6TH A",
+            "roll_no": "6009",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5241",
+            "student_name": "DILIP SINGH",
+            "father_name": "RAJU SINGH",
+            "class": "6TH A",
+            "roll_no": "6015",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3814",
+            "student_name": "MUKESH",
+            "father_name": "NEMA RAM",
+            "class": "6TH B",
+            "roll_no": "6107",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5644",
+            "student_name": "YUVRAJ",
+            "father_name": "DEVI SINGH",
+            "class": "6TH B",
+            "roll_no": "6137",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3093",
+            "student_name": "BHAWANI",
+            "father_name": "HARISH",
+            "class": "7TH A",
+            "roll_no": "7011",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5106",
+            "student_name": "GANPAT RAM",
+            "father_name": "SHERA RAM",
+            "class": "7TH A",
+            "roll_no": "7032",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5105",
+            "student_name": "KAMLESH",
+            "father_name": "URJA RAM",
+            "class": "7TH A",
+            "roll_no": "7046",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5051",
+            "student_name": "MUKESH",
+            "father_name": "MODA RAM",
+            "class": "7TH B",
+            "roll_no": "7115",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3094",
+            "student_name": "PANKAJ",
+            "father_name": "GANESH RAM",
+            "class": "7TH B",
+            "roll_no": "7121",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3119",
+            "student_name": "VIKASH",
+            "father_name": "GANESH RAM",
+            "class": "7TH B",
+            "roll_no": "7150",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4751",
+            "student_name": "HARISH",
+            "father_name": "CHIMNA RAM",
+            "class": "8TH A",
+            "roll_no": "8027",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4997",
+            "student_name": "PRATAP SINGH",
+            "father_name": "RAMA RAM",
+            "class": "8TH B",
+            "roll_no": "8056",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5270",
+            "student_name": "SOHAN RAM",
+            "father_name": "CHIMA RAM",
+            "class": "8TH B",
+            "roll_no": "8136",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3348",
+            "student_name": "VIKRAM",
+            "father_name": "PRATAP RAM",
+            "class": "8TH B",
+            "roll_no": "8148",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4441",
+            "student_name": "YASHPAL SINGH",
+            "father_name": "JALAM SINGH",
+            "class": "8TH B",
+            "roll_no": "8153",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5200",
+            "student_name": "BHAVESH",
+            "father_name": "KANA RAM",
+            "class": "9TH A",
+            "roll_no": "9015",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5053",
+            "student_name": "DINESH",
+            "father_name": "DURGA RAM",
+            "class": "9TH A",
+            "roll_no": "9035",
+            "is_nso": true
+        },
+        {
+            "sr_no": "5527",
+            "student_name": "KAILASH",
+            "father_name": "KHETA RAM",
+            "class": "9TH A",
+            "roll_no": "9065",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3065",
+            "student_name": "NARENDRA",
+            "father_name": "HARISH",
+            "class": "9TH B",
+            "roll_no": "9124",
+            "is_nso": true
+        },
+        {
+            "sr_no": "3521",
+            "student_name": "PINTU SINGH",
+            "father_name": "DEVI SINGH",
+            "class": "9TH B",
+            "roll_no": "9133",
+            "is_nso": true
+        },
+        {
+            "sr_no": "4713",
+            "student_name": "PRAVEEN SINGH",
+            "father_name": "SAWAI SINGH",
+            "class": "9TH B",
+            "roll_no": "9136",
+            "is_nso": true
+        }
     ]
 };
