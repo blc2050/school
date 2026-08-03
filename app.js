@@ -22,6 +22,11 @@ let pendingStudents = [];
 let pendingMediumFilter = 'all';
 let pendingLevelFilter = 'all';
 
+// Mobile Directory states
+let mobileMediumFilter = 'all';
+let mobileSelectedClass = '';
+let mobileSearchQuery = '';
+
 // Global Search States
 let searchFocusedIndex = -1;
 let globalSearchResultsList = [];
@@ -278,6 +283,8 @@ function switchTab(tabId) {
             pageSubtitle.innerText = 'RTE Students';
         } else if (tabId === 'marklist') {
             pageSubtitle.innerText = 'Marklist';
+        } else if (tabId === 'mobile') {
+            pageSubtitle.innerText = 'Mobile Number Verification';
         }
     }
     
@@ -305,6 +312,20 @@ function switchTab(tabId) {
             btn.classList.remove('active');
             if (btn.getAttribute('data-level') === 'all') btn.classList.add('active');
         });
+    }
+    
+    // Reset mobile filters state when switching tabs
+    if (tabId === 'mobile') {
+        mobileMediumFilter = 'all';
+        mobileSelectedClass = '';
+        mobileSearchQuery = '';
+        document.querySelectorAll('#mobile-medium-filters .segment-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-medium') === 'all') btn.classList.add('active');
+        });
+        const mobInput = document.getElementById('mobile-search-input');
+        if (mobInput) mobInput.value = '';
+        populateMobileClassDropdown();
     }
     
     updateUIState();
@@ -587,6 +608,7 @@ function updateUIState() {
     const tabPending = document.getElementById('tab-pending');
     const tabRte = document.getElementById('tab-rte');
     const tabMarklist = document.getElementById('tab-marklist');
+    const tabMobile = document.getElementById('tab-mobile');
     
     // Inject dynamic print style orientation for portrait (marklist) / landscape (others)
     let orientationStyle = document.getElementById('print-orientation-style');
@@ -617,6 +639,7 @@ function updateUIState() {
         if (tabPending) tabPending.style.display = 'none';
         if (tabRte) tabRte.style.display = 'none';
         if (tabMarklist) tabMarklist.style.display = 'none';
+        if (tabMobile) tabMobile.style.display = 'none';
         if (tabCounts) tabCounts.style.display = 'block';
         switchCountsFormat(currentCountsFormat);
     } else if (currentTab === 'pending') {
@@ -628,6 +651,7 @@ function updateUIState() {
         if (tabCounts) tabCounts.style.display = 'none';
         if (tabRte) tabRte.style.display = 'none';
         if (tabMarklist) tabMarklist.style.display = 'none';
+        if (tabMobile) tabMobile.style.display = 'none';
         if (tabPending) tabPending.style.display = 'block';
         renderPendingTables();
     } else if (currentTab === 'tc') {
@@ -640,6 +664,7 @@ function updateUIState() {
         if (tabPending) tabPending.style.display = 'none';
         if (tabRte) tabRte.style.display = 'none';
         if (tabMarklist) tabMarklist.style.display = 'none';
+        if (tabMobile) tabMobile.style.display = 'none';
         renderTCTable();
     } else if (currentTab === 'rte') {
         if (filterPanel) filterPanel.style.display = 'none';
@@ -651,7 +676,22 @@ function updateUIState() {
         if (tabPending) tabPending.style.display = 'none';
         if (tabRte) tabRte.style.display = 'block';
         if (tabMarklist) tabMarklist.style.display = 'none';
+        if (tabMobile) tabMobile.style.display = 'none';
         renderRteTable();
+    } else if (currentTab === 'mobile') {
+        if (filterPanel) filterPanel.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'none';
+        
+        if (tabDir) tabDir.style.display = 'none';
+        if (tabTc) tabTc.style.display = 'none';
+        if (tabCounts) tabCounts.style.display = 'none';
+        if (tabPending) tabPending.style.display = 'none';
+        if (tabRte) tabRte.style.display = 'none';
+        if (tabMarklist) tabMarklist.style.display = 'none';
+        if (tabMobile) tabMobile.style.display = 'block';
+        
+        populateMobileClassDropdown();
+        renderMobileTable();
     } else if (currentTab === 'marklist') {
         if (filterPanel) filterPanel.style.display = 'block';
         if (classFilterRow) classFilterRow.style.display = 'flex';
@@ -661,6 +701,7 @@ function updateUIState() {
         if (tabPending) tabPending.style.display = 'none';
         if (tabTc) tabTc.style.display = 'none';
         if (tabRte) tabRte.style.display = 'none';
+        if (tabMobile) tabMobile.style.display = 'none';
         
         if (!selectedClass) {
             if (placeholder) placeholder.style.display = 'block';
@@ -681,6 +722,7 @@ function updateUIState() {
         if (tabTc) tabTc.style.display = 'none';
         if (tabRte) tabRte.style.display = 'none';
         if (tabMarklist) tabMarklist.style.display = 'none';
+        if (tabMobile) tabMobile.style.display = 'none';
         
         if (!selectedClass) {
             if (placeholder) placeholder.style.display = 'block';
@@ -1724,4 +1766,173 @@ function renderMarklistTable() {
         pageDiv.innerHTML = gridHtml;
         container.appendChild(pageDiv);
     }
+}
+
+// Populate class dropdown for Mobile tab
+function populateMobileClassDropdown() {
+    const classSelect = document.getElementById('mobile-class-select');
+    if (!classSelect) return;
+    
+    classSelect.innerHTML = '<option value="">-- All Classes --</option>';
+    
+    let list = classesMain;
+    if (mobileMediumFilter !== 'all') {
+        list = classByMedium[mobileMediumFilter] || [];
+    }
+    
+    list.forEach(cls => {
+        const opt = document.createElement('option');
+        opt.value = cls;
+        opt.innerText = cls;
+        classSelect.appendChild(opt);
+    });
+    
+    classSelect.value = mobileSelectedClass;
+}
+
+// Set Medium filter for Mobile tab
+function setMobileMediumFilter(medium) {
+    mobileMediumFilter = medium;
+    
+    document.querySelectorAll('#mobile-medium-filters .segment-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-medium') === medium) {
+            btn.classList.add('active');
+        }
+    });
+    
+    mobileSelectedClass = '';
+    populateMobileClassDropdown();
+    renderMobileTable();
+}
+
+// Handle Class selection change in Mobile tab
+function handleMobileClassChange() {
+    const select = document.getElementById('mobile-class-select');
+    if (select) {
+        mobileSelectedClass = select.value;
+    }
+    renderMobileTable();
+}
+
+// Handle live search in Mobile tab
+function handleMobileSearchInput() {
+    const input = document.getElementById('mobile-search-input');
+    if (input) {
+        mobileSearchQuery = input.value.trim().toLowerCase();
+    }
+    renderMobileTable();
+}
+
+// Render Mobile Directory Table
+function renderMobileTable() {
+    const tbody = document.getElementById('mobile-tbody');
+    const missingBadgeText = document.getElementById('mobile-missing-count-text');
+    const reportTitle = document.getElementById('mobile-report-title');
+    if (!tbody) return;
+    
+    // Calculate total missing/invalid mobile numbers across active roster
+    const missingTotal = activeStudents.filter(s => !s.mobile || s.mobile.trim() === '' || s.mobile === 'N/A' || s.mobile.length < 10).length;
+    if (missingBadgeText) {
+        missingBadgeText.innerText = `${missingTotal} Mobile Numbers Missing / Invalid`;
+    }
+    
+    if (reportTitle) {
+        if (mobileSelectedClass) {
+            reportTitle.innerText = `Class Mobile Number Directory: ${mobileSelectedClass}`;
+        } else {
+            reportTitle.innerText = `All Classes Student Mobile Number Directory`;
+        }
+    }
+    
+    // Filter active students
+    let filtered = activeStudents.filter(s => {
+        if (mobileMediumFilter !== 'all' && s.medium !== mobileMediumFilter) return false;
+        if (mobileSelectedClass && s.class !== mobileSelectedClass) return false;
+        if (mobileSearchQuery) {
+            const nameMatch = s.student_name && s.student_name.toLowerCase().includes(mobileSearchQuery);
+            const fatherMatch = s.father_name && s.father_name.toLowerCase().includes(mobileSearchQuery);
+            const srMatch = s.sr_no && String(s.sr_no).toLowerCase().includes(mobileSearchQuery);
+            const mobMatch = s.mobile && String(s.mobile).toLowerCase().includes(mobileSearchQuery);
+            const classMatch = s.class && s.class.toLowerCase().includes(mobileSearchQuery);
+            if (!nameMatch && !fatherMatch && !srMatch && !mobMatch && !classMatch) return false;
+        }
+        return true;
+    });
+    
+    // Sort filtered: class order first, then by roll_no or name
+    filtered.sort((a, b) => {
+        const idxA = CLASS_SORT_ORDER.indexOf(a.class);
+        const idxB = CLASS_SORT_ORDER.indexOf(b.class);
+        const orderA = idxA !== -1 ? idxA : 999;
+        const orderB = idxB !== -1 ? idxB : 999;
+        if (orderA !== orderB) return orderA - orderB;
+        
+        const rA = parseInt(a.roll_no);
+        const rB = parseInt(b.roll_no);
+        if (!isNaN(rA) && !isNaN(rB)) return rA - rB;
+        return a.student_name.localeCompare(b.student_name);
+    });
+    
+    tbody.innerHTML = '';
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--slate-500);">No student records found matching the selected filters.</td></tr>`;
+        return;
+    }
+    
+    filtered.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        if (s.is_highlighted) tr.classList.add('highlight-row');
+        
+        const isMissing = !s.mobile || s.mobile.trim() === '' || s.mobile === 'N/A' || s.mobile.length < 10;
+        let mobBadgeHtml = '';
+        if (isMissing) {
+            mobBadgeHtml = `<span style="background-color: var(--amber-50); color: #d97706; border: 1px solid var(--amber-100); padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.76rem; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-triangle-exclamation"></i> Missing / Invalid</span>`;
+        } else {
+            mobBadgeHtml = `<span style="font-weight: 600; color: var(--slate-800);"><i class="fa-solid fa-phone" style="font-size: 0.72rem; color: var(--primary);"></i> ${s.mobile}</span>`;
+        }
+        
+        tr.innerHTML = `
+            <td><strong>${idx + 1}</strong></td>
+            <td><span class="badge" style="background-color: var(--primary-light); color: var(--primary-dark); font-weight: 600;">${s.class}</span></td>
+            <td><strong style="color: var(--primary-dark); cursor: pointer;" onclick="openStudentModal('${s.sr_no}')">${s.sr_no || ''}</strong></td>
+            <td><strong>${s.student_name}</strong></td>
+            <td>${s.father_name || ''}</td>
+            <td><span class="badge ${s.medium === 'English' ? 'badge-purple' : 'badge-emerald'}">${s.medium}</span></td>
+            <td>${mobBadgeHtml}</td>
+            <td class="no-print">
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <input type="tel" id="input-mob-${s.sr_no}" class="form-control" placeholder="New 10-digit Mob" value="${!isMissing ? s.mobile : ''}" style="width: 125px; font-size: 0.78rem; padding: 4px 8px; height: 30px;">
+                    <button class="btn btn-sm" style="background-color: #25d366; color: white; border: none; padding: 4px 10px; font-size: 0.78rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; border-radius: 6px; cursor: pointer; height: 30px; white-space: nowrap;" onclick="sendMobileWhatsAppUpdate('${s.sr_no}')">
+                        <i class="fa-brands fa-whatsapp" style="font-size: 0.9rem;"></i> Update
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Send prefilled mobile update directly to WhatsApp (7976545260)
+function sendMobileWhatsAppUpdate(srNo) {
+    const student = activeStudents.find(s => String(s.sr_no) === String(srNo));
+    if (!student) {
+        alert("Student record not found.");
+        return;
+    }
+    
+    const input = document.getElementById(`input-mob-${srNo}`);
+    const newMob = input ? input.value.trim() : '';
+    
+    if (!newMob) {
+        alert("Please enter a valid mobile number to send update.");
+        return;
+    }
+    
+    const oldMob = student.mobile && student.mobile !== 'N/A' ? student.mobile : 'Missing';
+    
+    const text = `SSVM Student Mobile Number Update Request:\n----------------------------------------\nStudent: ${student.student_name}\nFather: ${student.father_name || 'N/A'}\nSR No: ${student.sr_no}\nClass: ${student.class}\nOld Mobile: ${oldMob}\nNew Mobile: ${newMob}\n----------------------------------------\nPlease update in database.`;
+    
+    const whatsappUrl = `https://wa.me/917976545260?text=${encodeURIComponent(text)}`;
+    window.open(whatsappUrl, '_blank');
 }
