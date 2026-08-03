@@ -54,6 +54,10 @@
                     <i class="fa-solid fa-list-ol"></i>
                     <span>Marklist</span>
                 </button>
+                <button class="menu-item" id="btn-mobile" onclick="switchTab('mobile')">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    <span>Mobile Updates</span>
+                </button>
             </nav>
             
             <div class="sidebar-footer">
@@ -561,6 +565,90 @@
                 
                 <div id="marklist-container">
                     <!-- Dynamic Page 1 and Page 2 rendered here side-by-side -->
+                </div>
+            </section>
+
+            <!-- Tab Content 7: Mobile Directory & WhatsApp Updates -->
+            <section id="tab-mobile" class="tab-content">
+                <div class="card no-print" style="margin-bottom: 24px; padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 16px;">
+                        <div>
+                            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--slate-900);">Mobile Number Directory & WhatsApp Updates</h3>
+                            <p style="font-size: 0.85rem; color: var(--slate-600); margin-top: 2px;">Class-wise student mobile directory. Enter updated mobile numbers and send instant updates directly to WhatsApp (7976545260).</p>
+                        </div>
+                        <div class="highlight-info" id="mobile-stats-badge" style="background-color: var(--amber-50); border: 1px solid var(--amber-100); padding: 8px 14px; border-radius: var(--radius-md);">
+                            <span class="highlight-dot" style="background-color: var(--amber-500);"></span>
+                            <span class="highlight-text" id="mobile-missing-count-text" style="color: var(--slate-800); font-weight: 600;">0 Numbers Missing / Invalid</span>
+                        </div>
+                    </div>
+
+                    <!-- Filter Controls for Mobile Tab -->
+                    <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                        <div class="segment-control" id="mobile-medium-filters">
+                            <button class="segment-btn active" data-medium="all" onclick="setMobileMediumFilter('all')">All Mediums</button>
+                            <button class="segment-btn" data-medium="Hindi" onclick="setMobileMediumFilter('Hindi')">Hindi</button>
+                            <button class="segment-btn" data-medium="English" onclick="setMobileMediumFilter('English')">English</button>
+                        </div>
+                        
+                        <div style="min-width: 200px;">
+                            <select id="mobile-class-select" class="form-select" onchange="handleMobileClassChange()">
+                                <option value="">-- All Classes --</option>
+                            </select>
+                        </div>
+
+                        <div style="flex-grow: 1; max-width: 320px; position: relative;">
+                            <input type="text" id="mobile-search-input" class="form-control" placeholder="Search student name, SR, mobile..." oninput="handleMobileSearchInput()" style="padding-left: 36px;">
+                            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--slate-400);"></i>
+                        </div>
+
+                        <button class="btn btn-secondary" onclick="printReport()">
+                            <i class="fa-solid fa-print"></i> Print Mobile List
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Directory Report Card -->
+                <div class="report-card print-target">
+                    <div class="report-header print-only">
+                        <img src="SSVM%20Hindi%20Logo%20500x..jpg" class="report-logo" alt="SSVM Logo">
+                        <div class="report-header-text">
+                            <h2>श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मंडली, कल्याणपुर</h2>
+                            <p>VP : Mandli, Block : Kalyanpur, Dist : Balotra (RAJ) - 344026</p>
+                            <p>Mob : 9413030806, E-mail : ssvmorg@gmail.com</p>
+                            <h3 id="mobile-report-title" style="margin-top: 5px; text-decoration: underline;">Student Mobile Number Directory</h3>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45px;">S.No</th>
+                                    <th style="width: 75px;">Class</th>
+                                    <th style="width: 75px;">SR No</th>
+                                    <th>Student Name</th>
+                                    <th>Father Name</th>
+                                    <th style="width: 75px;">Medium</th>
+                                    <th style="width: 130px;">Current Mobile</th>
+                                    <th class="no-print" style="width: 250px;">WhatsApp Update Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mobile-tbody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="report-footer print-only">
+                        <div class="report-signature">
+                            <div class="signature-line"></div>
+                            <span>Class Teacher Signature</span>
+                        </div>
+                        <div class="report-signature">
+                            <div class="signature-line"></div>
+                            <span>Principal Signature</span>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>

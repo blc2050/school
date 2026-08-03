@@ -1575,91 +1575,67 @@ function renderMarklistTable() {
     const classActive = activeStudents.filter(s => s.class === selectedClass);
     const classNso = nsoStudents.filter(s => s.class === selectedClass);
     
-    // Helper to parse roll numbers
-    const getRollInt = (s) => {
-        if (!s || !s.roll_no) return null;
-        const val = parseInt(s.roll_no);
-        return isNaN(val) ? null : val;
-    };
-    
-    // Gather all roll numbers
-    let allRolls = [];
-    classActive.forEach(s => {
-        const r = getRollInt(s);
-        if (r !== null) allRolls.push(r);
+    // Sort active students: by roll_no if numeric/present, else by student_name
+    const sortedActive = [...classActive].sort((a, b) => {
+        const rA = parseInt(a.roll_no);
+        const rB = parseInt(b.roll_no);
+        if (!isNaN(rA) && !isNaN(rB)) return rA - rB;
+        if (!isNaN(rA)) return -1;
+        if (!isNaN(rB)) return 1;
+        return a.student_name.localeCompare(b.student_name);
     });
-    classNso.forEach(s => {
-        const r = getRollInt(s);
-        if (r !== null) allRolls.push(r);
+    
+    // Sort NSO students similarly
+    const sortedNso = [...classNso].sort((a, b) => {
+        const rA = parseInt(a.roll_no);
+        const rB = parseInt(b.roll_no);
+        if (!isNaN(rA) && !isNaN(rB)) return rA - rB;
+        if (!isNaN(rA)) return -1;
+        if (!isNaN(rB)) return 1;
+        return a.student_name.localeCompare(b.student_name);
     });
     
     let slots = [];
-    if (allRolls.length === 0) {
-        // No roll numbers assigned. Sort active students alphabetically and assign virtual roll numbers starting from 1
-        const sortedActive = [...classActive].sort((a, b) => a.student_name.localeCompare(b.student_name));
-        sortedActive.forEach((s, idx) => {
-            slots.push({
-                roll_no: idx + 1,
-                student_name: s.student_name,
-                is_nso: false,
-                is_blank: false
-            });
+    sortedActive.forEach((s) => {
+        slots.push({
+            roll_no: s.roll_no || '',
+            student_name: s.student_name,
+            is_nso: false
         });
-        // Also add any NSO students
-        const sortedNso = [...classNso].sort((a, b) => a.student_name.localeCompare(b.student_name));
-        sortedNso.forEach((s, idx) => {
-            slots.push({
-                roll_no: sortedActive.length + idx + 1,
-                student_name: s.student_name,
-                is_nso: true,
-                is_blank: false
-            });
+    });
+    sortedNso.forEach((s) => {
+        slots.push({
+            roll_no: s.roll_no || '',
+            student_name: s.student_name,
+            is_nso: true
         });
+    });
+    
+    // Dynamic page splitting: Page 1 holds up to 30 rows (due to header box). Subsequent pages hold up to 38 rows.
+    const PAGE_1_ROWS = 30;
+    const PAGE_N_ROWS = 38;
+    
+    let pages = [];
+    if (slots.length <= PAGE_1_ROWS) {
+        pages.push(slots);
     } else {
-        // Roll numbers are assigned
-        const minRoll = Math.min(...allRolls);
-        const maxRoll = Math.max(...allRolls);
-        
-        for (let r = minRoll; r <= maxRoll; r++) {
-            const activeStd = classActive.find(s => getRollInt(s) === r);
-            if (activeStd) {
-                slots.push({
-                    roll_no: r,
-                    student_name: activeStd.student_name,
-                    is_nso: false,
-                    is_blank: false
-                });
-            } else {
-                const nsoStd = classNso.find(s => getRollInt(s) === r);
-                if (nsoStd) {
-                    slots.push({
-                        roll_no: r,
-                        student_name: nsoStd.student_name,
-                        is_nso: true,
-                        is_blank: false
-                    });
-                } else {
-                    slots.push({
-                        roll_no: r,
-                        student_name: '',
-                        is_nso: false,
-                        is_blank: true
-                    });
-                }
-            }
+        pages.push(slots.slice(0, PAGE_1_ROWS));
+        let remaining = slots.slice(PAGE_1_ROWS);
+        while (remaining.length > 0) {
+            pages.push(remaining.slice(0, PAGE_N_ROWS));
+            remaining = remaining.slice(PAGE_N_ROWS);
         }
     }
     
-    // Sort slots by roll number
-    slots.sort((a, b) => a.roll_no - b.roll_no);
-    
-    // Split slots into pages. Each page has at most 44 lines.
-    // We do NOT pad the final page to 44 lines.
-    const numPages = Math.max(1, Math.ceil(slots.length / 44));
+    const numPages = pages.length;
     container.innerHTML = '';
     
     for (let p = 0; p < numPages; p++) {
-        const pageSlots = slots.slice(p * 44, (p + 1) * 44);
+        const pageSlots = pages[p];
+        let startSNo = 1;
+        for (let i = 0; i < p; i++) {
+            startSNo += pages[i].length;
+        }
         
         // Render a page wrapper
         const pageDiv = document.createElement('div');
@@ -1679,13 +1655,13 @@ function renderMarklistTable() {
                         <div class="marklist-header-text">
                             <h2 class="marklist-title">श्री सरस्वती उच्च माध्यमिक विद्या मंदिर मण्डली</h2>
                             <div class="marklist-meta-lines">
-                                <div class="marklist-meta-line">................................................... : 2026-27</div>
-                                <div class="marklist-meta-line" style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                <div class="marklist-meta-line">सत्र / Session : 2026-27</div>
+                                <div class="marklist-meta-line" style="display: flex; justify-content: space-between; margin-top: 2px;">
                                     <span>Class (कक्षा) : <strong>${selectedClass}</strong></span>
-                                    <span>Subject (विषय) : _________________</span>
+                                    <span>Subject (विषय) : _________</span>
                                 </div>
-                                <div class="marklist-meta-line" style="text-align: left; margin-top: 4px;">
-                                    Date (परीक्षा की दिनांक) : _____________________________
+                                <div class="marklist-meta-line" style="text-align: left; margin-top: 2px;">
+                                    Date (दिनांक) : ______________
                                 </div>
                             </div>
                         </div>
@@ -1697,19 +1673,19 @@ function renderMarklistTable() {
                 <table class="marklist-table">
                     <thead>
                         <tr>
-                            <th style="width: 35px;">S.No</th>
+                            <th style="width: 32px;">S.No</th>
                             <th style="width: 48px;">Roll No</th>
                             <th>Student Name</th>
-                            <th style="width: 42px;">Oral</th>
-                            <th style="width: 42px;">Writt<br>en</th>
-                            <th style="width: 42px;">Total</th>
+                            <th style="width: 40px;">Oral</th>
+                            <th style="width: 40px;">Writt.</th>
+                            <th style="width: 40px;">Total</th>
                         </tr>
                     </thead>
                     <tbody>
             `;
             
             pageSlots.forEach((slot, idx) => {
-                const sNo = p * 44 + idx + 1;
+                const sNo = startSNo + idx;
                 const rowClass = slot.is_nso ? 'class="row-nso"' : '';
                 const rollStr = slot.roll_no || '';
                 const nameStr = slot.student_name || '';
@@ -1734,9 +1710,9 @@ function renderMarklistTable() {
             // Footer signature: Only on the last page (p === numPages - 1)
             if (p === numPages - 1) {
                 gridHtml += `
-                    <div class="marklist-footer" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
-                        <div style="font-weight: 600; font-size: 0.72rem; color: #000;">Sign (Subject Teacher)</div>
-                        <div style="font-weight: 600; font-size: 0.72rem; color: #000; margin-top: 4px;">Date (Submission) _________________</div>
+                    <div class="marklist-footer" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+                        <div style="font-weight: 600; font-size: 0.70rem; color: #000;">Sign (Subject Teacher)</div>
+                        <div style="font-weight: 600; font-size: 0.70rem; color: #000; margin-top: 2px;">Date (Submission) _________</div>
                     </div>
                 `;
             }
