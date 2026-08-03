@@ -1831,12 +1831,6 @@ function renderMobileTable() {
     const reportTitle = document.getElementById('mobile-report-title');
     if (!tbody) return;
     
-    // Calculate total missing/invalid mobile numbers across active roster
-    const missingTotal = activeStudents.filter(s => !s.mobile || s.mobile.trim() === '' || s.mobile === 'N/A' || s.mobile.length < 10).length;
-    if (missingBadgeText) {
-        missingBadgeText.innerText = `${missingTotal} Mobile Numbers Missing / Invalid`;
-    }
-    
     if (reportTitle) {
         if (mobileSelectedClass) {
             reportTitle.innerText = `Class Mobile Number Directory: ${mobileSelectedClass}`;
@@ -1859,6 +1853,10 @@ function renderMobileTable() {
         }
         return true;
     });
+    
+    if (missingBadgeText) {
+        missingBadgeText.innerText = `${filtered.length} Students Listed`;
+    }
     
     // Sort filtered: class order first, then by roll_no or name
     filtered.sort((a, b) => {
@@ -1884,12 +1882,13 @@ function renderMobileTable() {
         const tr = document.createElement('tr');
         if (s.is_highlighted) tr.classList.add('highlight-row');
         
-        const isMissing = !s.mobile || s.mobile.trim() === '' || s.mobile === 'N/A' || s.mobile.length < 10;
-        let mobBadgeHtml = '';
-        if (isMissing) {
-            mobBadgeHtml = `<span style="background-color: var(--amber-50); color: #d97706; border: 1px solid var(--amber-100); padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.76rem; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-triangle-exclamation"></i> Missing / Invalid</span>`;
+        // Exact mobile number as in database / Excel
+        const rawMob = s.mobile && s.mobile !== 'N/A' ? String(s.mobile).trim() : '';
+        let mobDisplayHtml = '';
+        if (rawMob) {
+            mobDisplayHtml = `<span style="font-weight: 600; color: var(--slate-800);"><i class="fa-solid fa-phone" style="font-size: 0.72rem; color: var(--primary);"></i> ${rawMob}</span>`;
         } else {
-            mobBadgeHtml = `<span style="font-weight: 600; color: var(--slate-800);"><i class="fa-solid fa-phone" style="font-size: 0.72rem; color: var(--primary);"></i> ${s.mobile}</span>`;
+            mobDisplayHtml = `<span style="color: var(--slate-400);"></span>`;
         }
         
         tr.innerHTML = `
@@ -1899,10 +1898,10 @@ function renderMobileTable() {
             <td><strong>${s.student_name}</strong></td>
             <td>${s.father_name || ''}</td>
             <td><span class="badge ${s.medium === 'English' ? 'badge-purple' : 'badge-emerald'}">${s.medium}</span></td>
-            <td>${mobBadgeHtml}</td>
+            <td>${mobDisplayHtml}</td>
             <td class="no-print">
                 <div style="display: flex; gap: 6px; align-items: center;">
-                    <input type="tel" id="input-mob-${s.sr_no}" class="form-control" placeholder="New 10-digit Mob" value="${!isMissing ? s.mobile : ''}" style="width: 125px; font-size: 0.78rem; padding: 4px 8px; height: 30px;">
+                    <input type="tel" id="input-mob-${s.sr_no}" class="form-control" placeholder="New 10-digit Mob" value="${rawMob}" style="width: 125px; font-size: 0.78rem; padding: 4px 8px; height: 30px;">
                     <button class="btn btn-sm" style="background-color: #25d366; color: white; border: none; padding: 4px 10px; font-size: 0.78rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; border-radius: 6px; cursor: pointer; height: 30px; white-space: nowrap;" onclick="sendMobileWhatsAppUpdate('${s.sr_no}')">
                         <i class="fa-brands fa-whatsapp" style="font-size: 0.9rem;"></i> Update
                     </button>
