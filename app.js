@@ -1880,12 +1880,17 @@ function renderMobileTable() {
     
     filtered.forEach((s, idx) => {
         const tr = document.createElement('tr');
-        if (s.is_highlighted) tr.classList.add('highlight-row');
-        
-        // Exact mobile number as in database / Excel
         const rawMob = s.mobile && s.mobile !== 'N/A' ? String(s.mobile).trim() : '';
+        const is8854 = rawMob.includes('8854030806');
+        
+        if (s.is_highlighted || is8854) {
+            tr.classList.add('highlight-row');
+        }
+        
         let mobDisplayHtml = '';
-        if (rawMob) {
+        if (is8854) {
+            mobDisplayHtml = `<span class="badge" style="background-color: #fef3c7; color: #92400e; border: 1px solid #f59e0b; font-weight: 700; padding: 3px 8px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;"><i class="fa-solid fa-star" style="color: #d97706;"></i> ${rawMob}</span>`;
+        } else if (rawMob) {
             mobDisplayHtml = `<span style="font-weight: 600; color: var(--slate-800);"><i class="fa-solid fa-phone" style="font-size: 0.72rem; color: var(--primary);"></i> ${rawMob}</span>`;
         } else {
             mobDisplayHtml = `<span style="color: var(--slate-400);"></span>`;

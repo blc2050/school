@@ -4,6 +4,7 @@ import os
 
 excel_path = r"NEW DATABASE ROLLLIST.xlsx" if os.path.exists("NEW DATABASE ROLLLIST.xlsx") else (r"RollList.xlsx" if os.path.exists("RollList.xlsx") else r"Roll No List.xlsx")
 fee_excel_path = r"duefeereport.xlsx"
+mobile_excel_path = r"D:\Mobile Number\MobileNumber.xlsx" if os.path.exists(r"D:\Mobile Number\MobileNumber.xlsx") else (r"MobileNumber.xlsx" if os.path.exists("MobileNumber.xlsx") else "")
 js_output_path = r"data.js"
 
 def clean_int_str(val):
@@ -37,6 +38,20 @@ try:
         exit(1)
         
     xl = pd.ExcelFile(excel_path)
+    
+    # Load mobile numbers mapping from MobileNumber.xlsx if present
+    mob_map = {}
+    if mobile_excel_path and os.path.exists(mobile_excel_path):
+        print(f"Loading mobile numbers from '{mobile_excel_path}'...")
+        mob_xl = pd.ExcelFile(mobile_excel_path)
+        mob_df = mob_xl.parse(mob_xl.sheet_names[0])
+        mob_df.columns = mob_df.columns.str.strip()
+        for _, mrow in mob_df.iterrows():
+            msr = clean_int_str(get_case_insensitive(mrow, 'Scholar No.')) or clean_int_str(get_case_insensitive(mrow, 'SR No.'))
+            mmob = clean_int_str(get_case_insensitive(mrow, 'Mobile No')) or clean_int_str(get_case_insensitive(mrow, 'Mobile'))
+            if msr:
+                mob_map[msr] = mmob
+        print(f"Loaded {len(mob_map)} mobile numbers from MobileNumber.xlsx")
     
     # Dynamically find sheet names
     main_sheet = next((s for s in xl.sheet_names if s.upper() in ['ACTIVE STUDENTS 2026-27', 'MAIN', 'ACTIVE']), xl.sheet_names[0])
@@ -100,6 +115,12 @@ try:
         rbse_roll = clean_int_str(get_case_insensitive(row, 'RBSE Roll No'))
         student_nic = clean_int_str(get_case_insensitive(row, 'Student NIC ID'))
         mobile_no = clean_int_str(get_case_insensitive(row, 'ERP Mobile No'))
+        
+        if sr_no in mob_map and mob_map[sr_no]:
+            mobile_no = mob_map[sr_no]
+            
+        if "8854030806" in str(mobile_no):
+            is_highlighted = True
         
         student_rec = {
             "sr_no": sr_no,
@@ -199,6 +220,12 @@ try:
         if not medium or medium == "nan":
             medium = "English" if "EM" in str(class_name).upper() else "Hindi"
         mobile_no = clean_int_str(get_case_insensitive(row, 'Mobile No'))
+        if sr_no in mob_map and mob_map[sr_no]:
+            mobile_no = mob_map[sr_no]
+            
+        is_highlighted = False
+        if "8854030806" in str(mobile_no):
+            is_highlighted = True
         
         pending_rec = {
             "sr_no": sr_no,
@@ -208,6 +235,7 @@ try:
             "class": class_name,
             "medium": medium,
             "mobile_no": mobile_no,
+            "is_highlighted": is_highlighted,
             "status_remark": str(get_case_insensitive(row, 'Remark')) or str(get_case_insensitive(row, 'Remarks')) or str(get_case_insensitive(row, 'Status')) or str(get_case_insensitive(row, 'Status Remark'))
         }
         
