@@ -11,7 +11,7 @@ let dueFees = {};
 let nsoStudents = [];
 
 // Application states
-let currentTab = 'directory'; // 'directory', 'tc', 'counts', 'fees', or 'pending'
+let currentTab = 'mobile'; // 'directory', 'tc', 'counts', 'fees', 'pending', or 'mobile'
 let currentMediumFilter = 'all';
 let selectedClass = '';
 let currentSearchQuery = '';
@@ -1768,17 +1768,27 @@ function renderMarklistTable() {
     }
 }
 
-// Populate class dropdown for Mobile tab
+// Populate class dropdown for Mobile tab sorted in grade order
 function populateMobileClassDropdown() {
     const classSelect = document.getElementById('mobile-class-select');
     if (!classSelect) return;
     
-    classSelect.innerHTML = '<option value="">-- All Classes --</option>';
+    classSelect.innerHTML = '<option value="">-- Select Class --</option>';
     
-    let list = classesMain;
+    let list = classesMain.slice();
     if (mobileMediumFilter !== 'all') {
         list = classByMedium[mobileMediumFilter] || [];
     }
+    
+    // Sort classes in logical grade order (like Student Count)
+    list.sort((a, b) => {
+        const idxA = CLASS_SORT_ORDER.indexOf(a);
+        const idxB = CLASS_SORT_ORDER.indexOf(b);
+        const orderA = idxA !== -1 ? idxA : 999;
+        const orderB = idxB !== -1 ? idxB : 999;
+        if (orderA !== orderB) return orderA - orderB;
+        return a.localeCompare(b);
+    });
     
     list.forEach(cls => {
         const opt = document.createElement('option');
@@ -1824,57 +1834,64 @@ function handleMobileSearchInput() {
     renderMobileTable();
 }
 
-// Render Mobile Directory Table
+// Render Mobile Directory Table (Renders ONLY if a Class is selected from dropdown)
 function renderMobileTable() {
     const tbody = document.getElementById('mobile-tbody');
     const missingBadgeText = document.getElementById('mobile-missing-count-text');
     const reportTitle = document.getElementById('mobile-report-title');
     if (!tbody) return;
     
-    if (reportTitle) {
-        if (mobileSelectedClass) {
-            reportTitle.innerText = `Class Mobile Number Directory: ${mobileSelectedClass}`;
-        } else {
-            reportTitle.innerText = `All Classes Student Mobile Number Directory`;
-        }
+    // Requirement: Show student list ONLY if a Class is selected from dropdown
+    if (!mobileSelectedClass) {
+        if (reportTitle) reportTitle.innerText = 'Select a Class to View Mobile Directory';
+        if (missingBadgeText) missingBadgeText.innerText = 'Select a Class';
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 48px 24px; color: var(--slate-600); background-color: var(--slate-50);">
+                    <i class="fa-solid fa-hand-pointer" style="font-size: 2rem; color: var(--primary); margin-bottom: 12px; display: block;"></i>
+                    <strong style="font-size: 1.05rem; color: var(--slate-800); display: block; margin-bottom: 4px;">Please Select a Class</strong>
+                    <span style="font-size: 0.85rem;">Select a class from the dropdown menu above to view and update student mobile numbers.</span>
+                </td>
+            </tr>
+        `;
+        return;
     }
     
-    // Filter active students
+    if (reportTitle) {
+        reportTitle.innerText = `Class Mobile Number Directory: ${mobileSelectedClass}`;
+    }
+    
+    // Filter active students for the selected class
     let filtered = activeStudents.filter(s => {
+        if (s.class !== mobileSelectedClass) return false;
         if (mobileMediumFilter !== 'all' && s.medium !== mobileMediumFilter) return false;
-        if (mobileSelectedClass && s.class !== mobileSelectedClass) return false;
         if (mobileSearchQuery) {
             const nameMatch = s.student_name && s.student_name.toLowerCase().includes(mobileSearchQuery);
             const fatherMatch = s.father_name && s.father_name.toLowerCase().includes(mobileSearchQuery);
             const srMatch = s.sr_no && String(s.sr_no).toLowerCase().includes(mobileSearchQuery);
-            const mobMatch = s.mobile && String(s.mobile).toLowerCase().includes(mobileSearchQuery);
-            const classMatch = s.class && s.class.toLowerCase().includes(mobileSearchQuery);
-            if (!nameMatch && !fatherMatch && !srMatch && !mobMatch && !classMatch) return false;
+            const mobMatch = (s.mobile || s.mobile_no || '') && String(s.mobile || s.mobile_no).toLowerCase().includes(mobileSearchQuery);
+            if (!nameMatch && !fatherMatch && !srMatch && !mobMatch) return false;
         }
         return true;
     });
     
     if (missingBadgeText) {
-        missingBadgeText.innerText = `${filtered.length} Students Listed`;
+        missingBadgeText.innerText = `${filtered.length} Students in ${mobileSelectedClass}`;
     }
     
-    // Sort filtered: class order first, then by roll_no or name
+    // Sort filtered students by Roll No (or Student Name)
     filtered.sort((a, b) => {
-        const idxA = CLASS_SORT_ORDER.indexOf(a.class);
-        const idxB = CLASS_SORT_ORDER.indexOf(b.class);
-        const orderA = idxA !== -1 ? idxA : 999;
-        const orderB = idxB !== -1 ? idxB : 999;
-        if (orderA !== orderB) return orderA - orderB;
-        
         const rA = parseInt(a.roll_no);
         const rB = parseInt(b.roll_no);
         if (!isNaN(rA) && !isNaN(rB)) return rA - rB;
+        if (!isNaN(rA)) return -1;
+        if (!isNaN(rB)) return 1;
         return a.student_name.localeCompare(b.student_name);
     });
     
     tbody.innerHTML = '';
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--slate-500);">No student records found matching the selected filters.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--slate-500);">No student records found matching the selected class and filters.</td></tr>`;
         return;
     }
     
@@ -1933,7 +1950,7 @@ function sendMobileWhatsAppUpdate(srNo) {
         return;
     }
     
-    const oldMob = student.mobile && student.mobile !== 'N/A' ? student.mobile : 'Missing';
+    const oldMob = (student.mobile || student.mobile_no || 'Missing').toString().replace('N/A', '').trim() || 'Missing';
     
     const text = `SSVM Student Mobile Number Update Request:\n----------------------------------------\nStudent: ${student.student_name}\nFather: ${student.father_name || 'N/A'}\nSR No: ${student.sr_no}\nClass: ${student.class}\nOld Mobile: ${oldMob}\nNew Mobile: ${newMob}\n----------------------------------------\nPlease update in database.`;
     
