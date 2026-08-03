@@ -11,7 +11,7 @@ let dueFees = {};
 let nsoStudents = [];
 
 // Application states
-let currentTab = 'mobile'; // 'directory', 'tc', 'counts', 'fees', 'pending', or 'mobile'
+let currentTab = 'directory'; // 'directory', 'tc', 'counts', 'fees', 'pending', or 'mobile'
 let currentMediumFilter = 'all';
 let selectedClass = '';
 let currentSearchQuery = '';
