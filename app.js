@@ -1880,7 +1880,7 @@ function renderMobileTable() {
     
     filtered.forEach((s, idx) => {
         const tr = document.createElement('tr');
-        const rawMob = s.mobile && s.mobile !== 'N/A' ? String(s.mobile).trim() : '';
+        const rawMob = (s.mobile || s.mobile_no || '').toString().replace('N/A', '').trim();
         const is8854 = rawMob.includes('8854030806');
         
         if (s.is_highlighted || is8854) {
