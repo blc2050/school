@@ -1,4 +1,4 @@
-// EduPortal - Shri Saraswati Vidhya Mandir Mandli - Application Logic
+// EduPortal - Shri Saraswati Vidhya Mandir Mandli - Application Logic (v2026.08.03.1304)
 
 // Global database variables
 let activeStudents = [];
