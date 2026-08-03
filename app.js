@@ -1906,7 +1906,7 @@ function renderMobileTable() {
             <td>${mobDisplayHtml}</td>
             <td class="no-print">
                 <div style="display: flex; gap: 6px; align-items: center;">
-                    <input type="tel" id="input-mob-${s.sr_no}" class="form-control" placeholder="New 10-digit Mob" value="${rawMob}" style="width: 125px; font-size: 0.78rem; padding: 4px 8px; height: 30px;">
+                    <input type="tel" id="input-mob-${s.sr_no}" class="form-control" placeholder="New 10-digit Mob" value="" style="width: 125px; font-size: 0.78rem; padding: 4px 8px; height: 30px;">
                     <button class="btn btn-sm" style="background-color: #25d366; color: white; border: none; padding: 4px 10px; font-size: 0.78rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; border-radius: 6px; cursor: pointer; height: 30px; white-space: nowrap;" onclick="sendMobileWhatsAppUpdate('${s.sr_no}')">
                         <i class="fa-brands fa-whatsapp" style="font-size: 0.9rem;"></i> Update
                     </button>
